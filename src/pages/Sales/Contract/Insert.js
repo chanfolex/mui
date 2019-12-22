@@ -96,7 +96,7 @@ class SaleContractInsert extends Component {
         params.category = categorys[categoryIndex].id;
       } else if (storageIndex || storageIndex === 0) {
         params.storage = storages[storageIndex].id;
-      } else {
+      } else if (categoryIndex || categoryIndex === 0) {
         params.category = categorys[categoryIndex].id;
       }
     } else if (storageIndex || storageIndex === 0) {
