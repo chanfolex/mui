@@ -13,9 +13,13 @@ import {
   AutoComplete,
   Divider,
   Select,
+  Modal,
+  Table,
 } from 'antd';
 import Debounce from 'lodash-decorators/debounce';
+// eslint-disable-next-line import/extensions
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+// eslint-disable-next-line import/extensions
 import NumericInput from '@/components/common/NumericInput';
 
 import styles from './Index.less';
@@ -39,11 +43,19 @@ class SaleContractInsert extends Component {
       ordate: '',
       curIndex: 0,
       supporter: '',
+      searchModalState: false,
       // storage: '',
       // contractSn: '',
       storages: [],
+      categorys: [{ name: '全部分类' }],
+      products: [],
+      categoryIndex: null,
+      storageIndex: null,
+      searchContent: null,
       des: [{ name: '', shape: '', cover: '', intro: '', price: '', num: '', extra: '' }],
     };
+    // 无需更新页面
+    this.selectedRows = [];
   }
 
   componentDidMount() {
@@ -61,7 +73,52 @@ class SaleContractInsert extends Component {
         });
       }
     });
+
+    dispatch({
+      type: 'salesContract/fetchCategoryOption',
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({ categorys: [{ name: '全部类别' }].concat(res.data) });
+      }
+    });
+
+    this.getProduction({});
   }
+
+  getProduction = () => {
+    const { storageIndex, categoryIndex, searchContent, storages, categorys } = this.state;
+    const { dispatch } = this.props;
+    const params = {};
+    if (searchContent) {
+      params.abbr = searchContent;
+      if ((storageIndex || storageIndex === 0) && (categoryIndex || categoryIndex === 0)) {
+        params.storage = storages[storageIndex].id;
+        params.category = categorys[categoryIndex].id;
+      } else if (storageIndex || storageIndex === 0) {
+        params.storage = storages[storageIndex].id;
+      } else {
+        params.category = categorys[categoryIndex].id;
+      }
+    } else if (storageIndex || storageIndex === 0) {
+      if (categoryIndex || categoryIndex === 0) {
+        params.storage = storages[storageIndex].id;
+        params.category = categorys[categoryIndex].id;
+      } else {
+        params.storage = storages[storageIndex].id;
+      }
+    } else if (categoryIndex || categoryIndex === 0) {
+      params.category = categorys[categoryIndex].id;
+    }
+    console.log(params);
+    dispatch({
+      type: `product/fetchProductOption`,
+      payload: params,
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({ products: res.data });
+      }
+    });
+  };
 
   remove = k => {
     // 更新id值
@@ -203,6 +260,46 @@ class SaleContractInsert extends Component {
   //   });
   // };
 
+  openSearchModal = () => {
+    this.setState({
+      searchModalState: true,
+    });
+  };
+
+  selectCategory = (item, index) => {
+    if (index) {
+      this.setState({ categoryIndex: index });
+    } else {
+      this.setState({ categoryIndex: null });
+    }
+    setTimeout(() => this.getProduction({}), 10);
+  };
+
+  selectStorage = value => {
+    if (value) {
+      this.setState({
+        storageIndex: value - 1,
+      });
+    } else {
+      this.setState({
+        storageIndex: null,
+      });
+    }
+    setTimeout(() => this.getProduction({}), 10);
+  };
+
+  hideModal = () => {
+    this.setState({
+      searchModalState: false,
+    });
+  };
+
+  searchContent = e => {
+    this.setState({
+      searchContent: e.target.value,
+    });
+  };
+
   render() {
     const {
       product,
@@ -211,7 +308,7 @@ class SaleContractInsert extends Component {
     } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     const formItemLayout = { labelCol: { span: 5 }, wrapperCol: { span: 18 } };
-    const { des, storages } = this.state;
+    const { des, storages, searchModalState, categorys, products, categoryIndex } = this.state;
 
     const iniKeys = des && des.length > 0 ? des.map((el, index) => index) : [];
     // console.log(des)
@@ -259,7 +356,14 @@ class SaleContractInsert extends Component {
               )}
             </FormItem>
           </Col>
-
+          <Col span={1}>
+            <Button
+              type="primary"
+              shape="circle"
+              icon="search"
+              onClick={() => this.openSearchModal()}
+            />
+          </Col>
           <Col span={1}>
             <FormItem {...formItemLayout}>
               <span>{des[k].sn}</span>
@@ -384,7 +488,30 @@ class SaleContractInsert extends Component {
         </Row>
       </Fragment>
     ));
-
+    const columns = [
+      {
+        title: '产品名称',
+        dataIndex: 'name',
+        key: 'name',
+      },
+      {
+        title: '产品批号',
+        dataIndex: 'sn',
+        key: 'sn',
+      },
+      {
+        title: '库存数量',
+        dataIndex: 'num',
+        key: 'num',
+      },
+    ];
+    const dataSource = (products && products.list) || [];
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+        this.selectedRows = selectedRows;
+      },
+    };
     return (
       <PageHeaderWrapper title="">
         <Card bordered={false}>
@@ -625,6 +752,85 @@ class SaleContractInsert extends Component {
             </Row>
           </Form>
         </Card>
+        <Modal
+          title="产品查询"
+          visible={searchModalState}
+          onOk={this.hideModal}
+          maskClosable={false}
+          width={1024}
+          onCancel={this.hideModal}
+          footer={false}
+        >
+          <div className={styles.searchModalHeader}>
+            <div>
+              <Select
+                allowClear
+                placeholder="请选择仓库"
+                style={{ width: 200 }}
+                onChange={this.selectStorage}
+              >
+                {storages.map(el => (
+                  <Option key={el.id} value={el.id}>
+                    {el.name}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <Input
+                placeholder="产品拼音首字母搜索"
+                onChange={this.searchContent}
+                onPressEnter={this.getProduction}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              borderTop: '1px solid #f3f3f3',
+              borderBottom: '1px solid #f3f3f3',
+              display: 'flex',
+            }}
+          >
+            <Col
+              span={8}
+              style={{
+                borderLeft: '1px solid #f3f3f3',
+                borderRight: '1px solid #f3f3f3',
+                padding: 15,
+              }}
+            >
+              <div>产品分类</div>
+              <div style={{ background: '#f3f3f3' }} className={styles.searchModalLeft}>
+                {categorys.map((item, index) => (
+                  <div
+                    key={item.name}
+                    className={
+                      categoryIndex === index || (!categoryIndex && !index)
+                        ? styles.searchModalLeftListIndexItem
+                        : styles.searchModalLeftListItem
+                    }
+                    onClick={() => this.selectCategory(item, index)}
+                  >
+                    {item.name}
+                  </div>
+                ))}
+              </div>
+            </Col>
+            <Col span={16} style={{ borderRight: '1px solid #f3f3f3', padding: 15 }}>
+              <Table
+                rowSelection={rowSelection}
+                dataSource={dataSource}
+                columns={columns}
+                pagination={false}
+              />
+              ;
+            </Col>
+          </div>
+          <div className={styles.searchModalFooter}>
+            <Button>提交</Button>
+            <Button type="primary">确认</Button>
+          </div>
+        </Modal>
       </PageHeaderWrapper>
     );
   }

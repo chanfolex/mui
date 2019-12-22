@@ -10,6 +10,8 @@ import {
   addCraft,
   querySalesContractPrivate,
   queryClientOptionPrivate,
+  queryCategoryOption,
+  // eslint-disable-next-line import/extensions
 } from '@/services/sales-contract';
 
 export default {
@@ -83,6 +85,11 @@ export default {
 
     *fetchStorageOption({ payload }, { call }) {
       const response = yield call(queryStorageOption, payload);
+      return response;
+    },
+
+    *fetchCategoryOption({ payload }, { call }) {
+      const response = yield call(queryCategoryOption, payload);
       return response;
     },
 

@@ -1,4 +1,5 @@
 import { stringify } from 'qs';
+// eslint-disable-next-line import/extensions
 import request from '@/utils/request';
 
 // 查询销售合同编码
@@ -46,6 +47,10 @@ export async function queryClientOption(params) {
 
 export async function queryStorageOption(params) {
   return request(`/api/storage/option?${stringify(params)}`);
+}
+
+export async function queryCategoryOption(params) {
+  return request(`/api/category/option?${stringify(params)}`);
 }
 
 export async function queryClientOptionPrivate(params) {

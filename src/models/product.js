@@ -5,7 +5,9 @@ import {
   querySupporterOption,
   queryTypeOption,
   queryGradeOption,
+  // eslint-disable-next-line import/extensions
 } from '@/services/product';
+// eslint-disable-next-line import/extensions
 import { queryCategoryOption } from '@/services/category';
 
 export default {
@@ -30,6 +32,11 @@ export default {
     },
     *fetchCategoryOption({ payload }, { call }) {
       const response = yield call(queryCategoryOption, payload);
+      return response;
+    },
+
+    *fetchProductOption({ payload }, { call }) {
+      const response = yield call(queryProduct, payload);
       return response;
     },
 
