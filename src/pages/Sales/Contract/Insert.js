@@ -48,6 +48,7 @@ class SaleContractInsert extends Component {
       // contractSn: '',
       storages: [],
       categorys: [{ name: '全部分类' }],
+      selectedRowKeys: [],
       products: [],
       categoryIndex: null,
       storageIndex: null,
@@ -261,12 +262,12 @@ class SaleContractInsert extends Component {
   // };
 
   openSearchModal = () => {
-    this.setState({
-      searchModalState: true,
-    });
+    this.setState({ searchModalState: true });
   };
 
   selectCategory = (item, index) => {
+    this.setState({ selectedRowKeys: [] });
+    this.selectedRows = [];
     if (index) {
       this.setState({ categoryIndex: index });
     } else {
@@ -300,6 +301,18 @@ class SaleContractInsert extends Component {
     });
   };
 
+  submit = () => {
+    const { des } = this.state;
+    this.setState({
+      des: des.concat(...this.selectedRows),
+      categoryIndex: null,
+      storageIndex: null,
+      searchContent: null,
+      searchModalState: false,
+      selectedRowKeys: [],
+    });
+  };
+
   render() {
     const {
       product,
@@ -308,8 +321,16 @@ class SaleContractInsert extends Component {
     } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
     const formItemLayout = { labelCol: { span: 5 }, wrapperCol: { span: 18 } };
-    const { des, storages, searchModalState, categorys, products, categoryIndex } = this.state;
-
+    const {
+      des,
+      storages,
+      searchModalState,
+      categorys,
+      products,
+      categoryIndex,
+      selectedRowKeys,
+    } = this.state;
+    console.log(des);
     const iniKeys = des && des.length > 0 ? des.map((el, index) => index) : [];
     // console.log(des)
     // console.log(iniKeys)
@@ -399,7 +420,7 @@ class SaleContractInsert extends Component {
 
           <Col span={1}>
             <FormItem {...formItemLayout}>
-              <span>{des[k].category}</span>
+              <span>{des[k].category && des[k].category.name}</span>
             </FormItem>
           </Col>
 
@@ -507,8 +528,9 @@ class SaleContractInsert extends Component {
     ];
     const dataSource = (products && products.list) || [];
     const rowSelection = {
-      onChange: (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      selectedRowKeys,
+      onChange: (selectedKeys, selectedRows) => {
+        this.setState({ selectedRowKeys: selectedKeys });
         this.selectedRows = selectedRows;
       },
     };
@@ -803,7 +825,7 @@ class SaleContractInsert extends Component {
               <div style={{ background: '#f3f3f3' }} className={styles.searchModalLeft}>
                 {categorys.map((item, index) => (
                   <div
-                    key={item.name}
+                    key={item.id}
                     className={
                       categoryIndex === index || (!categoryIndex && !index)
                         ? styles.searchModalLeftListIndexItem
@@ -827,7 +849,7 @@ class SaleContractInsert extends Component {
             </Col>
           </div>
           <div className={styles.searchModalFooter}>
-            <Button>提交</Button>
+            <Button onClick={this.submit}>提交</Button>
             <Button type="primary">确认</Button>
           </div>
         </Modal>
