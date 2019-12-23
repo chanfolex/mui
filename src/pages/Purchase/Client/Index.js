@@ -2,7 +2,10 @@ import React, { Component, Fragment } from 'react';
 
 import { connect } from 'dva';
 import { Card, Form, Table, Button, Divider, Icon, Popconfirm } from 'antd';
+import Zmage from 'react-zmage';
+// eslint-disable-next-line import/extensions
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+// eslint-disable-next-line import/extensions
 import TableInputSearch from '@/components/common/TableInputSearch';
 import Create from './Create';
 import Update from './Update';
@@ -207,7 +210,7 @@ class Client extends Component {
           cover.length === 0 ? (
             <div style={{ width: 80, height: 80, lineHeight: 80 }} />
           ) : (
-            <img src={cover} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+            <Zmage src={cover} alt="" style={{ display: 'inline-block', width: 80, height: 80 }} />
           ),
       },
       {
