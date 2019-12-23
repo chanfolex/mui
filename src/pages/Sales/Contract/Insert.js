@@ -311,6 +311,8 @@ class SaleContractInsert extends Component {
       searchModalState: false,
       selectedRowKeys: [],
     });
+    this.selectedRows = [];
+    setTimeout(() => this.getProduction(), 100);
   };
 
   render() {
@@ -850,7 +852,9 @@ class SaleContractInsert extends Component {
           </div>
           <div className={styles.searchModalFooter}>
             <Button onClick={this.submit}>提交</Button>
-            <Button type="primary">确认</Button>
+            <Button type="primary" onClick={this.hideModal}>
+              确认
+            </Button>
           </div>
         </Modal>
       </PageHeaderWrapper>
