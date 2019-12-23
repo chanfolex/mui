@@ -53,6 +53,7 @@ class SaleContractInsert extends Component {
       categoryIndex: null,
       storageIndex: null,
       searchContent: null,
+      selectStorages: null,
       des: [{ name: '', shape: '', cover: '', intro: '', price: '', num: '', extra: '' }],
     };
     // 无需更新页面
@@ -277,6 +278,8 @@ class SaleContractInsert extends Component {
   };
 
   selectStorage = value => {
+    console.log(value);
+    this.setState({ selectStorages: value });
     if (value) {
       this.setState({
         storageIndex: value - 1,
@@ -310,6 +313,7 @@ class SaleContractInsert extends Component {
       searchContent: null,
       searchModalState: false,
       selectedRowKeys: [],
+      selectStorages: null,
     });
     this.selectedRows = [];
     setTimeout(() => this.getProduction(), 100);
@@ -331,6 +335,7 @@ class SaleContractInsert extends Component {
       products,
       categoryIndex,
       selectedRowKeys,
+      selectStorages,
     } = this.state;
     console.log(des);
     const iniKeys = des && des.length > 0 ? des.map((el, index) => index) : [];
@@ -789,6 +794,7 @@ class SaleContractInsert extends Component {
             <div>
               <Select
                 allowClear
+                value={selectStorages}
                 placeholder="请选择仓库"
                 style={{ width: 200 }}
                 onChange={this.selectStorage}
