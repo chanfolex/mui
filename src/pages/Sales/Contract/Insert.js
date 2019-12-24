@@ -1,17 +1,17 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 
 import {
   Row,
   Col,
-  Card,
+  // Card,
   Form,
   Input,
   DatePicker,
   Button,
   AutoComplete,
-  Divider,
+  // Divider,
   Select,
   Modal,
   Table,
@@ -54,7 +54,27 @@ class SaleContractInsert extends Component {
       storageIndex: null,
       searchContent: null,
       selectStorages: null,
-      des: [{ name: '', shape: '', cover: '', intro: '', price: '', num: '', extra: '' }],
+      des: [
+        {
+          name: '',
+          cover: '',
+          intro: '',
+          price: '',
+          num: '',
+          extra: '',
+          prodcution: '',
+          shape: '',
+          license: '',
+          company: '',
+          sn: '',
+          currentnum: '',
+          batch: '',
+          start: '',
+          best: '',
+          unit: '',
+          barsn: '',
+        },
+      ],
     };
     // 无需更新页面
     this.selectedRows = [];
@@ -137,7 +157,28 @@ class SaleContractInsert extends Component {
   add = () => {
     const { des } = this.state;
     this.setState({
-      des: [...des, { name: '', cover: '', intro: '', price: '', num: '', extra: '' }],
+      des: [
+        ...des,
+        {
+          name: '',
+          cover: '',
+          intro: '',
+          price: '',
+          num: '',
+          extra: '',
+          prodcution: '',
+          shape: '',
+          license: '',
+          company: '',
+          sn: '',
+          currentnum: '',
+          batch: '',
+          start: '',
+          best: '',
+          unit: '',
+          barsn: '',
+        },
+      ],
     });
   };
 
@@ -319,6 +360,10 @@ class SaleContractInsert extends Component {
     setTimeout(() => this.getProduction(), 100);
   };
 
+  dataChange = index => {
+    console.log(index);
+  };
+
   render() {
     const {
       product,
@@ -342,7 +387,7 @@ class SaleContractInsert extends Component {
     // console.log(des)
     // console.log(iniKeys)
     getFieldDecorator('keys', { initialValue: iniKeys });
-    const keys = getFieldValue('keys');
+    // const keys = getFieldValue('keys');
     // console.log('keys', keys);
     const total = [];
     des.forEach((el, index) => {
@@ -351,171 +396,6 @@ class SaleContractInsert extends Component {
       total.push((Number(num) * Number(price)).toFixed(2));
       // console.log(num, price, express);
     });
-
-    const formItems = keys.map((k, index) => (
-      <Fragment key={k}>
-        <Row className={styles.rowTableForm} style={{ minHeight: 50, lineHeight: '50px' }}>
-          <Col span={2}>
-            <div>{k + 1}</div>
-          </Col>
-
-          <Col span={2}>
-            <FormItem {...formItemLayout}>
-              {des[k].name ? (
-                <span>{des[k].name}</span>
-              ) : (
-                <AutoComplete
-                  allowClear
-                  style={{ width: 110 }}
-                  onSelect={this.onSelect}
-                  onSearch={this.handleSearch}
-                  onFocus={() => this.handleFocus(index)}
-                  placeholder="产品首字母搜索"
-                  dropdownMatchSelectWidth={false}
-                  dropdownStyle={{ width: 200 }}
-                >
-                  {product &&
-                    product.list.map(el => (
-                      <Option key={el.id}>
-                        {el.name}-{el.name}
-                      </Option>
-                    ))}
-                </AutoComplete>
-              )}
-            </FormItem>
-          </Col>
-          <Col span={1}>
-            <Button
-              type="primary"
-              shape="circle"
-              icon="search"
-              onClick={() => this.openSearchModal()}
-            />
-          </Col>
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].sn}</span>
-            </FormItem>
-          </Col>
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].intro}</span>
-            </FormItem>
-          </Col>
-
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].shape}</span>
-            </FormItem>
-          </Col>
-
-          <Col span={2}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].license}</span>
-            </FormItem>
-          </Col>
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].company}</span>
-            </FormItem>
-          </Col>
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].sn}</span>
-            </FormItem>
-          </Col>
-
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].category && des[k].category.name}</span>
-            </FormItem>
-          </Col>
-
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              <span>{des[k].currentnum}</span>
-            </FormItem>
-          </Col>
-
-          {/* <Col span={2}>
-            {des.length === 0 || des[k].cover === null
-              ? ''
-              : des[k].cover
-                  .split(',')
-                  .map(el => (
-                    <Avatar
-                      key={el}
-                      src={el}
-                      shape="square"
-                      size="large"
-                      style={{ marginRight: 5, marginBottom: 5 }}
-                    />
-                  ))}
-          </Col> */}
-
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              {form.getFieldDecorator(`batch[${k}]`, {
-                rules: [{ required: true, message: '是必填项' }],
-                // })(<Input placeholder="数量" autoComplete="off" />)}
-              })(<NumericInput placeholder="批号" />)}
-            </FormItem>
-          </Col>
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              {form.getFieldDecorator(`start[${k}]`, {
-                rules: [{ required: true, message: '是必填项' }],
-                // })(<Input placeholder="数量" autoComplete="off" />)}
-              })(<NumericInput placeholder="生产日期" />)}
-            </FormItem>
-          </Col>
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              {form.getFieldDecorator(`end[${k}]`, {
-                rules: [{ required: true, message: '是必填项' }],
-                // })(<Input placeholder="数量" autoComplete="off" />)}
-              })(<NumericInput placeholder="有效日期" />)}
-            </FormItem>
-          </Col>
-
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              {form.getFieldDecorator(`num[${k}]`, {
-                rules: [{ required: true, message: '是必填项' }],
-                initialValue: des[k].num,
-                // })(<Input placeholder="数量" autoComplete="off" />)}
-              })(<NumericInput placeholder="数量" />)}
-            </FormItem>
-          </Col>
-
-          <Col span={1}>
-            <FormItem {...formItemLayout}>
-              {form.getFieldDecorator(`price[${k}]`, {
-                rules: [{ required: true, message: '是必填项' }],
-                initialValue: des[k].price,
-                // })(<Input placeholder="数量" autoComplete="off" />)}
-              })(<NumericInput placeholder="售价" />)}
-            </FormItem>
-          </Col>
-
-          <Col span={3}>
-            <div>{total ? total[k] : ''}</div>
-          </Col>
-
-          <Col>
-            <div>
-              <Button
-                type="primary"
-                shape="circle"
-                icon="delete"
-                size="small"
-                onClick={() => this.remove(k, index)}
-              />
-            </div>
-          </Col>
-        </Row>
-      </Fragment>
-    ));
     const columns = [
       {
         title: '产品名称',
@@ -541,19 +421,366 @@ class SaleContractInsert extends Component {
         this.selectedRows = selectedRows;
       },
     };
+    const tableList = [
+      {
+        title: '序号',
+        key: 'tableList',
+        width: 100,
+        fixed: 'left',
+        render: (text, record, index) => <span>{index}</span>,
+      },
+      {
+        title: '存货编码',
+        width: 200,
+        dataIndex: 'barsn',
+        key: 'barsn',
+        render: (text, record, index) => {
+          if (text) {
+            return (
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <div>{text}</div>
+                <div>
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    icon="search"
+                    onClick={() => this.openSearchModal()}
+                  />
+                </div>
+              </div>
+            );
+          }
+          return (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AutoComplete
+                allowClear
+                style={{ width: 110 }}
+                onSelect={this.onSelect}
+                onSearch={this.handleSearch}
+                onFocus={() => this.handleFocus(index)}
+                placeholder="产品首字母搜索"
+                dropdownMatchSelectWidth={false}
+                dropdownStyle={{ width: 200 }}
+              >
+                {product &&
+                  product.list.map(el => (
+                    <Option key={el.id}>
+                      {el.name}-{el.name}
+                    </Option>
+                  ))}
+              </AutoComplete>
+              <div>
+                <Button
+                  type="primary"
+                  shape="circle"
+                  icon="search"
+                  onClick={() => this.openSearchModal()}
+                />
+              </div>
+            </div>
+          );
+        },
+      },
+      { title: '存货名称', width: 150, dataIndex: 'name', key: 'name' },
+      { title: '经营范围', width: 150, dataIndex: 'prodcution', key: 'prodcution' },
+      {
+        title: '规格',
+        width: 150,
+        key: 'shape',
+        render: text => {
+          if (text.shape) {
+            return (
+              <span>
+                {text.shape}
+                /盒
+              </span>
+            );
+          }
+          return <span>{text.shape}</span>;
+        },
+      },
+      { title: '生产许可证', width: 150, dataIndex: 'license', key: 'license' },
+      { title: '生产企业', width: 150, dataIndex: 'company', key: 'company' },
+      { title: '批准文号', width: 150, dataIndex: 'sn', key: 'sn' },
+      { title: '可用数量', width: 150, dataIndex: 'currentnum', key: 'currentnum' },
+      {
+        title: '批号',
+        width: 150,
+        key: 'batch',
+        render: text => {
+          if (text.batch) return <div>{text.batch}</div>;
+          return <NumericInput placeholder="批号" />;
+        },
+      },
+      {
+        title: '生产日期',
+        width: 250,
+        key: 'start',
+        render: (text, record, index) => {
+          if (text.start) {
+            return <span>{text.start}</span>;
+          }
+          return (
+            <div>
+              <DatePicker onChange={() => this.dataChange(index)} />
+            </div>
+          );
+        },
+      },
+      {
+        title: '有效截止时间',
+        width: 150,
+        key: 'timer',
+        render: (text, record, index) => <span>{index}</span>,
+      },
+      { title: '保质期', width: 150, dataIndex: 'best', key: 'best' },
+      {
+        title: '数量',
+        width: 150,
+        key: 'num',
+        render: text => {
+          if (text.num) return <div>{text.num}</div>;
+          return <NumericInput placeholder="数量" />;
+        },
+      },
+      {
+        title: '单位',
+        width: 150,
+        dataIndex: 'unit',
+        key: 'unit',
+        render: text => {
+          if (text.unit && text.unit.name) return <div>{text.unit.name}</div>;
+          return <div>盒</div>;
+        },
+      },
+      {
+        title: '换算率',
+        width: 150,
+        key: 'num*unit',
+        render: text => {
+          if (text.shape && text.pack)
+            return (
+              <div>
+                {text.shape}
+                盒=
+                {text.pack}箱
+              </div>
+            );
+          return text.shape;
+        },
+      },
+      {
+        title: '单价',
+        width: 150,
+        key: 'price',
+        render: text => {
+          if (text.price && text.price) return <div>{text.price}</div>;
+          return <NumericInput placeholder="单价" />;
+        },
+      },
+      {
+        title: '合计',
+        width: 150,
+        key: 'account',
+        render: (text, record, index) => <span>{index}</span>,
+      },
+      {
+        title: '操作',
+        key: 'operation',
+        fixed: 'right',
+        width: 100,
+        render: (text, record, index) => (
+          <Button
+            type="primary"
+            shape="circle"
+            icon="delete"
+            size="small"
+            onClick={() => this.remove(index)}
+          />
+        ),
+      },
+    ];
+    console.log(des);
+    const tableData = des;
+    // const formItems = keys.map((k, index) => (
+    //   <Fragment key={k}>
+    //     <Row className={styles.rowTableForm} style={{ minHeight: 50, lineHeight: '50px' }}>
+    //       <Col span={2}>
+    //         <div>{k + 1}</div>
+    //       </Col>
+
+    //       <Col span={2}>
+    //         <FormItem {...formItemLayout}>
+    //           {des[k].name ? (
+    //             <span>{des[k].name}</span>
+    //           ) : (
+    //             <AutoComplete
+    //               allowClear
+    //               style={{ width: 110 }}
+    //               onSelect={this.onSelect}
+    //               onSearch={this.handleSearch}
+    //               onFocus={() => this.handleFocus(index)}
+    //               placeholder="产品首字母搜索"
+    //               dropdownMatchSelectWidth={false}
+    //               dropdownStyle={{ width: 200 }}
+    //             >
+    //               {product &&
+    //                 product.list.map(el => (
+    //                   <Option key={el.id}>
+    //                     {el.name}-{el.name}
+    //                   </Option>
+    //                 ))}
+    //             </AutoComplete>
+    //           )}
+    //         </FormItem>
+    //       </Col>
+    //       <Col span={1}>
+    //         <Button
+    //           type="primary"
+    //           shape="circle"
+    //           icon="search"
+    //           onClick={() => this.openSearchModal()}
+    //         />
+    //       </Col>
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].sn}</span>
+    //         </FormItem>
+    //       </Col>
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].intro}</span>
+    //         </FormItem>
+    //       </Col>
+
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].shape}</span>
+    //         </FormItem>
+    //       </Col>
+
+    //       <Col span={2}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].license}</span>
+    //         </FormItem>
+    //       </Col>
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].company}</span>
+    //         </FormItem>
+    //       </Col>
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].sn}</span>
+    //         </FormItem>
+    //       </Col>
+
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].category && des[k].category.name}</span>
+    //         </FormItem>
+    //       </Col>
+
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           <span>{des[k].currentnum}</span>
+    //         </FormItem>
+    //       </Col>
+
+    //       {/* <Col span={2}>
+    //         {des.length === 0 || des[k].cover === null
+    //           ? ''
+    //           : des[k].cover
+    //               .split(',')
+    //               .map(el => (
+    //                 <Avatar
+    //                   key={el}
+    //                   src={el}
+    //                   shape="square"
+    //                   size="large"
+    //                   style={{ marginRight: 5, marginBottom: 5 }}
+    //                 />
+    //               ))}
+    //       </Col> */}
+
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           {form.getFieldDecorator(`batch[${k}]`, {
+    //             rules: [{ required: true, message: '是必填项' }],
+    //             // })(<Input placeholder="数量" autoComplete="off" />)}
+    //           })(<NumericInput placeholder="批号" />)}
+    //         </FormItem>
+    //       </Col>
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           {form.getFieldDecorator(`start[${k}]`, {
+    //             rules: [{ required: true, message: '是必填项' }],
+    //             // })(<Input placeholder="数量" autoComplete="off" />)}
+    //           })(<NumericInput placeholder="生产日期" />)}
+    //         </FormItem>
+    //       </Col>
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           {form.getFieldDecorator(`end[${k}]`, {
+    //             rules: [{ required: true, message: '是必填项' }],
+    //             // })(<Input placeholder="数量" autoComplete="off" />)}
+    //           })(<NumericInput placeholder="有效日期" />)}
+    //         </FormItem>
+    //       </Col>
+
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           {form.getFieldDecorator(`num[${k}]`, {
+    //             rules: [{ required: true, message: '是必填项' }],
+    //             initialValue: des[k].num,
+    //             // })(<Input placeholder="数量" autoComplete="off" />)}
+    //           })(<NumericInput placeholder="数量" />)}
+    //         </FormItem>
+    //       </Col>
+
+    //       <Col span={1}>
+    //         <FormItem {...formItemLayout}>
+    //           {form.getFieldDecorator(`price[${k}]`, {
+    //             rules: [{ required: true, message: '是必填项' }],
+    //             initialValue: des[k].price,
+    //             // })(<Input placeholder="数量" autoComplete="off" />)}
+    //           })(<NumericInput placeholder="售价" />)}
+    //         </FormItem>
+    //       </Col>
+
+    //       <Col span={3}>
+    //         <div>{total ? total[k] : ''}</div>
+    //       </Col>
+
+    //       <Col>
+    //         <div>
+    //           <Button
+    //             type="primary"
+    //             shape="circle"
+    //             icon="delete"
+    //             size="small"
+    //             onClick={() => this.remove(k, index)}
+    //           />
+    //         </div>
+    //       </Col>
+    //     </Row>
+    //   </Fragment>
+    // ));
     return (
       <PageHeaderWrapper title="">
-        <Card bordered={false}>
+        {/* <Card bordered={false}>
           <Row style={{ height: 40, lineHeight: '40px' }}>
-            <Col span={3}>{contractSn}</Col>
-            {/* 
+            <Col span={3}>{contractSn}</Col> */}
+        {/* 
             <Col span={3}>
               
               {form.getFieldDecorator('storage', {
                 rules: [{ required: true, message: '是必填项' }],
               })(<Input placeholder="仓库" onChange={this.onStorageChange} autoComplete="off" />)}
             </Col> */}
-            <Col span={2}>
+        {/* <Col span={2}>
               仓库&nbsp;&nbsp;
               {form.getFieldDecorator('storage', {
                 rules: [{ required: true, message: '仓库是必填项' }],
@@ -592,8 +819,8 @@ class SaleContractInsert extends Component {
                 defaultValue={moment()}
               />
             </Col>
-          </Row>
-          <Row className={styles.RowTableHeader}>
+          </Row> */}
+        {/* <Row className={styles.RowTableHeader}>
             <Col span={1}>
               <div>序号</div>
             </Col>
@@ -609,12 +836,12 @@ class SaleContractInsert extends Component {
 
             <Col span={1}>
               <div>规格</div>
-            </Col>
-            {/* <Col span={1}>
+            </Col> */}
+        {/* <Col span={1}>
               <div>图片</div>
             </Col> */}
 
-            <Col span={2}>
+        {/* <Col span={2}>
               <div>生产许可证</div>
             </Col>
             <Col span={1}>
@@ -647,9 +874,9 @@ class SaleContractInsert extends Component {
             </Col>
             <Col span={1}>
               <div>合计</div>
-            </Col>
+            </Col> */}
 
-            <Col>
+        {/* <Col>
               <div>操作</div>
             </Col>
           </Row>
@@ -686,15 +913,15 @@ class SaleContractInsert extends Component {
                     initialValue: '',
                   })(<Input placeholder="请输入" autoComplete="off" />)}
                 </FormItem>
-              </Col>
-              {/* <Col span={8}>
+              </Col> */}
+        {/* <Col span={8}>
                 <FormItem label="审核人" {...formItemLayout}>
                   {form.getFieldDecorator('delivery', {
                     rules: [{ required: true, message: '是必填项' }],
                   })(<DatePicker format="YYYY-MM-DD" placeholder="选择发货日期" />)}
                 </FormItem>
               </Col> */}
-              {/* <Col span={8}>
+        {/* <Col span={8}>
                 <FormItem label="审核日期" {...formItemLayout}>
                   {form.getFieldDecorator('terms', {
                     rules: [{ required: true, message: '是必填项' }],
@@ -702,7 +929,7 @@ class SaleContractInsert extends Component {
                   })(<TextArea rows={4} placeholder="请输入" />)}
                 </FormItem>
               </Col> */}
-              {/* <Col span={8}>
+        {/* <Col span={8}>
                 <FormItem label="包装" {...formItemLayout}>
                   {form.getFieldDecorator('packing', {
                     rules: [{ required: true, message: '是必填项' }],
@@ -710,7 +937,7 @@ class SaleContractInsert extends Component {
                   })(<TextArea rows={4} placeholder="请输入" />)}
                 </FormItem>
               </Col> */}
-              {/* <Col span={8}>
+        {/* <Col span={8}>
                 <FormItem label="贸易条款" {...formItemLayout}>
                   {form.getFieldDecorator('trade', {
                     rules: [{ required: true, message: '是必填项' }],
@@ -718,7 +945,7 @@ class SaleContractInsert extends Component {
                   })(<TextArea rows={4} placeholder="请输入" />)}
                 </FormItem>
               </Col> */}
-            </Row>
+        {/* </Row>
             <Row style={{ height: 50, lineHeight: '50px' }}>
               <Col span={8}>
                 合计: {total.length > 0 ? total.reduce((pre, current) => pre + current) : ''}
@@ -730,8 +957,8 @@ class SaleContractInsert extends Component {
               </Col>
             </Row>
 
-            <Row>
-              {/* <Col span={8}>
+            <Row> */}
+        {/* <Col span={8}>
                 <FormItem label="发货港" {...formItemLayout}>
                   {form.getFieldDecorator('port_l', {
                     rules: [{ required: true, message: '是必填项' }],
@@ -778,9 +1005,87 @@ class SaleContractInsert extends Component {
                   })(<TextArea rows={4} placeholder="请输入" />)}
                 </FormItem>
               </Col> */}
-            </Row>
+        {/* </Row>
           </Form>
-        </Card>
+        </Card> */}
+        <div style={{ background: 'white', padding: 10 }}>
+          <div className={styles.insertHeaderStyle}>
+            <div>{contractSn}</div>
+            <div>
+              <Select allowClear placeholder="请选择仓库" style={{ width: 150 }}>
+                {storages.map(el => (
+                  <Option key={el.id} value={el.id}>
+                    {el.name}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              <AutoComplete
+                allowClear
+                // style={{ width: 110 }}
+                onSelect={this.onSelectClient}
+                onSearch={this.handleClientSearch}
+                placeholder="首字母供应商搜索"
+                dropdownMatchSelectWidth={false}
+                dropdownStyle={{ width: 100 }}
+              >
+                {product && product.supporters.map(el => <Option key={el.id}>{el.name}</Option>)}
+              </AutoComplete>
+            </div>
+            <div>
+              <DatePicker
+                format="YYYY-MM-DD HH:mm:ss"
+                onChange={this.onDateChange}
+                placeholder="选择单据时间"
+                defaultValue={moment()}
+              />
+            </div>
+          </div>
+          <Table
+            columns={tableList}
+            dataSource={tableData}
+            scroll={{ x: 2500 }}
+            pagination={false}
+            footer={() => (
+              <Button type="primary" shape="circle" icon="plus" size="large" onClick={this.add} />
+            )}
+          />
+          <Row style={{ marginTop: 50 }}>
+            <Col span={8}>
+              <FormItem label="备注" {...formItemLayout}>
+                {form.getFieldDecorator('extra', {
+                  rules: [{ required: true, message: '是必填项' }],
+                  initialValue: '',
+                })(<Input placeholder="请输入" autoComplete="off" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem label="制单人" {...formItemLayout}>
+                {form.getFieldDecorator('payment', {
+                  rules: [{ required: true, message: '是必填项' }],
+                  initialValue: '',
+                })(<Input placeholder="请输入" autoComplete="off" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem label="审核人" {...formItemLayout}>
+                {form.getFieldDecorator('packing', {
+                  rules: [{ required: true, message: '是必填项' }],
+                  initialValue: '',
+                })(<Input placeholder="请输入" autoComplete="off" />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <div className={styles.submitBootmStyle}>
+            <div>
+              <Button type="primary" htmlType="submit">
+                提交
+              </Button>
+            </div>
+            <div>合计: {total.length > 0 ? total.reduce((pre, current) => pre + current) : ''}</div>
+          </div>
+        </div>
         <Modal
           title="产品查询"
           visible={searchModalState}
