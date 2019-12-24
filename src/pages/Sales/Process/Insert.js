@@ -92,7 +92,7 @@ class ProcessInsert extends Component {
       },
       {
         title: '供应商',
-        // width: 150,
+        width: 150,
         dataIndex: 'supporter.name',
         key: 'supporter.name',
       },
@@ -103,20 +103,33 @@ class ProcessInsert extends Component {
         key: 'total',
       },
       {
-        title: '创建人',
-        // width: 150,
+        title: '仓库',
+        width: 150,
+        dataIndex: 'storage.name',
+        key: 'storage.name',
+      },
+      {
+        title: '经手人',
+        width: 150,
+        dataIndex: 'cuser.nickname',
+        key: 'cuser.nickname',
+      },
+      {
+        title: '制单人',
+        width: 150,
         dataIndex: 'cuser.nickname',
         key: 'cuser.nickname',
       },
       {
         title: '创建时间',
-        // width: 300,
+        width: 200,
         dataIndex: 'ctime',
         key: 'ctime',
       },
       {
         title: '操作',
-        // width: 250,
+        width: 150,
+        fixed: 'right',
         render: (text, record) => (
           <Fragment>
             {/* <Divider type="vertical" />
@@ -164,8 +177,7 @@ class ProcessInsert extends Component {
               dataSource={list}
               pagination={paginationProps}
               onChange={this.handleTableChange}
-              // scroll={{ x: 1010, y: 540 }}
-
+              scroll={{ x: 1400, y: 540 }}
               onRow={record => ({
                 onDoubleClick: () => {
                   this.showDrawer(record);

@@ -206,7 +206,7 @@ class PrintTable extends PureComponent {
           <th colSpan="4">
             <input style={styleObj.printInputFooter} />
           </th>
-          <th>库管员（签字）</th>
+          <th>制单人（签字）</th>
           <th>
             <div style={styleObj.footerSpace} />
           </th>
@@ -231,7 +231,7 @@ class PrintTable extends PureComponent {
     const { printGroupData } = this.state;
     return printGroupData.map((item, index) => (
       <div style={styleObj.printArea}>
-        {this.createTitle('xxxxxxx公司xxx单')}
+        {this.createTitle('蜜拓蜜大健康采购入库单')}
         {this.createHeader()}
         {this.createForm(printCol, item)}
         {this.createFooter({ current: index + 1, total: printGroupData.length })}

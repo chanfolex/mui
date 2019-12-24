@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Form, Input, Drawer, Tabs, Divider, Row, Col, Table, Icon } from 'antd';
+import Zmage from 'react-zmage';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 
 @Form.create()
-export default class InsertSlide extends PureComponent {
+export default class StorageSlide extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -16,18 +17,19 @@ export default class InsertSlide extends PureComponent {
   }
 
   componentDidMount() {
-    this.fetchInquiry();
+    this.fetchData();
   }
 
-  fetchInquiry = (params = {}) => {
+  fetchData = (params = {}) => {
     const { dispatch, formRow } = this.props;
 
     this.setState({ loading: true });
     dispatch({
-      type: 'contract/fetchInsertItems',
+      type: 'prepurchase/fetchItems',
       payload: {
         ...params,
         sn: formRow.sn,
+        product: formRow.product.id,
       },
     }).then(res => {
       if (res) {
@@ -42,29 +44,6 @@ export default class InsertSlide extends PureComponent {
     });
   };
 
-  //  // 获取slide数据源头
-  // fetchInquiry = (params = {}) => {
-  //   const { dispatch, formRow } = this.props;
-  //   this.setState({ loading: true });
-  //   dispatch({
-  //     type: 'customer/fetchInquiry',
-  //     payload: {
-  //       ...params,
-  //       client: formRow.id,
-  //     },
-  //   }).then(res => {
-  //     if (res.code === 200) {
-  //       const { pagination } = this.state;
-  //       pagination.total = res.data.sum;
-  //       this.setState({
-  //         loading: false,
-  //         inquirys: res.data.list,
-  //         pagination,
-  //       });
-  //     }
-  //   });
-  // };
-
   handleTabChange = () => {
     // console.log(key);
   };
@@ -78,7 +57,7 @@ export default class InsertSlide extends PureComponent {
       pagination: pager,
     });
     const param = { pagination: pagination.current };
-    this.fetchInquiry(param);
+    this.fetchData(param);
   };
 
   handleSearch = e => {
@@ -86,7 +65,7 @@ export default class InsertSlide extends PureComponent {
     const { form } = this.props;
     form.validateFields((err, values) => {
       if (err) return;
-      this.fetchInquiry({ sn: values.abbr });
+      this.fetchData({ sn: values.abbr });
     });
   };
 
@@ -95,7 +74,7 @@ export default class InsertSlide extends PureComponent {
     form.setFieldsValue({
       abbr: '',
     });
-    this.fetchInquiry();
+    this.fetchData();
   };
 
   renderSimpleForm() {
@@ -132,58 +111,21 @@ export default class InsertSlide extends PureComponent {
 
     const columns = [
       {
-        title: '图片',
-        dataIndex: 'product.cover',
-        key: 'product.cover',
-        width: 100,
-        render: record => <img src={record} width="50px" height="50px" alt="" />,
-      },
-      {
-        title: '规格',
-        dataIndex: 'product.shape',
-        key: 'product.shape',
-        width: 100,
-      },
-      {
-        title: '名称',
-        dataIndex: 'product.name',
-        key: 'product.name',
-        width: 100,
-      },
-      {
-        title: '单位',
-        dataIndex: 'product.type',
-        key: 'product.type',
-        width: 100,
-      },
-      {
-        title: '生产企业',
-        dataIndex: 'product.company',
-        key: 'product.company',
-        width: 100,
-      },
-      {
-        title: '批准文号',
-        dataIndex: 'product.sn',
-        key: 'product.sn',
+        title: '批号',
+        dataIndex: 'batch',
+        key: 'batch',
         width: 100,
       },
       {
         title: '生产日期',
-        dataIndex: 'product.start',
-        key: 'product.start',
+        dataIndex: 'start',
+        key: 'start',
         width: 100,
       },
       {
-        title: '有效日期',
-        dataIndex: 'product.end',
-        key: 'product.end',
-        width: 100,
-      },
-      {
-        title: '售价',
-        dataIndex: 'price',
-        key: 'price',
+        title: '截至日期',
+        dataIndex: 'start',
+        key: 'start',
         width: 100,
       },
       {
@@ -193,17 +135,23 @@ export default class InsertSlide extends PureComponent {
         width: 100,
       },
       {
+        title: '单价',
+        dataIndex: 'price',
+        key: 'price',
+        width: 100,
+      },
+      {
         title: '合计',
         dataIndex: 'total',
         key: 'total',
-        width: 100,
+        width: 200,
       },
 
       {
         title: '备注',
         dataIndex: 'extra',
         key: 'extra',
-        width: 100,
+        width: 200,
       },
 
       // {
@@ -217,7 +165,7 @@ export default class InsertSlide extends PureComponent {
     return (
       <Drawer
         width="50%"
-        title="出库详情"
+        title="库存详情"
         placement="right"
         destroyOnClose
         closable={false}
@@ -227,42 +175,58 @@ export default class InsertSlide extends PureComponent {
         <Row>
           <Col span={8}>
             <div style={colClass}>
-              <span style={spanClass}>订单编号:</span>
-              <span style={{ color: '#333' }}> {formRow.sn}</span>
+              <span style={spanClass}>存货名称:</span>
+              <span style={{ color: '#333' }}> {formRow.product.name}</span>
             </div>
             <div style={colClass}>
-              <span style={spanClass}>客户:</span>
+              <span style={spanClass}>类型:</span>
+              <span style={{ color: '#333' }}> {formRow.product.category.name}</span>
+            </div>
+
+            <div style={colClass}>
+              <span style={spanClass}>供应商:</span>
+              {/* <span style={{ color: '#333' }}> {formRow.supporter.name}</span> */}
+            </div>
+            <div style={colClass}>
+              <span style={spanClass} />
               <span style={{ color: '#333' }}>
-                {' '}
-                {formRow.supporter ? formRow.supporter.name : ''}
+                <Zmage src={formRow.product.cover} alt="" width="50%" height="50%" />
               </span>
             </div>
           </Col>
+
           <Col span={8}>
             <div style={colClass}>
-              <span style={spanClass}>入库日期:</span>
-              <span style={{ color: '#333' }}> {formRow.ctime}</span>
+              <span style={spanClass}>规格型号:</span>
+              <span style={{ color: '#333' }}>{formRow.product.shape}</span>
             </div>
             <div style={colClass}>
-              <span style={spanClass}>创建人:</span>
-              <span style={{ color: '#333' }}> {formRow.cuser.nickname}</span>
+              <span style={spanClass}>计量单位:</span>
+              <span style={{ color: '#333' }}>{formRow.product.unit.name} </span>
+            </div>
+            <div style={colClass}>
+              <span style={spanClass}>生产企业:</span>
+              <span style={{ color: '#333' }}> {formRow.product.company}</span>
+            </div>
+            <div style={colClass}>
+              <span style={spanClass}>生产许可证:</span>
+              <span style={{ color: '#333' }}> {formRow.product.license}</span>
             </div>
           </Col>
           <Col span={8}>
             <div style={colClass}>
-              <span style={spanClass}>总金额:</span>
-              <span style={{ color: '#333' }}>{formRow.total}</span>
+              <span style={spanClass}>库存数量:</span>
+              <span style={{ color: '#333' }}> {formRow.product.num}</span>
             </div>
             <div style={colClass}>
-              <span style={spanClass}>x:</span>
-              {/* <span style={{ color: '#333' }}> {formRow.grade ? formRow.grade.name : ''}</span>
-              <Button type="primary" shape="round" icon="download" size="large" /> */}
+              <span style={spanClass}>备注:</span>
+              <span style={{ color: '#333' }}> {formRow.product.extra}</span>
             </div>
           </Col>
         </Row>
         <Divider style={{ marginTop: 10, marginBottom: 0 }} />
         <Tabs defaultActiveKey="1" onChange={this.handleTabChange}>
-          <TabPane tab="商品信息" key="1">
+          <TabPane tab="库存记录" key="1">
             <Table
               rowKey="id"
               size="middle"
@@ -276,46 +240,28 @@ export default class InsertSlide extends PureComponent {
           </TabPane>
         </Tabs>
 
-        <Row>
-          <Col>
-            <div style={colClass}>
-              <span style={spanClass}>合计:</span>
-              <span style={{ color: '#333' }}> {formRow.total}</span>
-            </div>
-          </Col>
-        </Row>
-        <Row>
+        {/* <Row>
           <Col span={8}>
             <div style={colClass}>
               <span style={spanClass}>包装:</span>
               <span style={{ color: '#333' }}> {formRow.packing}</span>
             </div>
             <div style={colClass}>
-              <span style={spanClass}>制单人:</span>
-              <span style={{ color: '#333' }}> {formRow.delivery}</span>
+              <span style={spanClass}>发货日期:</span>
+              <span style={{ color: '#333' }}> {formRow.deliver}</span>
             </div>
           </Col>
           <Col span={8}>
             <div style={colClass}>
-              <span style={spanClass}>审核人:</span>
-              <span style={{ color: '#333' }}> {formRow.port_d}</span>
+              <span style={spanClass}>交货地:</span>
+              <span style={{ color: '#333' }}> {formRow.location}</span>
             </div>
             <div style={colClass}>
-              <span style={spanClass}>备注:</span>
-              <span style={{ color: '#333' }}> {formRow.terms}</span>
+              <span style={spanClass}>付款:</span>
+              <span style={{ color: '#333' }}> {formRow.payment}</span>
             </div>
           </Col>
-          {/* <Col span={8}>
-            <div style={colClass}>
-              <span style={spanClass}>发货港:</span>
-              <span style={{ color: '#333' }}> {formRow.port_l}</span>
-            </div>
-            <div style={colClass}>
-              <span style={spanClass}>贸易条款:</span>
-              <span style={{ color: '#333' }}> {formRow.trade}</span>
-            </div>
-          </Col> */}
-        </Row>
+        </Row> */}
 
         {/* {modalVisible && (
           <Detail

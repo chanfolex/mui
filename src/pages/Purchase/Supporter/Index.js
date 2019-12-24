@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 
 import { connect } from 'dva';
 import { Card, Form, Table, Button, Divider, Icon, Popconfirm } from 'antd';
+import Zmage from 'react-zmage';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
 import CreateSupporter from './Create';
@@ -236,37 +237,41 @@ class Supporter extends Component {
       {
         title: '营业执照',
         dataIndex: 'cover',
-        width: 100,
+        width: 150,
         key: 'cover',
         render: cover =>
           cover.length === 0 ? (
             <div style={{ width: 80, height: 80, lineHeight: 80 }} />
           ) : (
-            <img src={cover} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+            <Zmage src={cover} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
           ),
       },
       {
         title: '备案',
         dataIndex: 'beian',
-        width: 100,
+        width: 150,
         key: 'beian',
         render: beian =>
           beian.length === 0 ? (
             <div style={{ width: 80, height: 80, lineHeight: 80 }} />
           ) : (
-            <img src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+            <Zmage src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
           ),
       },
       {
         title: '许可证',
         dataIndex: 'license',
-        width: 100,
+        width: 150,
         key: 'license',
         render: license =>
           license.length === 0 ? (
             <div style={{ width: 80, height: 80, lineHeight: 80 }} />
           ) : (
-            <img src={license} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+            <Zmage
+              src={license}
+              style={{ display: 'inline-block', width: 80, height: 80 }}
+              alt=""
+            />
           ),
       },
       {
@@ -298,7 +303,7 @@ class Supporter extends Component {
       {
         title: '操作',
         width: 200,
-        // fixed: 'right',
+        fixed: 'right',
         render: (text, record) => (
           <Fragment>
             {/* <ExamineModal record={record} onOk={this.examineHandler.bind(null, record.id)}>
@@ -351,7 +356,7 @@ class Supporter extends Component {
               dataSource={list}
               pagination={paginationProps}
               onChange={this.handleTableChange}
-              // scroll={{ x: 1010, y: 540 }}
+              scroll={{ x: 1500, y: 540 }}
               onRow={record => ({
                 onDoubleClick: () => {
                   this.showDrawer(record);

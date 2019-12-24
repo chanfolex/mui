@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import moment from 'moment';
-import { Card, Form, Input, Table, Button } from 'antd';
+import { Card, Form, Input, Table, Select, Button, Option } from 'antd';
 // import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
-
+import Slide from '../../Slide/StorageSlide';
 import styles from './product.less';
 
 // const { Option } = Select;
@@ -18,9 +18,11 @@ import styles from './product.less';
 @Form.create()
 class StorageIndex extends PureComponent {
   state = {
-    // categorys: [],
+    categorys: [],
+    storages: [],
     abbr: '',
     category: '',
+    storage: '',
     // loading: false,
   };
 
@@ -30,23 +32,24 @@ class StorageIndex extends PureComponent {
     this.fetchList();
     // 查询分类
     dispatch({
+      type: 'salesContract/fetchStorageOption',
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({
+          storages: res.data,
+        });
+      }
+    });
+
+    dispatch({
       type: 'product/fetchCategoryOption',
     }).then(res => {
       if (res.code === 200) {
         this.setState({
-          // categorys: res.data,
+          categorys: res.data,
         });
       }
     });
-    // dispatch({
-    //   type: 'product/fetchSupporterOption',
-    // }).then(res => {
-    //   if (res.code === 200) {
-    //     this.setState({
-    //       supporters: res.data,
-    //     });
-    //   }
-    // });
 
     //   dispatch({
     //     type: 'product/fetchTypeOption',
@@ -77,22 +80,37 @@ class StorageIndex extends PureComponent {
   // 查询产品列表
   fetchList = (params = {}) => {
     const { dispatch } = this.props;
-    const { category, abbr } = this.state;
+    const { category, storage, abbr } = this.state;
     const param = { ...params };
     if (category) param.category = category;
+    if (storage) param.storage = storage;
     if (abbr) param.abbr = abbr;
     dispatch({ type: 'storage1/fetch', payload: param });
   };
 
+  showDrawer = record => {
+    this.setState({
+      drawerVisible: true,
+      currentRecord: record,
+    });
+  };
+
+  onDrawerClose = () => {
+    this.setState({
+      drawerVisible: false,
+    });
+  };
+
   // 分页查询
   handleTableChange = (pagination, filters, sorter) => {
-    const { abbr, category } = this.state;
+    const { abbr, category, storage } = this.state;
     const param = { pagination: pagination.current };
     if (sorter.columnKey === 'price') {
       param.sort = `price ${sorter.order === 'descend' ? 'desc' : 'asc'}`;
     }
     if (abbr) param.abbr = abbr;
     if (category) param.category = category;
+    if (storage) param.storage = storage;
     this.fetchList(param);
   };
 
@@ -114,6 +132,13 @@ class StorageIndex extends PureComponent {
   // };
 
   // 分类选择查询
+  handleStorageChange = val => {
+    // const params = val ? {} : {};
+    this.setState({ storage: val }, () => {
+      this.fetchList();
+    });
+  };
+
   handleCategoryChange = val => {
     // const params = val ? {} : {};
     this.setState({ category: val }, () => {
@@ -124,8 +149,9 @@ class StorageIndex extends PureComponent {
   render() {
     const {
       storage1: { list, pagination },
+      dispatch,
     } = this.props;
-    // const { categorys } = this.state;
+    const { categorys, storages, drawerVisible, currentRecord } = this.state;
 
     const paginationProps = {
       // showSizeChanger: true,
@@ -152,6 +178,12 @@ class StorageIndex extends PureComponent {
       //       <img src={cover[0]} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
       //     ),
       // },
+      {
+        title: '批号',
+        width: 150,
+        dataIndex: 'batch',
+        key: 'batch',
+      },
       {
         title: '存货名称',
         dataIndex: 'product.name',
@@ -185,7 +217,6 @@ class StorageIndex extends PureComponent {
       //     </div>
       //   ),
       // },
-
       {
         title: '分类',
         dataIndex: 'product.category',
@@ -224,12 +255,7 @@ class StorageIndex extends PureComponent {
         dataIndex: 'storage.name',
         key: 'storage.name',
       },
-      {
-        title: '批号',
-        width: 150,
-        dataIndex: 'batch',
-        key: 'batch',
-      },
+
       {
         title: '生产日期',
         width: 150,
@@ -273,6 +299,7 @@ class StorageIndex extends PureComponent {
         width: 200,
         dataIndex: 'ctime',
         key: 'ctime',
+        fixed: 'right',
         render: text => <p>{text}</p>,
       },
     ];
@@ -282,10 +309,25 @@ class StorageIndex extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              {/* <Select
+              仓库选择
+              <Select
                 size="large"
                 style={{ width: 200, marginRight: 20 }}
-                placeholder="选择产品分类"
+                placeholder="选择仓库"
+                allowClear
+                onChange={this.handleStorageChange}
+              >
+                {storages.map(el => (
+                  <Option key={el.id} value={el.id}>
+                    {el.name}
+                  </Option>
+                ))}
+              </Select>
+              分类选择
+              <Select
+                size="large"
+                style={{ width: 200, marginRight: 20 }}
+                placeholder="选择分类"
                 allowClear
                 onChange={this.handleCategoryChange}
               >
@@ -294,7 +336,7 @@ class StorageIndex extends PureComponent {
                     {el.name}
                   </Option>
                 ))}
-              </Select> */}
+              </Select>
               {/* <Button
                 icon="plus"
                 type="primary"
@@ -319,9 +361,23 @@ class StorageIndex extends PureComponent {
               pagination={paginationProps}
               onChange={this.handleTableChange}
               scroll={{ x: 1400, y: 540 }}
+              onRow={record => ({
+                onDoubleClick: () => {
+                  this.showDrawer(record);
+                }, // 点击行
+              })}
             />
           </div>
         </Card>
+
+        {drawerVisible && (
+          <Slide
+            visible={drawerVisible}
+            formRow={currentRecord}
+            onClose={this.onDrawerClose}
+            dispatch={dispatch}
+          />
+        )}
       </PageHeaderWrapper>
     );
   }

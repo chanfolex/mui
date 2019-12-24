@@ -2,10 +2,11 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 // import moment from 'moment';
 import { Card, Form, Input, Select, Table, Button, message, Divider, Popconfirm } from 'antd';
+import Zmage from 'react-zmage';
 // import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import CreateProduct from './CreateProduct';
-import UpdateProduct from './UpdateProduct';
+import CreateProduct from './Create';
+import UpdateProduct from './Update';
 import TableInputSearch from '@/components/common/TableInputSearch';
 import Slide from '../../Slide/ProductSlide';
 
@@ -279,7 +280,11 @@ class Product extends PureComponent {
           cover.length === 0 ? (
             <div style={{ width: 80, height: 80, lineHeight: 80 }} />
           ) : (
-            <img src={cover[0]} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+            <Zmage
+              src={cover[0]}
+              style={{ display: 'inline-block', width: 80, height: 80 }}
+              alt=""
+            />
           ),
       },
       {
@@ -289,13 +294,20 @@ class Product extends PureComponent {
         key: 'name',
       },
       {
-        title: '规格型号',
+        title: '规格',
         dataIndex: 'shape',
         width: 150,
         key: 'shape',
       },
       {
-        title: '包装',
+        title: '计量单位',
+        dataIndex: 'unit',
+        width: 150,
+        key: 'unit',
+        render: unit => <span>{unit ? unit.name : '无'}</span>,
+      },
+      {
+        title: '包装(箱)',
         dataIndex: 'pack',
         width: 150,
         key: 'pack',
@@ -325,21 +337,14 @@ class Product extends PureComponent {
         key: 'category',
         render: category => <span>{category ? category.name : '无'}</span>,
       },
-      {
-        title: '计量单位',
-        dataIndex: 'unit',
-        width: 150,
-        key: 'unit',
-        render: unit => <span>{unit ? unit.name : '无'}</span>,
-      },
 
-      {
-        title: '库存数量',
-        width: 150,
-        dataIndex: 'num',
-        key: 'num',
-        sorter: true,
-      },
+      // {
+      //   title: '库存数量',
+      //   width: 150,
+      //   dataIndex: 'num',
+      //   key: 'num',
+      //   sorter: true,
+      // },
       {
         title: '最新成本',
         width: 150,
@@ -352,28 +357,30 @@ class Product extends PureComponent {
         width: 150,
         dataIndex: 'price_fob',
         key: 'price_fob',
-        sorter: true,
       },
       {
         title: '生产许可证',
         width: 150,
         dataIndex: 'license',
         key: 'license',
-        sorter: true,
       },
       {
         title: '生产企业',
         width: 150,
         dataIndex: 'company',
         key: 'company',
-        sorter: true,
+      },
+      {
+        title: '保质期(日)',
+        width: 150,
+        dataIndex: 'best',
+        key: 'best',
       },
       {
         title: '批准文号',
         width: 150,
         dataIndex: 'sn',
         key: 'sn',
-        sorter: true,
       },
       {
         title: '备注',

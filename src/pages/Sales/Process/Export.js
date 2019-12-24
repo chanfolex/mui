@@ -92,7 +92,7 @@ class ProcessExport extends Component {
       },
       {
         title: '客户',
-        // width: 150,
+        width: 150,
         dataIndex: 'client.name',
         key: 'client.name',
       },
@@ -102,22 +102,34 @@ class ProcessExport extends Component {
         dataIndex: 'total',
         key: 'total',
       },
-
       {
-        title: '创建人',
-        // width: 150,
+        title: '仓库',
+        width: 150,
+        dataIndex: 'storage',
+        key: 'storage',
+      },
+      {
+        title: '经手人',
+        width: 150,
+        dataIndex: 'cuser.nickname',
+        key: 'cuser.nickname',
+      },
+      {
+        title: '制单人',
+        width: 150,
         dataIndex: 'cuser.nickname',
         key: 'cuser.nickname',
       },
       {
         title: '创建时间',
-        // width: 300,
+        width: 300,
         dataIndex: 'ctime',
         key: 'ctime',
       },
       {
         title: '操作',
-        // width: 250,
+        width: 250,
+        fixed: 'right',
         render: (text, record) => (
           <Fragment>
             {/* <Divider type="vertical" />
@@ -158,8 +170,7 @@ class ProcessExport extends Component {
               dataSource={list}
               pagination={paginationProps}
               onChange={this.handleTableChange}
-              // scroll={{ x: 1010, y: 540 }}
-
+              scroll={{ x: 1400, y: 540 }}
               onRow={record => ({
                 onDoubleClick: () => {
                   this.showDrawer(record);

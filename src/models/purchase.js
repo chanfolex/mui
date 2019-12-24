@@ -2,11 +2,11 @@ import { routerRedux } from 'dva/router';
 import { message } from 'antd';
 import {
   getPurchaseSN,
+  queryPurchaseByProduct,
   addPurchase,
   queryPurchase,
   updatePurchase,
   queryPurchaseById,
-  queryContractBySn,
   queryStorageOption,
   examine,
   queryPreItems,
@@ -36,7 +36,7 @@ export default {
     },
 
     *fetchItems({ payload }, { call }) {
-      const response = yield call(queryContractBySn, payload);
+      const response = yield call(queryPurchaseByProduct, payload);
       return response;
     },
 

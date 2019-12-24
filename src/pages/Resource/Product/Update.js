@@ -20,6 +20,7 @@ export default class UpdateProduct extends Component {
         name: props.values.name,
         shape: props.values.shape,
         barsn: props.values.barsn,
+        best: props.values.best,
         cover: props.values.cover,
         pack: props.values.pack,
         price: props.values.price,
@@ -27,9 +28,9 @@ export default class UpdateProduct extends Component {
         company: props.values.company,
         license: props.values.license,
         sn: props.values.sn,
-        num: props.values.num,
-        start: props.values.start,
-        end: props.values.end,
+        // num: props.values.num,
+        // start: props.values.start,
+        // end: props.values.end,
         intro: props.values.intro,
         category: props.values.category ? props.values.category.id : '',
         supporter: props.values.category ? props.values.supporter.id : '',
@@ -107,7 +108,7 @@ export default class UpdateProduct extends Component {
                   hasFeedback
                 >
                   {form.getFieldDecorator('barsn', {
-                    rules: [{ required: true, whitespace: true, message: '是必填项' }],
+                    rules: [{ required: false, whitespace: true, message: '是必填项' }],
                     initialValue: formVals.barsn,
                   })(<Input placeholder="请输入存货编码" size="large" />)}
                 </FormItem>
@@ -163,6 +164,22 @@ export default class UpdateProduct extends Component {
                   )}
                 </FormItem>
 
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="规格" hasFeedback>
+                  {form.getFieldDecorator('shape', {
+                    initialValue: formVals.shape,
+                    rules: [
+                      {
+                        required: true,
+                        type: 'number',
+                        message: '必须是数字类型',
+                        transform(value) {
+                          return value ? Number(value) : '';
+                        },
+                      },
+                    ],
+                  })(<Input placeholder="请输入规格" size="large" />)}
+                </FormItem>
+
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="单位">
                   {form.getFieldDecorator('unit', {
                     rules: [{ required: true, message: '单位是必填项' }],
@@ -182,17 +199,7 @@ export default class UpdateProduct extends Component {
                     </Select>
                   )}
                 </FormItem>
-                <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="规格型号"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('shape', {
-                    initialValue: formVals.shape,
-                  })(<Input placeholder="请输入规格型号" size="large" />)}
-                </FormItem>
-                <FormItem
+                {/* <FormItem
                   labelCol={{ span: 5 }}
                   wrapperCol={{ span: 18 }}
                   label="生产日期"
@@ -211,11 +218,21 @@ export default class UpdateProduct extends Component {
                   {form.getFieldDecorator('end', {
                     initialValue: formVals.end,
                   })(<Input placeholder="请输入有效日期" size="large" />)}
-                </FormItem>
+                </FormItem> */}
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="包装" hasFeedback>
                   {form.getFieldDecorator('pack', {
                     initialValue: formVals.pack,
-                  })(<Input placeholder="请输入产品包装" size="large" />)}
+                    rules: [
+                      {
+                        required: true,
+                        type: 'number',
+                        message: '必须是数字类型',
+                        transform(value) {
+                          return value ? Number(value) : '';
+                        },
+                      },
+                    ],
+                  })(<Input placeholder="请输入包装计量（/箱）" size="large" />)}
                 </FormItem>
 
                 <FormItem
@@ -308,6 +325,27 @@ export default class UpdateProduct extends Component {
                 <FormItem
                   labelCol={{ span: 5 }}
                   wrapperCol={{ span: 18 }}
+                  label="保质期(日)"
+                  hasFeedback
+                >
+                  {form.getFieldDecorator('best', {
+                    rules: [
+                      {
+                        required: false,
+                        type: 'number',
+                        message: '必须是数字类型',
+                        transform(value) {
+                          return value ? Number(value) : '';
+                        },
+                      },
+                    ],
+                    initialValue: formVals.best,
+                  })(<Input placeholder="保质期(日)" size="large" />)}
+                </FormItem>
+
+                {/* <FormItem
+                  labelCol={{ span: 5 }}
+                  wrapperCol={{ span: 18 }}
                   label="库存数量"
                   hasFeedback
                 >
@@ -324,7 +362,7 @@ export default class UpdateProduct extends Component {
                     ],
                     initialValue: formVals.num,
                   })(<Input placeholder="库存数量" size="large" />)}
-                </FormItem>
+                </FormItem> */}
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="备注">
                   {form.getFieldDecorator('intro', {

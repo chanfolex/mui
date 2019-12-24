@@ -17,6 +17,11 @@ export async function queryAllItems(params) {
 }
 
 // 查询列表
+export async function queryPurchaseByProduct(params) {
+  return request(`/api/prepurchase/getAllItemsByProduct?${stringify(params)}`);
+}
+
+// 查询列表
 export async function queryListPre(params) {
   return request(`/api/purchase/preList?${stringify(params)}`);
 }
