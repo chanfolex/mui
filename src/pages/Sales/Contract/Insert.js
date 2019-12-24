@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
+import Dayjs from 'dayjs';
 
 import {
   Row,
@@ -360,8 +361,28 @@ class SaleContractInsert extends Component {
     setTimeout(() => this.getProduction(), 100);
   };
 
-  dataChange = index => {
-    console.log(index);
+  dataChange = (date, dateString, index) => {
+    const { des } = this.state;
+    des[index].dateString = dateString;
+    if (des[index].best) {
+      des[index].trueData = Dayjs()
+        .add(Number(des[index].best), 'day')
+        .format('YYYY-MM-DD');
+    }
+    des[index].date = date;
+    this.setState({ des });
+  };
+
+  numChange = (value, index) => {
+    const { des } = this.state;
+    des[index].numValue = value;
+    this.setState({ des });
+  };
+
+  priceChange = (value, index) => {
+    const { des } = this.state;
+    des[index].priceValue = value;
+    this.setState({ des });
   };
 
   render() {
@@ -370,7 +391,8 @@ class SaleContractInsert extends Component {
       form,
       salesContract: { contractSn },
     } = this.props;
-    const { getFieldDecorator, getFieldValue } = form;
+    // getFieldValue
+    const { getFieldDecorator } = form;
     const formItemLayout = { labelCol: { span: 5 }, wrapperCol: { span: 18 } };
     const {
       des,
@@ -389,12 +411,13 @@ class SaleContractInsert extends Component {
     getFieldDecorator('keys', { initialValue: iniKeys });
     // const keys = getFieldValue('keys');
     // console.log('keys', keys);
-    const total = [];
-    des.forEach((el, index) => {
-      const num = getFieldValue(`num[${index}]`) || el.num;
-      const price = getFieldValue(`price[${index}]`) || el.price;
-      total.push((Number(num) * Number(price)).toFixed(2));
-      // console.log(num, price, express);
+    let total = 0;
+    des.forEach(el => {
+      if (el.num && el.price) {
+        total += Number(el.num) * Number(el.price);
+      } else if (el.numValue && el.priceValue) {
+        total += el.numValue * el.priceValue;
+      }
     });
     const columns = [
       {
@@ -427,7 +450,13 @@ class SaleContractInsert extends Component {
         key: 'tableList',
         width: 100,
         fixed: 'left',
-        render: (text, record, index) => <span>{index}</span>,
+        render: (text, record, index) => (
+          <div
+            style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            {index}
+          </div>
+        ),
       },
       {
         title: '存货编码',
@@ -461,6 +490,7 @@ class SaleContractInsert extends Component {
                 onSearch={this.handleSearch}
                 onFocus={() => this.handleFocus(index)}
                 placeholder="产品首字母搜索"
+                disabled
                 dropdownMatchSelectWidth={false}
                 dropdownStyle={{ width: 200 }}
               >
@@ -524,7 +554,9 @@ class SaleContractInsert extends Component {
           }
           return (
             <div>
-              <DatePicker onChange={() => this.dataChange(index)} />
+              <DatePicker
+                onChange={(date, dateString) => this.dataChange(date, dateString, index)}
+              />
             </div>
           );
         },
@@ -533,16 +565,23 @@ class SaleContractInsert extends Component {
         title: '有效截止时间',
         width: 150,
         key: 'timer',
-        render: (text, record, index) => <span>{index}</span>,
+        render: text => {
+          if (text.date && text.best) {
+            return <div>{text.trueData}</div>;
+          }
+          return null;
+        },
       },
       { title: '保质期', width: 150, dataIndex: 'best', key: 'best' },
       {
         title: '数量',
         width: 150,
         key: 'num',
-        render: text => {
+        render: (text, record, index) => {
           if (text.num) return <div>{text.num}</div>;
-          return <NumericInput placeholder="数量" />;
+          return (
+            <NumericInput placeholder="数量" onChange={value => this.numChange(value, index)} />
+          );
         },
       },
       {
@@ -575,16 +614,26 @@ class SaleContractInsert extends Component {
         title: '单价',
         width: 150,
         key: 'price',
-        render: text => {
+        render: (text, record, index) => {
           if (text.price && text.price) return <div>{text.price}</div>;
-          return <NumericInput placeholder="单价" />;
+          return (
+            <NumericInput placeholder="单价" onChange={value => this.priceChange(value, index)} />
+          );
         },
       },
       {
         title: '合计',
         width: 150,
         key: 'account',
-        render: (text, record, index) => <span>{index}</span>,
+        render: text => {
+          if (text.num && text.price) {
+            return <span>{Number(text.num) * Number(text.price)}</span>;
+          }
+          if (text.numValue && text.priceValue) {
+            return <span>{text.numValue * text.priceValue}</span>;
+          }
+          return null;
+        },
       },
       {
         title: '操作',
@@ -1083,7 +1132,7 @@ class SaleContractInsert extends Component {
                 提交
               </Button>
             </div>
-            <div>合计: {total.length > 0 ? total.reduce((pre, current) => pre + current) : ''}</div>
+            <div>合计: {total}</div>
           </div>
         </div>
         <Modal
