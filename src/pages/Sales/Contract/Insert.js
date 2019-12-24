@@ -55,6 +55,7 @@ class SaleContractInsert extends Component {
       storageIndex: null,
       searchContent: null,
       selectStorages: null,
+      itemIndex: null,
       des: [
         {
           name: '',
@@ -159,7 +160,6 @@ class SaleContractInsert extends Component {
     const { des } = this.state;
     this.setState({
       des: [
-        ...des,
         {
           name: '',
           cover: '',
@@ -179,6 +179,7 @@ class SaleContractInsert extends Component {
           unit: '',
           barsn: '',
         },
+        ...des,
       ],
     });
   };
@@ -244,11 +245,10 @@ class SaleContractInsert extends Component {
             const idx = values.keys[index];
             const formVal = {
               product: el.product ? el.product : '',
-              price: Number(values.price[idx]),
-              num: values.num[idx],
-              batch: values.batch[idx],
-              start: values.start[idx],
-              end: values.end[idx],
+              price: el.price || el.priceValue,
+              num: el.num || el.numValue,
+              batch: el.batch || el.batchValue,
+              start: el.date || '',
               supporter: 1,
               storage: 1,
               extra: values.extra[idx],
@@ -256,6 +256,7 @@ class SaleContractInsert extends Component {
             return formVal;
           }),
         };
+        console.log(obj);
         dispatch({ type: 'purchase/create', payload: obj });
       }
     });
@@ -304,8 +305,9 @@ class SaleContractInsert extends Component {
   //   });
   // };
 
-  openSearchModal = () => {
-    this.setState({ searchModalState: true });
+  openSearchModal = index => {
+    console.log(index);
+    this.setState({ searchModalState: true, itemIndex: index });
   };
 
   selectCategory = (item, index) => {
@@ -347,9 +349,11 @@ class SaleContractInsert extends Component {
   };
 
   submit = () => {
-    const { des } = this.state;
+    const { des, itemIndex } = this.state;
+    des.splice(itemIndex, 0, ...this.selectedRows);
+    des.splice(itemIndex + this.selectedRows.length, 1);
     this.setState({
-      des: des.concat(...this.selectedRows),
+      des,
       categoryIndex: null,
       storageIndex: null,
       searchContent: null,
@@ -481,7 +485,7 @@ class SaleContractInsert extends Component {
                     type="primary"
                     shape="circle"
                     icon="search"
-                    onClick={() => this.openSearchModal()}
+                    onClick={() => this.openSearchModal(index)}
                   />
                 </div>
               </div>
@@ -512,7 +516,8 @@ class SaleContractInsert extends Component {
                   type="primary"
                   shape="circle"
                   icon="search"
-                  onClick={() => this.openSearchModal()}
+                  // eslint-disable-next-line no-shadow
+                  onClick={() => this.openSearchModal(index)}
                 />
               </div>
             </div>
@@ -1141,7 +1146,7 @@ class SaleContractInsert extends Component {
           </Row>
           <div className={styles.submitBootmStyle}>
             <div>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" onClick={this.handleSubmit}>
                 提交
               </Button>
             </div>
