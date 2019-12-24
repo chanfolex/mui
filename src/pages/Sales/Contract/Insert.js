@@ -385,6 +385,12 @@ class SaleContractInsert extends Component {
     this.setState({ des });
   };
 
+  batchChange = (value, index) => {
+    const { des } = this.state;
+    des[index].batchValue = value;
+    this.setState({ des });
+  };
+
   render() {
     const {
       product,
@@ -454,7 +460,7 @@ class SaleContractInsert extends Component {
           <div
             style={{ height: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           >
-            {index}
+            {index + 1}
           </div>
         ),
       },
@@ -539,9 +545,16 @@ class SaleContractInsert extends Component {
         title: '批号',
         width: 150,
         key: 'batch',
-        render: text => {
+        render: (text, record, index) => {
           if (text.batch) return <div>{text.batch}</div>;
-          return <NumericInput placeholder="批号" />;
+          return (
+            <NumericInput
+              placeholder="批号"
+              onChange={value => {
+                this.batchChange(value, index);
+              }}
+            />
+          );
         },
       },
       {
