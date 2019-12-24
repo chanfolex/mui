@@ -56,6 +56,7 @@ class SaleContractInsert extends Component {
       searchContent: null,
       selectStorages: null,
       itemIndex: null,
+      storageValue: null,
       des: [
         {
           name: '',
@@ -230,28 +231,28 @@ class SaleContractInsert extends Component {
       dispatch,
       salesContract: { contractSn },
     } = this.props;
-    const { ordate, supporter, des } = this.state;
+    const { ordate, supporter, des, storageValue } = this.state;
     form.validateFields((err, values) => {
+      console.log(values);
       if (!err) {
         const obj = {
           contractSn,
           ordate,
           supporter,
-          storage: values.storage,
+          storage: storageValue,
           payment: values.payment,
           extra: values.extra,
           packing: values.packing,
-          des: des.map((el, index) => {
-            const idx = values.keys[index];
+          des: des.map(el => {
             const formVal = {
-              product: el.product ? el.product : '',
+              product: el.id ? el.id : '',
               price: el.price || el.priceValue,
               num: el.num || el.numValue,
               batch: el.batch || el.batchValue,
               start: el.date || '',
               supporter: 1,
               storage: 1,
-              extra: values.extra[idx],
+              extra: values.extra,
             };
             return formVal;
           }),
@@ -395,6 +396,11 @@ class SaleContractInsert extends Component {
     this.setState({ des });
   };
 
+  storageChange = value => {
+    console.log(value);
+    this.setState({ storageValue: value });
+  };
+
   render() {
     const {
       product,
@@ -427,6 +433,10 @@ class SaleContractInsert extends Component {
         total += Number(el.num) * Number(el.price);
       } else if (el.numValue && el.priceValue) {
         total += el.numValue * el.priceValue;
+      } else if (el.num && el.priceValue) {
+        total += Number(el.num) * el.priceValue;
+      } else if (el.numValue && el.price) {
+        total += el.numValue * Number(el.price);
       }
     });
     const columns = [
@@ -646,6 +656,12 @@ class SaleContractInsert extends Component {
         render: text => {
           if (text.num && text.price) {
             return <span>{Number(text.num) * Number(text.price)}</span>;
+          }
+          if (text.num && text.priceValue) {
+            return <span>{Number(text.num) * Number(text.priceValue)}</span>;
+          }
+          if (text.numValue && text.price) {
+            return <span>{Number(text.numValue) * Number(text.price)}</span>;
           }
           if (text.numValue && text.priceValue) {
             return <span>{text.numValue * text.priceValue}</span>;
@@ -1079,7 +1095,12 @@ class SaleContractInsert extends Component {
           <div className={styles.insertHeaderStyle}>
             <div>{contractSn}</div>
             <div>
-              <Select allowClear placeholder="请选择仓库" style={{ width: 150 }}>
+              <Select
+                allowClear
+                placeholder="请选择仓库"
+                style={{ width: 150 }}
+                onChange={this.storageChange}
+              >
                 {storages.map(el => (
                   <Option key={el.id} value={el.id}>
                     {el.name}
