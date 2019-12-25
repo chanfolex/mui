@@ -174,6 +174,7 @@ class SaleContractInsert extends Component {
     const { des } = this.state;
     this.setState({
       des: [
+        ...des,
         {
           name: '',
           cover: '',
@@ -195,7 +196,6 @@ class SaleContractInsert extends Component {
           unit: '',
           barsn: '',
         },
-        ...des,
       ],
     });
   };
@@ -388,7 +388,7 @@ class SaleContractInsert extends Component {
     const { des } = this.state;
     des[index].dateString = dateString;
     if (des[index].best) {
-      des[index].trueData = Dayjs()
+      des[index].trueData = Dayjs(date)
         .add(Number(des[index].best), 'day')
         .format('YYYY-MM-DD');
     }
@@ -657,7 +657,6 @@ class SaleContractInsert extends Component {
       {
         title: '零售价',
         width: 150,
-        dataIndex: 'price_fob',
         key: 'price_fob',
         render: text => {
           if (text.price_fob && text.price_fob) return <div>{text.price_fob}</div>;
