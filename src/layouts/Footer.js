@@ -16,7 +16,10 @@ const FooterView = () => (
       // ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2019 goSoftbank,Inc.宁海缑之软盈网络科技有限公司
+          Copyright <Icon type="copyright" /> 2019 Hoenix,Inc.杭州弘野科技有限公司{' '}
+          <a href="http://www.beian.miit.gov.cn" target="self">
+            浙ICP备16037320号-5
+          </a>
         </Fragment>
       }
     />

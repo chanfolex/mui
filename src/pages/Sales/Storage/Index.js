@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 // import moment from 'moment';
-import { Card, Form, Input, Table, Select, Button, Option } from 'antd';
+import { Card, Form, Input, Table, Select, Button } from 'antd';
 // import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
 import Slide from '../../Slide/StorageSlide';
 import styles from './product.less';
 
-// const { Option } = Select;
+const { Option } = Select;
 
 @connect(({ storage1, user }) => ({
   storage1,

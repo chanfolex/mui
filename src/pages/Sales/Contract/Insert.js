@@ -48,6 +48,7 @@ class SaleContractInsert extends Component {
       // storage: '',
       // contractSn: '',
       storages: [],
+      users: [],
       categorys: [{ name: '全部分类' }],
       selectedRowKeys: [],
       products: [],
@@ -57,12 +58,14 @@ class SaleContractInsert extends Component {
       selectStorages: null,
       itemIndex: null,
       storageValue: null,
+      // jsuerValue: null,
       des: [
         {
           name: '',
           cover: '',
           intro: '',
           price: '',
+          price_fob: '',
           num: '',
           extra: '',
           prodcution: '',
@@ -95,6 +98,16 @@ class SaleContractInsert extends Component {
       if (res.code === 200) {
         this.setState({
           storages: res.data,
+        });
+      }
+    });
+
+    dispatch({
+      type: 'salesContract/fetchUserOption',
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({
+          users: res.data,
         });
       }
     });
@@ -166,9 +179,11 @@ class SaleContractInsert extends Component {
           cover: '',
           intro: '',
           price: '',
+          price_fob: '',
           num: '',
           extra: '',
           prodcution: '',
+          pack: '',
           shape: '',
           license: '',
           company: '',
@@ -203,10 +218,12 @@ class SaleContractInsert extends Component {
         type: row.category,
         start: row.start,
         end: row.end,
-        price: row.price,
+        pack: row.pack,
         shape: row.shape,
         sn: row.sn,
         currentnum: row.num,
+        price_fob: row.price_fob,
+        price: row.price,
         extra: row.extra,
       };
 
@@ -231,7 +248,7 @@ class SaleContractInsert extends Component {
       dispatch,
       salesContract: { contractSn },
     } = this.props;
-    const { ordate, supporter, des, storageValue } = this.state;
+    const { ordate, supporter, des, storageValue, juserValue } = this.state;
     form.validateFields((err, values) => {
       console.log(values);
       if (!err) {
@@ -240,14 +257,15 @@ class SaleContractInsert extends Component {
           ordate,
           supporter,
           storage: storageValue,
+          juser: juserValue,
           payment: values.payment,
           extra: values.extra,
           packing: values.packing,
           des: des.map(el => {
             const formVal = {
               product: el.id ? el.id : '',
-              price: el.price || el.priceValue,
-              num: el.num || el.numValue,
+              price: el.priceValue,
+              num: el.numValue,
               batch: el.batch || el.batchValue,
               start: el.date || '',
               supporter: 1,
@@ -401,6 +419,11 @@ class SaleContractInsert extends Component {
     this.setState({ storageValue: value });
   };
 
+  userChange = value => {
+    console.log(value);
+    this.setState({ juserValue: value });
+  };
+
   render() {
     const {
       product,
@@ -413,6 +436,7 @@ class SaleContractInsert extends Component {
     const {
       des,
       storages,
+      users,
       searchModalState,
       categorys,
       products,
@@ -429,14 +453,8 @@ class SaleContractInsert extends Component {
     // console.log('keys', keys);
     let total = 0;
     des.forEach(el => {
-      if (el.num && el.price) {
-        total += Number(el.num) * Number(el.price);
-      } else if (el.numValue && el.priceValue) {
+      if (el.numValue && el.priceValue) {
         total += el.numValue * el.priceValue;
-      } else if (el.num && el.priceValue) {
-        total += Number(el.num) * el.priceValue;
-      } else if (el.numValue && el.price) {
-        total += el.numValue * Number(el.price);
       }
     });
     const columns = [
@@ -452,8 +470,8 @@ class SaleContractInsert extends Component {
       },
       {
         title: '库存数量',
-        dataIndex: 'num',
-        key: 'num',
+        dataIndex: 'currentnum',
+        key: 'currentnum',
       },
     ];
     const dataSource = (products && products.list) || [];
@@ -552,6 +570,22 @@ class SaleContractInsert extends Component {
           return <span>{text.shape}</span>;
         },
       },
+      {
+        title: '包装(箱)',
+        width: 150,
+        key: 'pack',
+        render: text => {
+          if (text.pack) {
+            return (
+              <span>
+                {text.pack}
+                /箱
+              </span>
+            );
+          }
+          return <span>{text.shape}</span>;
+        },
+      },
       { title: '生产许可证', width: 150, dataIndex: 'license', key: 'license' },
       { title: '生产企业', width: 150, dataIndex: 'company', key: 'company' },
       { title: '批准文号', width: 150, dataIndex: 'sn', key: 'sn' },
@@ -590,7 +624,7 @@ class SaleContractInsert extends Component {
         },
       },
       {
-        title: '有效截止时间',
+        title: '有效期',
         width: 150,
         key: 'timer',
         render: text => {
@@ -601,16 +635,14 @@ class SaleContractInsert extends Component {
         },
       },
       { title: '保质期', width: 150, dataIndex: 'best', key: 'best' },
+
       {
         title: '数量',
         width: 150,
         key: 'num',
-        render: (text, record, index) => {
-          if (text.num) return <div>{text.num}</div>;
-          return (
-            <NumericInput placeholder="数量" onChange={value => this.numChange(value, index)} />
-          );
-        },
+        render: (text, record, index) => (
+          <NumericInput placeholder="数量" onChange={value => this.numChange(value, index)} />
+        ),
       },
       {
         title: '单位',
@@ -623,6 +655,24 @@ class SaleContractInsert extends Component {
         },
       },
       {
+        title: '零售价',
+        width: 150,
+        dataIndex: 'price_fob',
+        key: 'price_fob',
+        render: text => {
+          if (text.price_fob && text.price_fob) return <div>{text.price_fob}</div>;
+          return null;
+        },
+      },
+      {
+        title: '单价',
+        width: 150,
+        key: 'price',
+        render: (text, record, index) => (
+          <NumericInput placeholder="单价" onChange={value => this.priceChange(value, index)} />
+        ),
+      },
+      {
         title: '换算率',
         width: 150,
         key: 'num*unit',
@@ -630,23 +680,11 @@ class SaleContractInsert extends Component {
           if (text.shape && text.pack)
             return (
               <div>
-                {text.shape}
-                盒=
-                {text.pack}箱
+                {text.pack}
+                盒= 1箱
               </div>
             );
           return text.shape;
-        },
-      },
-      {
-        title: '单价',
-        width: 150,
-        key: 'price',
-        render: (text, record, index) => {
-          if (text.price && text.price) return <div>{text.price}</div>;
-          return (
-            <NumericInput placeholder="单价" onChange={value => this.priceChange(value, index)} />
-          );
         },
       },
       {
@@ -654,15 +692,6 @@ class SaleContractInsert extends Component {
         width: 150,
         key: 'account',
         render: text => {
-          if (text.num && text.price) {
-            return <span>{Number(text.num) * Number(text.price)}</span>;
-          }
-          if (text.num && text.priceValue) {
-            return <span>{Number(text.num) * Number(text.priceValue)}</span>;
-          }
-          if (text.numValue && text.price) {
-            return <span>{Number(text.numValue) * Number(text.price)}</span>;
-          }
           if (text.numValue && text.priceValue) {
             return <span>{text.numValue * text.priceValue}</span>;
           }
@@ -1095,6 +1124,7 @@ class SaleContractInsert extends Component {
           <div className={styles.insertHeaderStyle}>
             <div>{contractSn}</div>
             <div>
+              仓库{' '}
               <Select
                 allowClear
                 placeholder="请选择仓库"
@@ -1109,6 +1139,22 @@ class SaleContractInsert extends Component {
               </Select>
             </div>
             <div>
+              经办人{' '}
+              <Select
+                allowClear
+                placeholder="请选择经办人"
+                style={{ width: 150 }}
+                onChange={this.userChange}
+              >
+                {users.map(el => (
+                  <Option key={el.id} value={el.id}>
+                    {el.nickname}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+            <div>
+              供应商{' '}
               <AutoComplete
                 allowClear
                 // style={{ width: 110 }}
@@ -1122,6 +1168,7 @@ class SaleContractInsert extends Component {
               </AutoComplete>
             </div>
             <div>
+              日期{' '}
               <DatePicker
                 format="YYYY-MM-DD HH:mm:ss"
                 onChange={this.onDateChange}
@@ -1141,14 +1188,6 @@ class SaleContractInsert extends Component {
           />
           <Row style={{ marginTop: 50 }}>
             <Col span={8}>
-              <FormItem label="备注" {...formItemLayout}>
-                {form.getFieldDecorator('extra', {
-                  rules: [{ required: true, message: '是必填项' }],
-                  initialValue: '',
-                })(<Input placeholder="请输入" autoComplete="off" />)}
-              </FormItem>
-            </Col>
-            <Col span={8}>
               <FormItem label="制单人" {...formItemLayout}>
                 {form.getFieldDecorator('payment', {
                   rules: [{ required: true, message: '是必填项' }],
@@ -1157,8 +1196,16 @@ class SaleContractInsert extends Component {
               </FormItem>
             </Col>
             <Col span={8}>
-              <FormItem label="审核人" {...formItemLayout}>
+              <FormItem label="审核" {...formItemLayout}>
                 {form.getFieldDecorator('packing', {
+                  rules: [{ required: true, message: '是必填项' }],
+                  initialValue: '',
+                })(<Input placeholder="请输入" autoComplete="off" />)}
+              </FormItem>
+            </Col>
+            <Col span={8}>
+              <FormItem label="备注" {...formItemLayout}>
+                {form.getFieldDecorator('extra', {
                   rules: [{ required: true, message: '是必填项' }],
                   initialValue: '',
                 })(<Input placeholder="请输入" autoComplete="off" />)}
@@ -1250,10 +1297,10 @@ class SaleContractInsert extends Component {
             </Col>
           </div>
           <div className={styles.searchModalFooter}>
-            <Button onClick={this.submit}>提交</Button>
             <Button type="primary" onClick={this.hideModal}>
-              确认
+              关闭
             </Button>
+            <Button onClick={this.submit}>提交</Button>
           </div>
         </Modal>
       </PageHeaderWrapper>

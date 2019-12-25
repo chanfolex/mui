@@ -11,6 +11,7 @@ import {
   querySalesContractPrivate,
   queryClientOptionPrivate,
   queryCategoryOption,
+  queryUserOption,
   // eslint-disable-next-line import/extensions
 } from '@/services/sales-contract';
 
@@ -85,6 +86,11 @@ export default {
 
     *fetchStorageOption({ payload }, { call }) {
       const response = yield call(queryStorageOption, payload);
+      return response;
+    },
+
+    *fetchUserOption({ payload }, { call }) {
+      const response = yield call(queryUserOption, payload);
       return response;
     },
 

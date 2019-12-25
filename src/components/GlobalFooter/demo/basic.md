@@ -26,7 +26,8 @@ const links = [{
   blankTarget: true,
 }];
 
-const copyright = <div>Copyright <Icon type="copyright" /> 2019 goSoftbank,Inc.宁海缑之软盈网络科技有限公司</div>;
+const copyright = <div>Copyright <Icon type="copyright" /> 2019 Hoenix,Inc.杭州弘野科技有限公司 <a href="http://www.beian.miit.gov.cn" target="self">
+浙ICP备16037320号-5</a></div>;
 
 ReactDOM.render(
   <div style={{ background: '#f5f5f5', overflow: 'hidden' }}>

@@ -44,6 +44,9 @@ export async function addSalesContract(params) {
 export async function queryClientOption(params) {
   return request(`/api/client/option?${stringify(params)}`);
 }
+export async function queryUserOption(params) {
+  return request(`/api/user/option?${stringify(params)}`);
+}
 
 export async function queryStorageOption(params) {
   return request(`/api/storage/option?${stringify(params)}`);

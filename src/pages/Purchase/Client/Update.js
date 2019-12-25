@@ -92,9 +92,16 @@ export default class UpdateSupporter extends Component {
           fax: values.fax,
           mail: values.mail,
           account: values.account,
-          cover: values.cover ? values.cover[0].url : '',
-          beian: values.beian ? values.beian[0].url : '',
-          license: values.license ? values.license[0].url : '',
+          // eslint-disable-next-line no-nested-ternary
+          cover: values.cover ? values.cover[0].url : formVals.cover ? formVals.cover : '',
+          // eslint-disable-next-line no-nested-ternary
+          beian: values.beian ? values.beian[0].url : formVals.beian ? formVals.beian : '',
+          // eslint-disable-next-line no-nested-ternary
+          license: values.license
+            ? values.license[0].url
+            : formVals.license
+              ? formVals.license
+              : '',
         };
         // eslint-disable-next-line no-param-reassign
         param.des = keys.map((k, index) => ({
