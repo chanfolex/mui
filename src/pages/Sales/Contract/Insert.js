@@ -13,6 +13,7 @@ import {
   Button,
   AutoComplete,
   // Divider,
+  message,
   Select,
   Modal,
   Table,
@@ -59,28 +60,26 @@ class SaleContractInsert extends Component {
       itemIndex: null,
       storageValue: null,
       // jsuerValue: null,
-      des: [
-        {
-          name: '',
-          cover: '',
-          intro: '',
-          price: '',
-          price_fob: '',
-          num: '',
-          extra: '',
-          prodcution: '',
-          shape: '',
-          license: '',
-          company: '',
-          sn: '',
-          currentnum: '',
-          batch: '',
-          start: '',
-          best: '',
-          unit: '',
-          barsn: '',
-        },
-      ],
+      des: [1, 2, 3].map(() => ({
+        name: '',
+        cover: '',
+        intro: '',
+        price: '',
+        price_fob: '',
+        num: '',
+        extra: '',
+        prodcution: '',
+        shape: '',
+        license: '',
+        company: '',
+        sn: '',
+        currentnum: '',
+        batch: '',
+        start: '',
+        best: '',
+        unit: '',
+        barsn: '',
+      })),
     };
     // 无需更新页面
     this.selectedRows = [];
@@ -250,8 +249,9 @@ class SaleContractInsert extends Component {
     } = this.props;
     const { ordate, supporter, des, storageValue, juserValue } = this.state;
     form.validateFields((err, values) => {
-      console.log(values);
       if (!err) {
+        if (!des.every(item => item.numValue && item.priceValue))
+          return message.warning('您选择的产品价格或数量未填写完整');
         const obj = {
           contractSn,
           ordate,
@@ -275,9 +275,9 @@ class SaleContractInsert extends Component {
             return formVal;
           }),
         };
-        console.log(obj);
-        dispatch({ type: 'purchase/create', payload: obj });
+        return dispatch({ type: 'purchase/create', payload: obj });
       }
+      return message.warning('您还有必填项未填');
     });
   };
 
@@ -368,6 +368,9 @@ class SaleContractInsert extends Component {
   };
 
   submit = () => {
+    if (!this.selectedRows.length) {
+      return message.warning('您没有选择任何表单数据，不可以提交');
+    }
     const { des, itemIndex } = this.state;
     des.splice(itemIndex, 0, ...this.selectedRows);
     des.splice(itemIndex + this.selectedRows.length, 1);
@@ -381,7 +384,7 @@ class SaleContractInsert extends Component {
       selectStorages: null,
     });
     this.selectedRows = [];
-    setTimeout(() => this.getProduction(), 100);
+    return setTimeout(() => this.getProduction(), 100);
   };
 
   dataChange = (date, dateString, index) => {
@@ -415,12 +418,10 @@ class SaleContractInsert extends Component {
   };
 
   storageChange = value => {
-    console.log(value);
     this.setState({ storageValue: value });
   };
 
   userChange = value => {
-    console.log(value);
     this.setState({ juserValue: value });
   };
 
@@ -1121,60 +1122,91 @@ class SaleContractInsert extends Component {
         </Card> */}
         <div style={{ background: 'white', padding: 10 }}>
           <div className={styles.insertHeaderStyle}>
-            <div>{contractSn}</div>
-            <div>
-              仓库{' '}
-              <Select
-                allowClear
-                placeholder="请选择仓库"
-                style={{ width: 150 }}
-                onChange={this.storageChange}
-              >
-                {storages.map(el => (
-                  <Option key={el.id} value={el.id}>
-                    {el.name}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-            <div>
-              经办人{' '}
-              <Select
-                allowClear
-                placeholder="请选择经办人"
-                style={{ width: 150 }}
-                onChange={this.userChange}
-              >
-                {users.map(el => (
-                  <Option key={el.id} value={el.id}>
-                    {el.nickname}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-            <div>
-              供应商{' '}
-              <AutoComplete
-                allowClear
-                // style={{ width: 110 }}
-                onSelect={this.onSelectClient}
-                onSearch={this.handleClientSearch}
-                placeholder="首字母供应商搜索"
-                dropdownMatchSelectWidth={false}
-                dropdownStyle={{ width: 100 }}
-              >
-                {product && product.supporters.map(el => <Option key={el.id}>{el.name}</Option>)}
-              </AutoComplete>
-            </div>
-            <div>
-              日期{' '}
-              <DatePicker
-                format="YYYY-MM-DD HH:mm:ss"
-                onChange={this.onDateChange}
-                placeholder="选择单据时间"
-                defaultValue={moment()}
-              />
-            </div>
+            <main>
+              <div style={{ marginTop: -22 }}>{contractSn}</div>
+            </main>
+            <main>
+              <div style={{ marginTop: -22 }}>仓库</div>
+              <div>
+                <FormItem {...formItemLayout}>
+                  {form.getFieldDecorator('storageValue', {
+                    rules: [{ required: true, message: '仓库是必填项' }],
+                  })(
+                    <Select
+                      allowClear
+                      placeholder="请选择仓库"
+                      style={{ width: 150 }}
+                      onChange={this.storageChange}
+                    >
+                      {storages.map(el => (
+                        <Option key={el.id} value={el.id}>
+                          {el.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              </div>
+            </main>
+            <main>
+              <div style={{ marginTop: -22 }}>经办人</div>
+              <div>
+                <FormItem {...formItemLayout}>
+                  {form.getFieldDecorator('juserValue', {
+                    rules: [{ required: true, message: '是必填项' }],
+                    initialValue: '',
+                  })(
+                    <Select
+                      allowClear
+                      placeholder="请选择经办人"
+                      style={{ width: 150 }}
+                      onChange={this.userChange}
+                    >
+                      {users.map(el => (
+                        <Option key={el.id} value={el.id}>
+                          {el.nickname}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+              </div>
+            </main>
+            <main>
+              <div style={{ marginTop: -22 }}>供应商</div>
+              <div>
+                <FormItem {...formItemLayout}>
+                  {form.getFieldDecorator('supporter', {
+                    rules: [{ required: true, message: '是必填项' }],
+                    initialValue: '',
+                  })(
+                    <AutoComplete
+                      allowClear
+                      style={{ width: 120 }}
+                      onSelect={this.onSelectClient}
+                      onSearch={this.handleClientSearch}
+                      placeholder="首字母供应商搜索"
+                      dropdownMatchSelectWidth={false}
+                      dropdownStyle={{ width: 100 }}
+                    >
+                      {product &&
+                        product.supporters.map(el => <Option key={el.id}>{el.name}</Option>)}
+                    </AutoComplete>
+                  )}
+                </FormItem>
+              </div>
+            </main>
+            <main>
+              <div>日期</div>
+              <div>
+                <DatePicker
+                  format="YYYY-MM-DD HH:mm:ss"
+                  onChange={this.onDateChange}
+                  placeholder="选择单据时间"
+                  defaultValue={moment()}
+                />
+              </div>
+            </main>
           </div>
           <Table
             columns={tableList}
