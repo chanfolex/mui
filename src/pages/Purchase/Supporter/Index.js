@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
 import { connect } from 'dva';
-import { Card, Form, Table, Button, Divider, Icon, Popconfirm } from 'antd';
+import { Card, Form, Table, Button, Divider, Popconfirm } from 'antd';
 import Zmage from 'react-zmage';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
@@ -246,53 +246,53 @@ class Supporter extends Component {
             <Zmage src={cover} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
           ),
       },
-      {
-        title: '备案',
-        dataIndex: 'beian',
-        width: 150,
-        key: 'beian',
-        render: beian =>
-          beian.length === 0 ? (
-            <div style={{ width: 80, height: 80, lineHeight: 80 }} />
-          ) : (
-            <Zmage src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
-          ),
-      },
-      {
-        title: '许可证',
-        dataIndex: 'license',
-        width: 150,
-        key: 'license',
-        render: license =>
-          license.length === 0 ? (
-            <div style={{ width: 80, height: 80, lineHeight: 80 }} />
-          ) : (
-            <Zmage
-              src={license}
-              style={{ display: 'inline-block', width: 80, height: 80 }}
-              alt=""
-            />
-          ),
-      },
+      // {
+      //   title: '备案',
+      //   dataIndex: 'beian',
+      //   width: 150,
+      //   key: 'beian',
+      //   render: beian =>
+      //     beian.length === 0 ? (
+      //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
+      //     ) : (
+      //       <Zmage src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+      //     ),
+      // },
+      // {
+      //   title: '许可证',
+      //   dataIndex: 'license',
+      //   width: 150,
+      //   key: 'license',
+      //   render: license =>
+      //     license.length === 0 ? (
+      //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
+      //     ) : (
+      //       <Zmage
+      //         src={license}
+      //         style={{ display: 'inline-block', width: 80, height: 80 }}
+      //         alt=""
+      //       />
+      //     ),
+      // },
       {
         title: '添加人',
         width: 100,
         dataIndex: 'cuser.name',
         key: 'cuser.name',
       },
-      {
-        title: '资质审核',
-        width: 150,
-        dataIndex: 'state',
-        key: 'state',
-        render: text => (
-          <Icon
-            type="check-circle"
-            theme="filled"
-            style={{ color: text === 1 ? '#36ab60' : '#bfbfbf' }}
-          />
-        ),
-      },
+      // {
+      //   title: '资质审核',
+      //   width: 150,
+      //   dataIndex: 'state',
+      //   key: 'state',
+      //   render: text => (
+      //     <Icon
+      //       type="check-circle"
+      //       theme="filled"
+      //       style={{ color: text === 1 ? '#36ab60' : '#bfbfbf' }}
+      //     />
+      //   ),
+      // },
 
       {
         title: '添加时间',

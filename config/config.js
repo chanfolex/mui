@@ -68,7 +68,7 @@ export default {
   proxy: {
     '/server/public/api': {
       // target: 'http://chettah.cn/',
-      target: 'http://chettah.cn/',
+      target: 'http://www.fqyun.xyz/',
       changeOrigin: true,
       pathRewrite: { '^/server/public/api': '/server/public/api' },
     },

@@ -71,8 +71,8 @@ export default class CreateClient extends Component {
           job: values.job,
           account: values.account,
           cover: values.cover ? values.cover[0].url : '',
-          beian: values.beian ? values.beian[0].url : '',
-          license: values.license ? values.license[0].url : '',
+          // beian: values.beian ? values.beian[0].url : '',
+          // license: values.license ? values.license[0].url : '',
         };
         param.des = keys.map((k, index) => ({
           bank: values[`bank${index}`],
@@ -210,7 +210,7 @@ export default class CreateClient extends Component {
                 getValueFromEvent: this.handleUploadChange,
               })(<UploadFile num={1} />)}
             </FormItem>
-            <FormItem
+            {/* <FormItem
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 19 }}
               label="二类医疗器械备案"
@@ -231,7 +231,7 @@ export default class CreateClient extends Component {
                 valuePropName: 'fileList',
                 getValueFromEvent: this.handleUploadChange,
               })(<UploadFile num={1} />)}
-            </FormItem>
+            </FormItem> */}
           </TabPane>
         </Tabs>
       </Modal>

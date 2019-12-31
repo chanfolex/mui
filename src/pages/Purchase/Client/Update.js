@@ -95,13 +95,13 @@ export default class UpdateSupporter extends Component {
           // eslint-disable-next-line no-nested-ternary
           cover: values.cover ? values.cover[0].url : formVals.cover ? formVals.cover : '',
           // eslint-disable-next-line no-nested-ternary
-          beian: values.beian ? values.beian[0].url : formVals.beian ? formVals.beian : '',
-          // eslint-disable-next-line no-nested-ternary
-          license: values.license
-            ? values.license[0].url
-            : formVals.license
-              ? formVals.license
-              : '',
+          // beian: values.beian ? values.beian[0].url : formVals.beian ? formVals.beian : '',
+          // // eslint-disable-next-line no-nested-ternary
+          // license: values.license
+          //   ? values.license[0].url
+          //   : formVals.license
+          //     ? formVals.license
+          //     : '',
         };
         // eslint-disable-next-line no-param-reassign
         param.des = keys.map((k, index) => ({
@@ -243,7 +243,7 @@ export default class UpdateSupporter extends Component {
                 getValueFromEvent: this.handleUploadChange,
               })(<UploadFile num={1} />)}
             </FormItem>
-            <FormItem
+            {/* <FormItem
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 19 }}
               label="二类医疗器械备案"
@@ -266,7 +266,7 @@ export default class UpdateSupporter extends Component {
                 valuePropName: 'fileList',
                 getValueFromEvent: this.handleUploadChange,
               })(<UploadFile num={1} />)}
-            </FormItem>
+            </FormItem> */}
           </TabPane>
         </Tabs>
       </Modal>

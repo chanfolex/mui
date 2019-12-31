@@ -353,35 +353,12 @@ class Product extends PureComponent {
         sorter: true,
       },
       {
-        title: '参考成本',
-        width: 150,
-        dataIndex: 'price_fob',
-        key: 'price_fob',
-      },
-      {
-        title: '生产许可证',
-        width: 150,
-        dataIndex: 'license',
-        key: 'license',
-      },
-      {
         title: '生产企业',
         width: 150,
         dataIndex: 'company',
         key: 'company',
       },
-      {
-        title: '保质期(日)',
-        width: 150,
-        dataIndex: 'best',
-        key: 'best',
-      },
-      {
-        title: '批准文号',
-        width: 150,
-        dataIndex: 'sn',
-        key: 'sn',
-      },
+
       {
         title: '备注',
         width: 200,

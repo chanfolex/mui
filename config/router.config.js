@@ -125,7 +125,7 @@ export default [
             path: '/resource/product',
             name: 'product',
             authority: 13,
-            component: './Resource/Product/Product',
+            component: './Resource/Product/Index',
           },
           // {
           //   path: '/resource/grade',
