@@ -60,6 +60,8 @@ class SaleContractInsert extends Component {
       selectStorages: null,
       itemIndex: null,
       storageValue: null,
+      totalSum: 0,
+      page: 1,
       // jsuerValue: null,
       des: [1, 2, 3].map(() => ({
         name: '',
@@ -84,6 +86,7 @@ class SaleContractInsert extends Component {
     };
     // 无需更新页面
     this.selectedRows = [];
+    this.recordDataList = [];
   }
 
   componentDidMount() {
@@ -124,7 +127,7 @@ class SaleContractInsert extends Component {
   }
 
   getProduction = () => {
-    const { storageIndex, categoryIndex, searchContent, storages, categorys } = this.state;
+    const { storageIndex, categoryIndex, searchContent, storages, categorys, page } = this.state;
     const { dispatch } = this.props;
     const params = {};
     if (searchContent) {
@@ -147,25 +150,26 @@ class SaleContractInsert extends Component {
     } else if (categoryIndex || categoryIndex === 0) {
       params.category = categorys[categoryIndex].id;
     }
-    console.log(params);
+    if (page) params.pagination = page;
     dispatch({
       type: `product/fetchProductOption`,
       payload: params,
     }).then(res => {
       if (res.code === 200) {
-        this.setState({ products: res.data });
+        this.setState({ products: res.data, totalSum: res.data.sum });
       }
     });
   };
 
   remove = k => {
+    const { des } = this.state;
+    if (des.length === 1) return message.warning('请至少填写一个产品信息');
     // 更新id值
     id -= 1;
-    const { des } = this.state;
     const arr = [...des];
     arr.splice(k, 1);
     this.setState({ des: arr });
-    if (!arr.length) message.warning('请至少填写一个产品信息');
+    return null;
   };
 
   add = () => {
@@ -333,14 +337,16 @@ class SaleContractInsert extends Component {
   };
 
   selectCategory = (item, index) => {
-    this.setState({ selectedRowKeys: [] });
-    this.selectedRows = [];
+    this.setState({ page: 1 });
     if (index) {
       this.setState({ categoryIndex: index });
     } else {
       this.setState({ categoryIndex: null });
     }
-    setTimeout(() => this.getProduction({}), 10);
+    setTimeout(() => {
+      this.getProduction({});
+      this.recordData();
+    }, 10);
   };
 
   selectStorage = value => {
@@ -357,6 +363,7 @@ class SaleContractInsert extends Component {
       });
     }
     setTimeout(() => this.getProduction({}), 10);
+    this.recordData();
   };
 
   hideModal = () => {
@@ -370,16 +377,19 @@ class SaleContractInsert extends Component {
     this.setState({
       searchContent: e.target.value,
     });
-    this.timerSend = setTimeout(() => this.getProduction(), 1000);
+    this.timerSend = setTimeout(() => {
+      this.getProduction();
+      this.recordData();
+    }, 1000);
   };
 
   submit = () => {
-    if (!this.selectedRows.length) {
+    this.recordDataList = this.recordDataList.concat(...this.selectedRows);
+    if (!this.recordDataList.length) {
       return message.warning('您没有选择任何表单数据，不可以提交');
     }
     const { des, itemIndex } = this.state;
-    des.splice(itemIndex, 0, ...this.selectedRows);
-    des.splice(itemIndex + this.selectedRows.length, 1);
+    des.splice(itemIndex, 1, ...this.recordDataList);
     this.setState({
       des,
       categoryIndex: null,
@@ -390,6 +400,7 @@ class SaleContractInsert extends Component {
       selectStorages: null,
     });
     this.selectedRows = [];
+    this.recordDataList = [];
     return setTimeout(() => this.getProduction(), 100);
   };
 
@@ -431,6 +442,16 @@ class SaleContractInsert extends Component {
     this.setState({ juserValue: value });
   };
 
+  pageChange = pageNumber => {
+    this.setState({ page: pageNumber });
+    this.recordData();
+    setTimeout(() => this.getProduction(), 100);
+  };
+
+  recordData = () => {
+    this.recordDataList = this.recordDataList.concat(...this.selectedRows);
+  };
+
   render() {
     const {
       product,
@@ -450,8 +471,11 @@ class SaleContractInsert extends Component {
       categoryIndex,
       selectedRowKeys,
       selectStorages,
+      totalSum,
+      searchContent,
+      storageIndex,
+      page,
     } = this.state;
-    console.log(des);
     const iniKeys = des && des.length > 0 ? des.map((el, index) => index) : [];
     // console.log(des)
     // console.log(iniKeys)
@@ -654,7 +678,6 @@ class SaleContractInsert extends Component {
       {
         title: '单位',
         width: 150,
-        dataIndex: 'unit',
         key: 'unit',
         render: text => {
           if (text.unit && text.unit.name) return <div>{text.unit.name}</div>;
@@ -720,7 +743,6 @@ class SaleContractInsert extends Component {
         ),
       },
     ];
-    console.log(des);
     const tableData = des;
     // const formItems = keys.map((k, index) => (
     //   <Fragment key={k}>
@@ -1328,9 +1350,17 @@ class SaleContractInsert extends Component {
                 rowSelection={rowSelection}
                 dataSource={dataSource}
                 columns={columns}
-                pagination={false}
+                rowKey={(record, index) =>
+                  `${searchContent || 'none'}//${
+                    storageIndex ? storages[storageIndex].name : 'all'
+                  }//${categoryIndex ? categorys[categoryIndex].name : 'all'}//${page}//${index}`
+                }
+                pagination={{
+                  total: totalSum,
+                  onChange: this.pageChange,
+                  current: page,
+                }}
               />
-              ;
             </Col>
           </div>
           <div className={styles.searchModalFooter}>
