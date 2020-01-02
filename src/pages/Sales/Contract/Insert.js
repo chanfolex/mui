@@ -12,6 +12,7 @@ import {
   DatePicker,
   Button,
   AutoComplete,
+  InputNumber,
   // Divider,
   message,
   Select,
@@ -163,10 +164,8 @@ class SaleContractInsert extends Component {
     const { des } = this.state;
     const arr = [...des];
     arr.splice(k, 1);
-    console.log('arr', arr);
-    this.setState({
-      des: arr,
-    });
+    this.setState({ des: arr });
+    if (!arr.length) message.warning('请至少填写一个产品信息');
   };
 
   add = () => {
@@ -252,6 +251,7 @@ class SaleContractInsert extends Component {
       if (!err) {
         if (!des.every(item => item.numValue && item.priceValue))
           return message.warning('您选择的产品价格或数量未填写完整');
+        if (!des.length) return message.warning('请至少填写一个产品信息');
         const obj = {
           contractSn,
           ordate,
@@ -294,7 +294,10 @@ class SaleContractInsert extends Component {
   handleClientSearch = value => {
     const { dispatch } = this.props;
     if (value) {
-      dispatch({ type: 'product/fetchSupporterOption', payload: { abbr: value } });
+      dispatch({ type: 'product/fetchSupporterOption', payload: { abbr: value } }).then(res => {
+        if (res && !res.data.length) return message.warning('搜索结果不存在');
+        return null;
+      });
     }
   };
 
@@ -341,14 +344,15 @@ class SaleContractInsert extends Component {
   };
 
   selectStorage = value => {
-    console.log(value);
-    this.setState({ selectStorages: value });
+    const { storages } = this.state;
     if (value) {
       this.setState({
-        storageIndex: value - 1,
+        storageIndex: value.split('//')[1],
+        selectStorages: storages[value.split('//')[1]].name,
       });
     } else {
       this.setState({
+        selectStorages: null,
         storageIndex: null,
       });
     }
@@ -362,9 +366,11 @@ class SaleContractInsert extends Component {
   };
 
   searchContent = e => {
+    if (this.timerSend) clearTimeout(this.timerSend);
     this.setState({
       searchContent: e.target.value,
     });
+    this.timerSend = setTimeout(() => this.getProduction(), 1000);
   };
 
   submit = () => {
@@ -642,7 +648,7 @@ class SaleContractInsert extends Component {
         width: 150,
         key: 'num',
         render: (text, record, index) => (
-          <NumericInput placeholder="数量" onChange={value => this.numChange(value, index)} />
+          <InputNumber placeholder="数量" onChange={value => this.numChange(value, index)} />
         ),
       },
       {
@@ -669,7 +675,7 @@ class SaleContractInsert extends Component {
         width: 150,
         key: 'price',
         render: (text, record, index) => (
-          <NumericInput placeholder="单价" onChange={value => this.priceChange(value, index)} />
+          <InputNumber placeholder="单价" onChange={value => this.priceChange(value, index)} />
         ),
       },
       {
@@ -1270,8 +1276,8 @@ class SaleContractInsert extends Component {
                 style={{ width: 200 }}
                 onChange={this.selectStorage}
               >
-                {storages.map(el => (
-                  <Option key={el.id} value={el.id}>
+                {storages.map((el, i) => (
+                  <Option key={el.id} value={`${el.id}//${i}`}>
                     {el.name}
                   </Option>
                 ))}
