@@ -1,5 +1,6 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Form, Input, Drawer, Tabs, Divider, Row, Col, Table, Icon } from 'antd';
+import EditModal from './EditModal';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
@@ -67,6 +68,12 @@ export default class InsertSlide extends PureComponent {
 
   handleTabChange = () => {
     // console.log(key);
+  };
+
+  // 询盘编辑
+  editHandler = (id, values) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'contract/update', payload: { id, ...values } });
   };
 
   // eslint-disable-next-line no-unused-vars
@@ -204,6 +211,22 @@ export default class InsertSlide extends PureComponent {
         dataIndex: 'extra',
         key: 'extra',
         width: 100,
+      },
+
+      {
+        title: '操作',
+        // width: 250,
+        render: (text, record) => (
+          <Fragment>
+            <EditModal
+              record={record}
+              // eslint-disable-next-line react/jsx-no-bind
+              onOk={this.editHandler.bind(null, record.id)}
+            >
+              <a>编辑</a>
+            </EditModal>
+          </Fragment>
+        ),
       },
 
       // {
