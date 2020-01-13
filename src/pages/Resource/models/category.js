@@ -17,30 +17,32 @@ export default {
         payload: response,
       });
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload }, { call }) {
       const response = yield call(addCategory, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      // yield put({
+      //   type: 'add',
+      //   payload,
+      // });
+      return response;
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload }, { call }) {
       const response = yield call(updateCategory, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      })
-      if(callback) callback();
+      // yield put({
+      //   type: 'save',
+      //   payload: response,
+      // })
+      // if(callback) callback();
+      return response;
     },
-    *delete({ payload, callback }, { call, put }) {
+    *delete({ payload }, { call }) {
       const response = yield call(removeCategory, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      })
-      if (callback) callback();
-    }
+      // yield put({
+      //   type: 'save',
+      //   payload: response,
+      // })
+      // if (callback) callback();
+      return response;
+    },
   },
   reducers: {
     save(state, action) {
@@ -48,17 +50,22 @@ export default {
         const data = {
           list: action.payload.data.list,
           pagination: {
-            total: action.payload.data.list.length,
+            total: action.payload.data.sum,
             pageSize: 10,
             current: 1,
-          }
-        }
+          },
+        };
         return {
           ...state,
           data,
         };
       }
       return state;
+    },
+    add(state) {
+      return {
+        ...state,
+      };
     },
   },
 };

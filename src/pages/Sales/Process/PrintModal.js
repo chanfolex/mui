@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 
 import { Form, Modal } from 'antd';
-import PrintTable from './PrintTable';
+import PrintTable from './printTable';
 
 @connect(({ customer }) => ({
   customer,

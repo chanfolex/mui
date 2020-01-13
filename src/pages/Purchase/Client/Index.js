@@ -3,18 +3,16 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Table, Button, Divider, Popconfirm } from 'antd';
 import Zmage from 'react-zmage';
-// eslint-disable-next-line import/extensions
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-// eslint-disable-next-line import/extensions
 import TableInputSearch from '@/components/common/TableInputSearch';
 import Create from './Create';
 import Update from './Update';
 import styles from './index.less';
 // import ExamineModal from '../../Slide/ExamineModal';
-import Slide from '../../Slide/ClientSlide';
+import Slide from '../../Slide/SupporterSlide';
 
-@connect(({ customer1 }) => ({
-  customer1,
+@connect(({ customer }) => ({
+  customer,
   // loading: loading.models.product,
 }))
 @Form.create()
@@ -24,6 +22,8 @@ class Client extends Component {
     updateModalVisible: false,
     stepFormValues: {},
     categorys: [],
+    drawerVisible: false,
+    currentRecord: {},
   };
 
   componentDidMount() {
@@ -42,12 +42,6 @@ class Client extends Component {
     });
   }
 
-  // 查询询盘列表
-  fetchList = (params = {}) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'customer1/fetch', payload: params });
-  };
-
   showDrawer = record => {
     this.setState({
       drawerVisible: true,
@@ -61,11 +55,17 @@ class Client extends Component {
     });
   };
 
+  // 查询询盘列表
+  fetchList = (params = {}) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'customer/fetch', payload: params });
+  };
+
   // 新增
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'customer1/create',
+      type: 'customer/create',
       payload: {
         ...fields,
       },
@@ -78,7 +78,7 @@ class Client extends Component {
   handleUpdate = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'customer1/update',
+      type: 'customer/update',
       payload: {
         ...fields,
       },
@@ -103,7 +103,13 @@ class Client extends Component {
   // 询盘编辑
   editHandler = (id, values) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'customer1/update', payload: { id, ...values } });
+    dispatch({ type: 'customer/update', payload: { id, ...values } });
+  };
+
+  // 生成合同
+  contractHandler = values => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'customer/createContractorders', payload: { ...values } });
   };
 
   handleModalVisible = flag => {
@@ -115,7 +121,7 @@ class Client extends Component {
   // 审核通道
   examineHandler = (id, fields) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'customer1/update', payload: { id, ...fields } });
+    dispatch({ type: 'customer/update', payload: { id, ...fields } });
   };
 
   handleUpdateModalVisible = (flag, record) => {
@@ -128,12 +134,12 @@ class Client extends Component {
   // 询盘删除
   handleDelete = fields => {
     const { dispatch } = this.props;
-    dispatch({ type: 'customer1/update', payload: { id: fields.id, status: 2 } });
+    dispatch({ type: 'customer/update', payload: { id: fields.id, status: 2 } });
   };
 
   render() {
     const {
-      customer1: { list, pagination },
+      customer: { list, pagination },
       dispatch,
     } = this.props;
 
@@ -183,12 +189,39 @@ class Client extends Component {
         dataIndex: 'linkman',
         key: 'linkman',
       },
+      // {
+      //   title: '职务',
+      //   width: 150,
+      //   dataIndex: 'job',
+      //   key: 'job',
+      // },
       {
         title: '联系电话',
         width: 150,
         dataIndex: 'tel',
         key: 'tel',
       },
+
+      // {
+      //   title: '银行',
+      //   width: 150,
+      //   dataIndex: 'bank',
+      //   key: 'bank',
+      // },
+      // {
+      //   title: '对公账号',
+      //   width: 150,
+      //   dataIndex: 'account',
+      //   key: 'account',
+      // },
+
+      // {
+      //   title: '电话',
+      //   width: 150,
+      //   dataIndex: 'tel',
+      //   key: 'tel',
+      // },
+
       {
         title: '主营',
         width: 150,
@@ -204,47 +237,49 @@ class Client extends Component {
       {
         title: '营业执照',
         dataIndex: 'cover',
-        width: 100,
+        width: 150,
         key: 'cover',
         render: cover =>
           cover.length === 0 ? (
             <div style={{ width: 80, height: 80, lineHeight: 80 }} />
           ) : (
-            <Zmage src={cover} alt="" style={{ display: 'inline-block', width: 80, height: 80 }} />
+            <Zmage src={cover} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
           ),
       },
       // {
       //   title: '备案',
       //   dataIndex: 'beian',
-      //   width: 100,
+      //   width: 150,
       //   key: 'beian',
       //   render: beian =>
       //     beian.length === 0 ? (
       //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
       //     ) : (
-      //       <img src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+      //       <Zmage src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
       //     ),
       // },
       // {
       //   title: '许可证',
       //   dataIndex: 'license',
-      //   width: 100,
+      //   width: 150,
       //   key: 'license',
       //   render: license =>
       //     license.length === 0 ? (
       //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
       //     ) : (
-      //       <img src={license} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
+      //       <Zmage
+      //         src={license}
+      //         style={{ display: 'inline-block', width: 80, height: 80 }}
+      //         alt=""
+      //       />
       //     ),
       // },
-
       {
         title: '添加人',
         width: 100,
         dataIndex: 'cuser.name',
         key: 'cuser.name',
       },
-
       // {
       //   title: '资质审核',
       //   width: 150,
@@ -258,6 +293,7 @@ class Client extends Component {
       //     />
       //   ),
       // },
+
       {
         title: '添加时间',
         width: 130,
@@ -267,7 +303,7 @@ class Client extends Component {
       {
         title: '操作',
         width: 200,
-        // fixed: 'right',
+        fixed: 'right',
         render: (text, record) => (
           <Fragment>
             {/* <ExamineModal record={record} onOk={this.examineHandler.bind(null, record.id)}>
@@ -320,12 +356,12 @@ class Client extends Component {
               dataSource={list}
               pagination={paginationProps}
               onChange={this.handleTableChange}
+              scroll={{ x: 1500, y: 540 }}
               onRow={record => ({
                 onDoubleClick: () => {
                   this.showDrawer(record);
                 }, // 点击行
               })}
-              // scroll={{ x: 1010, y: 540 }}
             />
           </div>
         </Card>

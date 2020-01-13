@@ -7,7 +7,7 @@ import {
   Card,
   Form,
   Input,
-  Select,
+  // Select,
   Table,
   Icon,
   Button,
@@ -31,7 +31,7 @@ import styles from './Category.less';
 const FormItem = Form.Item;
 // const { Step } = Steps;
 // const { TextArea } = Input;
-const { Option } = Select;
+// const { Option } = Select;
 // const RadioGroup = Radio.Group;
 const getValue = obj =>
   Object.keys(obj)
@@ -39,8 +39,7 @@ const getValue = obj =>
     .join(',');
 
 const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible, types } = props;
-
+  const { modalVisible, form, handleAdd, handleModalVisible } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -56,19 +55,6 @@ const CreateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="类型">
-        {form.getFieldDecorator('type', {
-          rules: [{ required: true, message: '单位是必填项' }],
-        })(
-          <Select placeholder="请选择" style={{ width: '100%' }}>
-            {types.map(item => (
-              <Option value={item.id} key={item.id}>
-                {item.name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="名称">
         {form.getFieldDecorator('name', {
           rules: [{ required: true, message: '名称是必填项' }],
@@ -86,7 +72,6 @@ class UpdateForm extends PureComponent {
     this.state = {
       formVals: {
         name: props.values.name,
-        type: props.values.type,
         id: props.values.id,
       },
     };
@@ -110,22 +95,9 @@ class UpdateForm extends PureComponent {
   };
 
   renderContent = formVals => {
-    const { form, types } = this.props;
+    const { form } = this.props;
+
     return [
-      <FormItem key="type" {...this.formLayout} label="类型">
-        {form.getFieldDecorator('type', {
-          rules: [{ required: true, message: '类型是必填项' }],
-          initialValue: formVals.type,
-        })(
-          <Select allowClear placeholder="请选择" style={{ width: '100%' }}>
-            {types.map(item => (
-              <Option value={item.id} key={item.id}>
-                {item.name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </FormItem>,
       <FormItem key="name" {...this.formLayout} label="名称">
         {form.getFieldDecorator('name', {
           rules: [{ required: true, message: '请输入名称！' }],
@@ -144,7 +116,7 @@ class UpdateForm extends PureComponent {
         width={640}
         bodyStyle={{ padding: '32px 40px 48px' }}
         destroyOnClose
-        title="分类编辑"
+        title="类型编辑"
         visible={updateModalVisible}
         onOk={this.handleComplate}
         onCancel={() => handleUpdateModalVisible()}
@@ -156,9 +128,8 @@ class UpdateForm extends PureComponent {
 }
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ category, types, loading }) => ({
+@connect(({ category, loading }) => ({
   category,
-  types,
   loading: loading.models.category,
 }))
 @Form.create()
@@ -208,7 +179,8 @@ class Category extends PureComponent {
     });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+  // Table 切换分页
+  handleTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { formValues } = this.state;
 
@@ -245,6 +217,13 @@ class Category extends PureComponent {
       payload: {},
     });
   };
+
+  // toggleForm = () => {
+  //   const { expandForm } = this.state;
+  //   this.setState({
+  //     expandForm: !expandForm,
+  //   });
+  // };
 
   handleMenuClick = e => {
     const { dispatch } = this.props;
@@ -301,12 +280,6 @@ class Category extends PureComponent {
   };
 
   handleModalVisible = flag => {
-    const { dispatch, types } = this.props;
-    if (types.data.list.length === 0) {
-      dispatch({
-        type: 'types/fetch',
-      });
-    }
     this.setState({
       modalVisible: !!flag,
     });
@@ -326,27 +299,36 @@ class Category extends PureComponent {
       type: 'category/add',
       payload: {
         name: fields.name,
-        type: fields.type,
       },
+    }).then(res => {
+      if (res.code === 200) {
+        this.handleModalVisible();
+        message.success('添加类型成功');
+        dispatch({
+          type: 'category/fetch',
+        });
+      }
     });
-
-    message.success('添加分类成功');
-    this.handleModalVisible();
   };
 
+  // 编辑更新
   handleUpdate = fields => {
     const { dispatch } = this.props;
     dispatch({
       type: 'category/update',
       payload: {
         name: fields.name,
-        type: fields.type,
         id: fields.id,
       },
+    }).then(res => {
+      if (res.code === 200) {
+        message.success('类型编辑成功');
+        this.handleUpdateModalVisible();
+        dispatch({
+          type: 'category/fetch',
+        });
+      }
     });
-
-    message.success('分类编辑成功');
-    this.handleUpdateModalVisible();
   };
 
   handleDelete = fields => {
@@ -357,8 +339,14 @@ class Category extends PureComponent {
         id: `${fields.id}`,
         status: 2,
       },
+    }).then(res => {
+      if (res.code === 200) {
+        message.success('类型删除成功');
+        dispatch({
+          type: 'category/fetch',
+        });
+      }
     });
-    message.success('分类删除成功');
   };
 
   emitEmpty = () => {
@@ -366,7 +354,6 @@ class Category extends PureComponent {
     const { form } = this.props;
     form.setFieldsValue({
       name: '',
-      type: '',
     });
   };
 
@@ -387,16 +374,12 @@ class Category extends PureComponent {
     );
   }
 
-  // renderForm() {
-  //   const { expandForm } = this.state;
-  //   return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
-  // }
-
   render() {
     const {
       category: { data },
-      types,
+      // loading,
     } = this.props;
+
     const { modalVisible, updateModalVisible, stepFormValues } = this.state;
 
     const parentMethods = {
@@ -407,6 +390,7 @@ class Category extends PureComponent {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
+
     const paginationProps = {
       // showSizeChanger: true,
       // showQuickJumper: true,
@@ -423,17 +407,17 @@ class Category extends PureComponent {
               <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             </div>
             <Table
-              rowKey="id"
               columns={this.columns}
               dataSource={data.list}
               pagination={paginationProps}
+              rowKey="name"
+              onChange={this.handleTableChange}
             />
           </div>
         </Card>
-        <CreateForm types={types.data.list} {...parentMethods} modalVisible={modalVisible} />
+        <CreateForm {...parentMethods} modalVisible={modalVisible} />
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateForm
-            types={types.data.list}
             {...updateMethods}
             updateModalVisible={updateModalVisible}
             values={stepFormValues}

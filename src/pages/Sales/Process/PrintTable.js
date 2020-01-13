@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 // import { connect } from 'dva';
 import { Row, Col, Button, Card, message, InputNumber } from 'antd';
-import { styleObj } from './PrintStyle';
+import { styleObj } from './printStyle';
 
 class PrintTable extends PureComponent {
   state = {
@@ -14,15 +14,15 @@ class PrintTable extends PureComponent {
   componentDidMount() {
     const printCol = [
       {
-        key: 'product.barsn',
+        key: 'number',
         name: '序号',
       },
       {
-        key: 'product.shape',
+        key: 'shape',
         name: '型号',
       },
       {
-        key: 'product.name',
+        key: 'name',
         name: '商品名称',
       },
       {
@@ -158,7 +158,7 @@ class PrintTable extends PureComponent {
             </th>
             <th>客户</th>
             <th colSpan="7">
-              {/* <input style={styleObj.printInput} value={print.client.name} /> */}
+              <input style={styleObj.printInput} value={print.client.name} />
             </th>
             <th>合同日期</th>
             <th colSpan="7">
@@ -206,7 +206,7 @@ class PrintTable extends PureComponent {
           <th colSpan="4">
             <input style={styleObj.printInputFooter} />
           </th>
-          <th>制单人（签字）</th>
+          <th>库管员（签字）</th>
           <th>
             <div style={styleObj.footerSpace} />
           </th>
@@ -231,7 +231,7 @@ class PrintTable extends PureComponent {
     const { printGroupData } = this.state;
     return printGroupData.map((item, index) => (
       <div style={styleObj.printArea}>
-        {this.createTitle('蜜拓蜜大健康采购入库单')}
+        {this.createTitle('xxxxxxx公司xxx单')}
         {this.createHeader()}
         {this.createForm(printCol, item)}
         {this.createFooter({ current: index + 1, total: printGroupData.length })}

@@ -10,40 +10,37 @@ export async function queryCategoryOption(params) {
 }
 
 export async function addCategory(params) {
-  return request('/api/category', {
+  return request('/api/category/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: {
       ...params,
-      method: 'post',
     },
   });
 }
 
 export async function updateCategory(params) {
-  return request('/api/category', {
+  return request('/api/category/save', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: {
       ...params,
-      method: 'update',
     },
   });
 }
 
 export async function removeCategory(params) {
-  return request('/api/category', {
+  return request('/api/category/save', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: {
       ...params,
-      method: 'delete',
     },
   });
 }

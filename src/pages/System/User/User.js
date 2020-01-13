@@ -147,6 +147,7 @@ class User extends Component {
         dataIndex: 'openid',
         key: 'openid',
       },
+
       {
         title: '创建时间',
         width: 150,

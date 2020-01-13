@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { Row, Col, Form, Input, Select, Modal, Tabs } from 'antd';
 
+// eslint-disable-next-line import/extensions
 import UploadFile from '@/components/UploadFile';
 import styles from './index.less';
 
@@ -11,7 +12,7 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 @Form.create()
-export default class UpdateSupporter extends Component {
+export default class UpdateClient extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -123,7 +124,7 @@ export default class UpdateSupporter extends Component {
         width={800}
         className={styles.formRow}
         destroyOnClose
-        title="编辑供应商"
+        title="编辑"
         visible={updateModalVisible}
         maskClosable={false}
         onOk={okHandle}
@@ -159,6 +160,7 @@ export default class UpdateSupporter extends Component {
                     </Select>
                   )}
                 </FormItem>
+
                 <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} label="地址" hasFeedback>
                   {form.getFieldDecorator('address', {
                     initialValue: formVals.address,
