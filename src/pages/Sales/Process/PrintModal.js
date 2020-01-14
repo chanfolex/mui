@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 
 import { Form, Modal } from 'antd';
+// eslint-disable-next-line import/no-unresolved
 import PrintTable from './printTable';
 
 @connect(({ customer }) => ({
@@ -34,8 +35,7 @@ export default class PrintModal extends Component {
 
   render() {
     const { visible } = this.state;
-    const { children, record } = this.props;
-
+    const { children, record, showModel, controlHideModelHandler } = this.props;
     return (
       <span>
         <span onClick={this.showModelHandler}>{children}</span>
@@ -45,10 +45,10 @@ export default class PrintModal extends Component {
           centered
           title="打印"
           bodyStyle={{ maxHeight: 'calc(100vh - 250px)', overflow: 'auto' }}
-          visible={visible}
+          visible={visible || showModel}
           maskClosable={false}
           onOk={this.okHandler}
-          onCancel={this.hideModelHandler}
+          onCancel={controlHideModelHandler || this.hideModelHandler}
         >
           <PrintTable print={record} />
         </Modal>

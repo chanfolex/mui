@@ -54,6 +54,10 @@ export default {
       yield put({ type: 'reload' });
       message.success('添加成功');
     },
+    *createInsert({ payload }, { call }) {
+      const response = yield call(addPurchase, payload);
+      return response;
+    },
     *createContract({ payload }, { call, put }) {
       yield call(addContract, payload);
       yield put(

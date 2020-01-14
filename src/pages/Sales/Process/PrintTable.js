@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 // import { connect } from 'dva';
 import { Row, Col, Button, Card, message, InputNumber } from 'antd';
+// eslint-disable-next-line import/no-unresolved
 import { styleObj } from './printStyle';
 
 class PrintTable extends PureComponent {
@@ -52,6 +53,18 @@ class PrintTable extends PureComponent {
       total: el.total,
       extra: el.extra,
     }));
+
+    while (printData.length === 0 || printData.length % 8 !== 0) {
+      printData.push({
+        number: '',
+        shape: '',
+        name: '',
+        price: '',
+        num: '',
+        total: '',
+        extra: '',
+      });
+    }
     // const printData = [
     //   { number: 1, goodsName: '1111', goodsType: '2222', unitName: 'sfs', specifications: 'sfsdf' },
     //   { number: 1, goodsName: '1111', goodsType: '2222', unitName: 'sfs', specifications: 'sfsdf' },
@@ -158,7 +171,7 @@ class PrintTable extends PureComponent {
             </th>
             <th>客户</th>
             <th colSpan="7">
-              <input style={styleObj.printInput} value={print.client.name} />
+              <input style={styleObj.printInput} value={print.client && print.client.name} />
             </th>
             <th>合同日期</th>
             <th colSpan="7">

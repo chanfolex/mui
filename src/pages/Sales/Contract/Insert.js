@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import Dayjs from 'dayjs';
+// eslint-disable-next-line import/order
+import PrintModal from '../Process/PrintModal';
 
 import {
   Row,
@@ -33,9 +35,10 @@ let id = 0;
 const FormItem = Form.Item;
 const { Option } = AutoComplete;
 
-@connect(({ salesContract, product }) => ({
+@connect(({ salesContract, product, purchase }) => ({
   salesContract,
   product,
+  purchase,
   // loading: loading.effects['chart/fetch'],
 }))
 @Form.create()
@@ -62,6 +65,8 @@ class SaleContractInsert extends Component {
       storageValue: null,
       totalSum: 0,
       page: 1,
+      printRecordData: {},
+      showModel: false,
       // jsuerValue: null,
       des: [1, 2, 3].map(() => ({
         name: '',
@@ -279,10 +284,60 @@ class SaleContractInsert extends Component {
             return formVal;
           }),
         };
-        return dispatch({ type: 'purchase/create', payload: obj });
+        return dispatch({ type: 'prepurchase/createInsert', payload: obj }).then(() => {
+          message.success('添加成功');
+          this.clearFromData();
+          this.openPrintModel(obj);
+        });
       }
       return message.warning('您还有必填项未填');
     });
+  };
+
+  // 控制model关闭
+  controlHideModelHandler = () => {
+    this.setState({
+      showModel: false,
+    });
+  };
+
+  // 打卡打印Model
+  openPrintModel = obj => {
+    this.setState({
+      printRecordData: obj,
+      showModel: true,
+    });
+  };
+
+  // 清除页面表单数据
+  clearFromData = () => {
+    const { form } = this.props;
+    this.setState({
+      des: [1, 2, 3].map(() => ({
+        name: '',
+        cover: '',
+        intro: '',
+        price: '',
+        price_fob: '',
+        num: '',
+        extra: '',
+        prodcution: '',
+        shape: '',
+        license: '',
+        company: '',
+        sn: '',
+        currentnum: '',
+        batch: '',
+        start: '',
+        best: '',
+        unit: '',
+        barsn: '',
+      })),
+      storageValue: null,
+      juserValue: null,
+      supporter: '',
+    });
+    form.resetFields();
   };
 
   // 合同搜索
@@ -475,6 +530,8 @@ class SaleContractInsert extends Component {
       searchContent,
       storageIndex,
       page,
+      printRecordData,
+      showModel,
     } = this.state;
     const iniKeys = des && des.length > 0 ? des.map((el, index) => index) : [];
     // console.log(des)
@@ -672,7 +729,11 @@ class SaleContractInsert extends Component {
         width: 150,
         key: 'num',
         render: (text, record, index) => (
-          <InputNumber placeholder="数量" onChange={value => this.numChange(value, index)} />
+          <InputNumber
+            placeholder="数量"
+            value={record.numValue}
+            onChange={value => this.numChange(value, index)}
+          />
         ),
       },
       {
@@ -698,7 +759,11 @@ class SaleContractInsert extends Component {
         width: 150,
         key: 'price',
         render: (text, record, index) => (
-          <InputNumber placeholder="单价" onChange={value => this.priceChange(value, index)} />
+          <InputNumber
+            placeholder="单价"
+            value={record.priceValue}
+            onChange={value => this.priceChange(value, index)}
+          />
         ),
       },
       {
@@ -1370,6 +1435,11 @@ class SaleContractInsert extends Component {
             <Button onClick={this.submit}>提交</Button>
           </div>
         </Modal>
+        <PrintModal
+          record={printRecordData}
+          showModel={showModel}
+          controlHideModelHandler={this.controlHideModelHandler}
+        />
       </PageHeaderWrapper>
     );
   }

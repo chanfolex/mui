@@ -69,6 +69,11 @@ export default {
       message.success('添加成功');
     },
 
+    *createInsert({ payload }, { call }) {
+      const response = yield call(addPurchase, payload);
+      return response;
+    },
+
     *update({ payload }, { call, put }) {
       yield call(updatePurchase, payload);
       yield put(
