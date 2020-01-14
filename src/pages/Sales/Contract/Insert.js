@@ -258,9 +258,11 @@ class SaleContractInsert extends Component {
     const { ordate, supporter, des, storageValue, juserValue } = this.state;
     form.validateFields((err, values) => {
       if (!err) {
-        if (!des.every(item => item.numValue && item.priceValue))
-          return message.warning('您选择的产品价格或数量未填写完整');
         if (!des.length) return message.warning('请至少填写一个产品信息');
+        if (!des.some(item => item.numValue && item.priceValue)) {
+          return message.warning('您选择的产品价格或数量未填写完整');
+        }
+        const filterData = des.filter(item => item.numValue && item.priceValue);
         const obj = {
           contractSn,
           ordate,
@@ -270,7 +272,7 @@ class SaleContractInsert extends Component {
           payment: values.payment,
           extra: values.extra,
           packing: values.packing,
-          des: des.map(el => {
+          des: filterData.map(el => {
             const formVal = {
               product: el.id ? el.id : '',
               price: el.priceValue,
