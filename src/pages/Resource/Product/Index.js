@@ -300,6 +300,12 @@ class Product extends PureComponent {
         key: 'shape',
       },
       {
+        title: '库存数量',
+        dataIndex: 'num',
+        width: 150,
+        key: 'num',
+      },
+      {
         title: '计量单位',
         dataIndex: 'unit',
         width: 150,

@@ -1,6 +1,6 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { Form, Input, Drawer, Tabs, Divider, Row, Col, Table, Icon } from 'antd';
-import EditModal from './EditModal';
+// import EditModal from './EditModal';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
@@ -164,30 +164,6 @@ export default class InsertSlide extends PureComponent {
         width: 100,
       },
       {
-        title: '生产企业',
-        dataIndex: 'product.company',
-        key: 'product.company',
-        width: 100,
-      },
-      {
-        title: '批准文号',
-        dataIndex: 'product.sn',
-        key: 'product.sn',
-        width: 100,
-      },
-      {
-        title: '生产日期',
-        dataIndex: 'product.start',
-        key: 'product.start',
-        width: 100,
-      },
-      {
-        title: '有效日期',
-        dataIndex: 'product.end',
-        key: 'product.end',
-        width: 100,
-      },
-      {
         title: '售价',
         dataIndex: 'price',
         key: 'price',
@@ -213,21 +189,21 @@ export default class InsertSlide extends PureComponent {
         width: 100,
       },
 
-      {
-        title: '操作',
-        // width: 250,
-        render: (text, record) => (
-          <Fragment>
-            <EditModal
-              record={record}
-              // eslint-disable-next-line react/jsx-no-bind
-              onOk={this.editHandler.bind(null, record.id)}
-            >
-              <a>编辑</a>
-            </EditModal>
-          </Fragment>
-        ),
-      },
+      // {
+      //   title: '操作',
+      //   // width: 250,
+      //   render: (text, record) => (
+      //     <Fragment>
+      //       <EditModal
+      //         record={record}
+      //         // eslint-disable-next-line react/jsx-no-bind
+      //         onOk={this.editHandler.bind(null, record.id)}
+      //       >
+      //         <a>编辑</a>
+      //       </EditModal>
+      //     </Fragment>
+      //   ),
+      // },
 
       // {
       //   title: '提交时间',
@@ -254,7 +230,7 @@ export default class InsertSlide extends PureComponent {
               <span style={{ color: '#333' }}> {formRow.sn}</span>
             </div>
             <div style={colClass}>
-              <span style={spanClass}>客户:</span>
+              <span style={spanClass}>供应商:</span>
               <span style={{ color: '#333' }}>
                 {' '}
                 {formRow.supporter ? formRow.supporter.name : ''}

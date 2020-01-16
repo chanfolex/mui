@@ -27,7 +27,9 @@ export async function addProduct(params) {
     },
   });
 }
-
+export async function queryClientOption(params) {
+  return request(`/api/client/option?${stringify(params)}`);
+}
 export async function updateProduct(params) {
   return request('/api/product/save', {
     method: 'POST',

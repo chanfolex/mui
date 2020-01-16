@@ -25,7 +25,7 @@ import Debounce from 'lodash-decorators/debounce';
 // eslint-disable-next-line import/extensions
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 // eslint-disable-next-line import/extensions
-// import NumericInput from '@/components/common/NumericInput';
+import NumericInput from '@/components/common/NumericInput';
 
 import styles from './Index.less';
 
@@ -643,6 +643,7 @@ class SaleContractInsert extends Component {
         },
       },
       { title: '存货名称', width: 150, dataIndex: 'name', key: 'name' },
+      { title: '经营范围', width: 150, dataIndex: 'prodcution', key: 'prodcution' },
       {
         title: '规格',
         width: 150,
@@ -675,7 +676,56 @@ class SaleContractInsert extends Component {
           return <span>{text.shape}</span>;
         },
       },
+      { title: '生产许可证', width: 150, dataIndex: 'license', key: 'license' },
+      { title: '生产企业', width: 150, dataIndex: 'company', key: 'company' },
+      { title: '批准文号', width: 150, dataIndex: 'sn', key: 'sn' },
       { title: '可用数量', width: 150, dataIndex: 'currentnum', key: 'currentnum' },
+      {
+        title: '批号',
+        width: 150,
+        key: 'batch',
+        render: (text, record, index) => {
+          if (text.batch) return <div>{text.batch}</div>;
+          return (
+            <NumericInput
+              placeholder="批号"
+              onChange={value => {
+                this.batchChange(value, index);
+              }}
+            />
+          );
+        },
+      },
+      {
+        title: '生产日期',
+        width: 250,
+        key: 'start',
+        render: (text, record, index) => {
+          if (text.start) {
+            return <span>{text.start}</span>;
+          }
+          return (
+            <div>
+              <DatePicker
+                onChange={(date, dateString) => this.dataChange(date, dateString, index)}
+              />
+            </div>
+          );
+        },
+      },
+      {
+        title: '有效期',
+        width: 150,
+        key: 'timer',
+        render: text => {
+          if (text.date && text.best) {
+            return <div>{text.trueData}</div>;
+          }
+          return null;
+        },
+      },
+      { title: '保质期', width: 150, dataIndex: 'best', key: 'best' },
+
       {
         title: '数量',
         width: 150,
@@ -698,6 +748,15 @@ class SaleContractInsert extends Component {
         },
       },
       {
+        title: '零售价',
+        width: 150,
+        key: 'price_fob',
+        render: text => {
+          if (text.price_fob && text.price_fob) return <div>{text.price_fob}</div>;
+          return null;
+        },
+      },
+      {
         title: '单价',
         width: 150,
         key: 'price',
@@ -708,6 +767,21 @@ class SaleContractInsert extends Component {
             onChange={value => this.priceChange(value, index)}
           />
         ),
+      },
+      {
+        title: '换算率',
+        width: 150,
+        key: 'num*unit',
+        render: text => {
+          if (text.shape && text.pack)
+            return (
+              <div>
+                {text.pack}
+                盒= 1箱
+              </div>
+            );
+          return text.shape;
+        },
       },
       {
         title: '合计',

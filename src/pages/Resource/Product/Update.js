@@ -20,15 +20,11 @@ export default class UpdateProduct extends Component {
         name: props.values.name,
         shape: props.values.shape,
         barsn: props.values.barsn,
-        best: props.values.best,
         cover: props.values.cover,
         pack: props.values.pack,
         price: props.values.price,
         price_fob: props.values.price_fob,
-        company: props.values.company,
-        license: props.values.license,
-        sn: props.values.sn,
-        // num: props.values.num,
+        num: props.values.num,
         // start: props.values.start,
         // end: props.values.end,
         intro: props.values.intro,
@@ -124,14 +120,14 @@ export default class UpdateProduct extends Component {
                   })(<Input placeholder="请输入存货名称" size="large" />)}
                 </FormItem>
 
-                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="供应商">
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="客户">
                   {form.getFieldDecorator('supporter', {
-                    rules: [{ required: true, message: '供应商是必填项' }],
+                    rules: [{ required: true, message: '客户是必填项' }],
                     initialValue: formVals.supporter,
                   })(
                     <Select
                       allowClear
-                      placeholder="请选择供应商"
+                      placeholder="请选择客户"
                       style={{ width: '100%' }}
                       size="large"
                     >
@@ -292,60 +288,6 @@ export default class UpdateProduct extends Component {
                 <FormItem
                   labelCol={{ span: 5 }}
                   wrapperCol={{ span: 18 }}
-                  label="生产许可证"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('license', {
-                    initialValue: formVals.license,
-                  })(<Input placeholder="生产许可证" size="large" />)}
-                </FormItem>
-
-                <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="生产企业"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('company', {
-                    initialValue: formVals.company,
-                  })(<Input placeholder="生产企业" size="large" />)}
-                </FormItem>
-
-                <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="批准文号"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('sn', {
-                    initialValue: formVals.sn,
-                  })(<Input placeholder="批准文号" size="large" />)}
-                </FormItem>
-
-                <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="保质期(日)"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('best', {
-                    rules: [
-                      {
-                        required: false,
-                        type: 'number',
-                        message: '必须是数字类型',
-                        transform(value) {
-                          return value ? Number(value) : '';
-                        },
-                      },
-                    ],
-                    initialValue: formVals.best,
-                  })(<Input placeholder="保质期(日)" size="large" />)}
-                </FormItem>
-
-                {/* <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
                   label="库存数量"
                   hasFeedback
                 >
@@ -362,7 +304,7 @@ export default class UpdateProduct extends Component {
                     ],
                     initialValue: formVals.num,
                   })(<Input placeholder="库存数量" size="large" />)}
-                </FormItem> */}
+                </FormItem>
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="备注">
                   {form.getFieldDecorator('intro', {

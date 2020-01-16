@@ -5,6 +5,7 @@ import {
   querySupporterOption,
   queryTypeOption,
   queryGradeOption,
+  queryClientOption,
   // eslint-disable-next-line import/extensions
 } from '@/services/product';
 // eslint-disable-next-line import/extensions
@@ -20,6 +21,7 @@ export default {
       pageSize: 10,
     },
     supporters: [],
+    clients: [],
   },
 
   effects: {
@@ -56,6 +58,15 @@ export default {
       }
       return res;
     },
+
+    *fetchClientOption({ payload }, { call, put }) {
+      const res = yield call(queryClientOption, payload);
+      if (res.code === 200) {
+        yield put({ type: 'saveClient', payload: res.data });
+      }
+      return res;
+    },
+
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addProduct, payload);
       yield put({
@@ -88,6 +99,9 @@ export default {
     },
     saveSupporter(state, action) {
       return { ...state, supporters: action.payload };
+    },
+    saveClient(state, action) {
+      return { ...state, clients: action.payload };
     },
     setPaginationCurrent(state, action) {
       const { pagination } = state;

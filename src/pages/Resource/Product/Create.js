@@ -83,13 +83,13 @@ export default class CreateProduct extends Component {
                   })(<Input placeholder="请输入存货名称" size="large" />)}
                 </FormItem>
 
-                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="供应商">
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="客户">
                   {form.getFieldDecorator('supporter', {
-                    rules: [{ required: true, message: '请选择供应商' }],
+                    rules: [{ required: true, message: '请选择客户' }],
                   })(
                     <Select
                       allowClear
-                      placeholder="请选供应商"
+                      placeholder="请选客户"
                       style={{ width: '100%' }}
                       size="large"
                     >
@@ -240,61 +240,7 @@ export default class CreateProduct extends Component {
                     getValueFromEvent: this.handleUploadChange,
                   })(<UploadFile num={6} />)}
                 </FormItem>
-
                 <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="生产许可证"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('license', {})(
-                    <Input placeholder="请输入生产许可证" size="large" />
-                  )}
-                </FormItem>
-
-                <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="生产企业"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('company', {})(
-                    <Input placeholder="请输入生产企业" size="large" />
-                  )}
-                </FormItem>
-
-                <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="批准文号"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('sn', {})(
-                    <Input placeholder="请输入批准文号" size="large" />
-                  )}
-                </FormItem>
-
-                <FormItem
-                  labelCol={{ span: 5 }}
-                  wrapperCol={{ span: 18 }}
-                  label="保质期(日)"
-                  hasFeedback
-                >
-                  {form.getFieldDecorator('best', {
-                    rules: [
-                      {
-                        required: false,
-                        type: 'number',
-                        message: '必须是数字类型',
-                        transform(value) {
-                          return value ? Number(value) : '';
-                        },
-                      },
-                    ],
-                  })(<Input placeholder="保质期(日)" size="large" />)}
-                </FormItem>
-
-                {/* <FormItem
                   labelCol={{ span: 5 }}
                   wrapperCol={{ span: 18 }}
                   label="库存数量"
@@ -312,7 +258,7 @@ export default class CreateProduct extends Component {
                       },
                     ],
                   })(<Input placeholder="库存数量" size="large" />)}
-                </FormItem> */}
+                </FormItem>
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="备注">
                   {form.getFieldDecorator('intro', {})(
