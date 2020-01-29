@@ -127,6 +127,11 @@ export default [
             authority: 13,
             component: './Resource/Product/Index',
           },
+          {
+            path: '/resource/procedure',
+            name: 'procedure',
+            component: './Resource/Procedure/Index',
+          },
           // {
           //   path: '/resource/grade',
           //   name: 'grade',

@@ -97,6 +97,7 @@ export default {
   'menu.resource.product': '产品管理',
   'menu.resource.client': '供应商管理',
   'menu.resource.supporter': '客户管理',
+  'menu.resource.procedure': '工序管理',
 
   'menu.purchase': '采购管理',
   // 'menu.purchase.plan': '采购计划',

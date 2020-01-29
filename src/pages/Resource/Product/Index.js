@@ -8,7 +8,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import CreateProduct from './Create';
 import UpdateProduct from './Update';
 import TableInputSearch from '@/components/common/TableInputSearch';
-import Slide from '../../Slide/ProductSlide';
+import Slide from '../../Slide/ProcedureSlide';
 
 import styles from './product.less';
 
@@ -385,6 +385,9 @@ class Product extends PureComponent {
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
+            <a onClick={() => this.showDrawer(record)}>工序列表</a>
+            <Divider type="vertical" />
+
             {currentUser.role.id === 1 ||
             currentUser.role.id === 13 ||
             currentUser.role.id === 20 ||

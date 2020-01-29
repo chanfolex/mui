@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { Form, Input, Drawer, Tabs, Divider, Row, Col, Table, Icon } from 'antd';
-import Zmage from 'react-zmage';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
@@ -25,11 +24,10 @@ export default class ProcedureSlide extends PureComponent {
 
     this.setState({ loading: true });
     dispatch({
-      type: 'prepurchase/fetchItems',
+      type: 'procedure/fetchItems',
       payload: {
         ...params,
-        sn: formRow.sn,
-        product: formRow.product.id,
+        product: formRow.id,
       },
     }).then(res => {
       if (res) {
@@ -111,27 +109,15 @@ export default class ProcedureSlide extends PureComponent {
 
     const columns = [
       {
-        title: '批号',
-        dataIndex: 'batch',
-        key: 'batch',
+        title: '序号',
+        dataIndex: 'position',
+        key: 'position',
         width: 100,
       },
       {
-        title: '生产日期',
-        dataIndex: 'start',
-        key: 'start',
-        width: 100,
-      },
-      {
-        title: '截至日期',
-        dataIndex: 'start',
-        key: 'start',
-        width: 100,
-      },
-      {
-        title: '数量',
-        dataIndex: 'num',
-        key: 'num',
+        title: '名称',
+        dataIndex: 'name',
+        key: 'name',
         width: 100,
       },
       {
@@ -139,12 +125,6 @@ export default class ProcedureSlide extends PureComponent {
         dataIndex: 'price',
         key: 'price',
         width: 100,
-      },
-      {
-        title: '合计',
-        dataIndex: 'total',
-        key: 'total',
-        width: 200,
       },
 
       {
@@ -154,12 +134,12 @@ export default class ProcedureSlide extends PureComponent {
         width: 200,
       },
 
-      // {
-      //   title: '提交时间',
-      //   dataIndex: 'ctime',
-      //   key: 'ctime',
-      //   render: text => <span>{text || '无'}</span>,
-      // },
+      {
+        title: '提交时间',
+        dataIndex: 'ctime',
+        key: 'ctime',
+        render: text => <span>{text || '无'}</span>,
+      },
     ];
 
     return (
@@ -176,26 +156,19 @@ export default class ProcedureSlide extends PureComponent {
           <Col span={8}>
             <div style={colClass}>
               <span style={spanClass}>存货名称:</span>
-              <span style={{ color: '#333' }}> {formRow.product.name}</span>
+              <span style={{ color: '#333' }}> {formRow.name}</span>
             </div>
-            <div style={colClass}>
+            {/* <div style={colClass}>
               <span style={spanClass}>类型:</span>
-              <span style={{ color: '#333' }}> {formRow.product.category.name}</span>
+              <span style={{ color: '#333' }}> {formRow.name}</span>
             </div>
 
             <div style={colClass}>
               <span style={spanClass}>供应商:</span>
               {/* <span style={{ color: '#333' }}> {formRow.supporter.name}</span> */}
-            </div>
-            <div style={colClass}>
-              <span style={spanClass} />
-              <span style={{ color: '#333' }}>
-                <Zmage src={formRow.product.cover} alt="" width="50%" height="50%" />
-              </span>
-            </div>
           </Col>
 
-          <Col span={8}>
+          {/* <Col span={8}>
             <div style={colClass}>
               <span style={spanClass}>规格型号:</span>
               <span style={{ color: '#333' }}>{formRow.product.shape}</span>
@@ -222,11 +195,11 @@ export default class ProcedureSlide extends PureComponent {
               <span style={spanClass}>备注:</span>
               <span style={{ color: '#333' }}> {formRow.product.extra}</span>
             </div>
-          </Col>
+          </Col> */}
         </Row>
         <Divider style={{ marginTop: 10, marginBottom: 0 }} />
         <Tabs defaultActiveKey="1" onChange={this.handleTabChange}>
-          <TabPane tab="库存记录" key="1">
+          <TabPane tab="工序列表" key="1">
             <Table
               rowKey="id"
               size="middle"
