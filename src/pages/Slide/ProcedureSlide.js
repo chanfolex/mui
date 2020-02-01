@@ -2,7 +2,20 @@ import React, { PureComponent } from 'react';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
-import { Form, Input, Drawer, Tabs, Divider, Row, Col, Table, Icon } from 'antd';
+import {
+  Form,
+  Input,
+  Drawer,
+  Tabs,
+  Divider,
+  Row,
+  Col,
+  Table,
+  Icon,
+  Popover,
+  Button,
+  InputNumber,
+} from 'antd';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
@@ -80,82 +93,6 @@ const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
   }))(BodyRow)
 );
 
-class EditableCell extends React.Component {
-  state = {
-    editing: false,
-  };
-
-  toggleEdit = () => {
-    const { editing } = this.state;
-    this.setState({ editing: !editing }, () => {
-      if (!editing) {
-        this.input.focus();
-      }
-    });
-  };
-
-  save = e => {
-    const { record, handleSave } = this.props;
-    this.form.validateFields((error, values) => {
-      if (error && error[e.currentTarget.id]) {
-        return;
-      }
-      this.toggleEdit();
-      handleSave({ ...record, ...values });
-    });
-  };
-
-  renderCell = form => {
-    this.form = form;
-    const { children, dataIndex, record, title } = this.props;
-    const { editing } = this.state;
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>
-        {form.getFieldDecorator(dataIndex, {
-          rules: [
-            {
-              required: true,
-              message: `${title} is required.`,
-            },
-          ],
-          initialValue: record[dataIndex],
-          // eslint-disable-next-line no-return-assign
-        })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{ paddingRight: 24 }}
-        onClick={this.toggleEdit}
-      >
-        {children}
-      </div>
-    );
-  };
-
-  render() {
-    const {
-      editable,
-      dataIndex,
-      title,
-      record,
-      index,
-      handleSave,
-      children,
-      ...restProps
-    } = this.props;
-    return (
-      <td {...restProps}>
-        {editable ? (
-          <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
-        ) : (
-          children
-        )}
-      </td>
-    );
-  }
-}
-
 @Form.create()
 export default class ProcedureSlide extends PureComponent {
   constructor(props) {
@@ -164,6 +101,9 @@ export default class ProcedureSlide extends PureComponent {
       dataList: [],
       pagination: {},
       loading: false,
+      extraValue: '',
+      nameValue: '',
+      priceValue: '',
     };
   }
 
@@ -243,6 +183,54 @@ export default class ProcedureSlide extends PureComponent {
     );
   };
 
+  getNameValue = e => {
+    this.setState({ nameValue: e.target.value });
+  };
+
+  sureName = index => {
+    console.log(index);
+    const { dataList, nameValue } = this.state;
+    console.log(nameValue);
+    console.log(dataList);
+    dataList[index].name = nameValue;
+    if (nameValue) {
+      this.setState({
+        dataList,
+        nameValue: '',
+      });
+    }
+  };
+
+  getPriceValue = value => {
+    this.setState({ priceValue: value });
+  };
+
+  surePrice = index => {
+    const { dataList, priceValue } = this.state;
+    dataList[index].price = priceValue;
+    if (priceValue) {
+      this.setState({
+        dataList,
+        priceValue: '',
+      });
+    }
+  };
+
+  getExtraValue = e => {
+    this.setState({ extraValue: e.target.value });
+  };
+
+  sureExtra = index => {
+    const { dataList, extraValue } = this.state;
+    dataList[index].extra = extraValue;
+    if (extraValue) {
+      this.setState({
+        dataList,
+        extraValue: '',
+      });
+    }
+  };
+
   renderSimpleForm() {
     const { form } = this.props;
 
@@ -263,7 +251,7 @@ export default class ProcedureSlide extends PureComponent {
 
   render() {
     const { visible, onClose, formRow } = this.props;
-    const { dataList, pagination, loading } = this.state;
+    const { dataList, pagination, loading, nameValue, extraValue, priceValue } = this.state;
 
     const windowH = window.innerHeight;
 
@@ -272,7 +260,6 @@ export default class ProcedureSlide extends PureComponent {
     const components = {
       body: {
         row: DragableBodyRow,
-        cell: EditableCell,
       },
     };
 
@@ -285,7 +272,7 @@ export default class ProcedureSlide extends PureComponent {
       minWidth: '40px',
     };
 
-    let columns = [
+    const columns = [
       {
         title: '序号',
         dataIndex: 'position',
@@ -298,6 +285,25 @@ export default class ProcedureSlide extends PureComponent {
         key: 'name',
         width: 100,
         editable: true,
+        render: (text, record, index) => (
+          <Popover
+            content={
+              <div style={{ display: 'flex' }}>
+                <Input placeholder="名称" value={nameValue} onChange={this.getNameValue} />
+                <Button
+                  type="primary"
+                  style={{ marginLeft: 5 }}
+                  onClick={() => this.sureName(index)}
+                >
+                  确认
+                </Button>
+              </div>
+            }
+            title="更改"
+          >
+            <div>{text}</div>
+          </Popover>
+        ),
       },
       {
         title: '单价',
@@ -305,6 +311,29 @@ export default class ProcedureSlide extends PureComponent {
         key: 'price',
         width: 100,
         editable: true,
+        render: (text, record, index) => (
+          <Popover
+            content={
+              <div style={{ display: 'flex' }}>
+                <InputNumber
+                  defaultValue={0}
+                  value={priceValue || 0}
+                  onChange={this.getPriceValue}
+                />
+                <Button
+                  type="primary"
+                  style={{ marginLeft: 5 }}
+                  onClick={() => this.surePrice(index)}
+                >
+                  确认
+                </Button>
+              </div>
+            }
+            title="更改"
+          >
+            <div>{text}</div>
+          </Popover>
+        ),
       },
 
       {
@@ -313,6 +342,25 @@ export default class ProcedureSlide extends PureComponent {
         key: 'extra',
         width: 200,
         editable: true,
+        render: (text, record, index) => (
+          <Popover
+            content={
+              <div style={{ display: 'flex' }}>
+                <Input placeholder="备注" value={extraValue} onChange={this.getExtraValue} />
+                <Button
+                  type="primary"
+                  style={{ marginLeft: 5 }}
+                  onClick={() => this.sureExtra(index)}
+                >
+                  确认
+                </Button>
+              </div>
+            }
+            title="更改"
+          >
+            <div>{text}</div>
+          </Popover>
+        ),
       },
 
       {
@@ -322,22 +370,6 @@ export default class ProcedureSlide extends PureComponent {
         render: text => <span>{text || '无'}</span>,
       },
     ];
-
-    columns = columns.map(col => {
-      if (!col.editable) {
-        return col;
-      }
-      return {
-        ...col,
-        onCell: record => ({
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          handleSave: this.handleSave,
-        }),
-      };
-    });
 
     return (
       <Drawer
