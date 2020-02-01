@@ -1,8 +1,160 @@
 import React, { PureComponent } from 'react';
+import { DndProvider, DragSource, DropTarget } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import update from 'immutability-helper';
 import { Form, Input, Drawer, Tabs, Divider, Row, Col, Table, Icon } from 'antd';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+
+const EditableContext = React.createContext();
+let dragingIndex = -1;
+
+const EditableRow = ({ form, index, ...props }) => (
+  <EditableContext.Provider value={form}>
+    <tr {...props} />
+  </EditableContext.Provider>
+);
+
+// eslint-disable-next-line no-unused-vars
+const EditableFormRow = Form.create()(EditableRow);
+
+class BodyRow extends React.Component {
+  render() {
+    const { isOver, connectDragSource, connectDropTarget, moveRow, ...restProps } = this.props;
+    const style = { ...restProps.style, cursor: 'move' };
+
+    let { className } = restProps;
+    if (isOver) {
+      if (restProps.index > dragingIndex) {
+        className += ' drop-over-downward';
+      }
+      if (restProps.index < dragingIndex) {
+        className += ' drop-over-upward';
+      }
+    }
+
+    return connectDragSource(
+      connectDropTarget(<tr {...restProps} className={className} style={style} />)
+    );
+  }
+}
+
+const rowSource = {
+  beginDrag(props) {
+    dragingIndex = props.index;
+    return {
+      index: props.index,
+    };
+  },
+};
+
+const rowTarget = {
+  drop(props, monitor) {
+    const dragIndex = monitor.getItem().index;
+    const hoverIndex = props.index;
+
+    // Don't replace items with themselves
+    if (dragIndex === hoverIndex) {
+      return;
+    }
+
+    // Time to actually perform the action
+    props.moveRow(dragIndex, hoverIndex);
+
+    // Note: we're mutating the monitor item here!
+    // Generally it's better to avoid mutations,
+    // but it's good here for the sake of performance
+    // to avoid expensive index searches.
+    // eslint-disable-next-line no-param-reassign
+    monitor.getItem().index = hoverIndex;
+  },
+};
+
+const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  isOver: monitor.isOver(),
+}))(
+  DragSource('row', rowSource, connect => ({
+    connectDragSource: connect.dragSource(),
+  }))(BodyRow)
+);
+
+class EditableCell extends React.Component {
+  state = {
+    editing: false,
+  };
+
+  toggleEdit = () => {
+    const { editing } = this.state;
+    this.setState({ editing: !editing }, () => {
+      if (!editing) {
+        this.input.focus();
+      }
+    });
+  };
+
+  save = e => {
+    const { record, handleSave } = this.props;
+    this.form.validateFields((error, values) => {
+      if (error && error[e.currentTarget.id]) {
+        return;
+      }
+      this.toggleEdit();
+      handleSave({ ...record, ...values });
+    });
+  };
+
+  renderCell = form => {
+    this.form = form;
+    const { children, dataIndex, record, title } = this.props;
+    const { editing } = this.state;
+    return editing ? (
+      <Form.Item style={{ margin: 0 }}>
+        {form.getFieldDecorator(dataIndex, {
+          rules: [
+            {
+              required: true,
+              message: `${title} is required.`,
+            },
+          ],
+          initialValue: record[dataIndex],
+          // eslint-disable-next-line no-return-assign
+        })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
+      </Form.Item>
+    ) : (
+      <div
+        className="editable-cell-value-wrap"
+        style={{ paddingRight: 24 }}
+        onClick={this.toggleEdit}
+      >
+        {children}
+      </div>
+    );
+  };
+
+  render() {
+    const {
+      editable,
+      dataIndex,
+      title,
+      record,
+      index,
+      handleSave,
+      children,
+      ...restProps
+    } = this.props;
+    return (
+      <td {...restProps}>
+        {editable ? (
+          <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
+        ) : (
+          children
+        )}
+      </td>
+    );
+  }
+}
 
 @Form.create()
 export default class ProcedureSlide extends PureComponent {
@@ -75,6 +227,22 @@ export default class ProcedureSlide extends PureComponent {
     this.fetchData();
   };
 
+  handleSave = () => {};
+
+  moveRow = (dragIndex, hoverIndex) => {
+    const { dataList } = this.state;
+    const dragRow = dataList[dragIndex];
+
+    this.setState(
+      // eslint-disable-next-line react/no-access-state-in-setstate
+      update(this.state, {
+        dataList: {
+          $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
+        },
+      })
+    );
+  };
+
   renderSimpleForm() {
     const { form } = this.props;
 
@@ -98,6 +266,16 @@ export default class ProcedureSlide extends PureComponent {
     const { dataList, pagination, loading } = this.state;
 
     const windowH = window.innerHeight;
+
+    // EditableFormRow 编辑效果
+    // DragableBodyRow 拖动效果
+    const components = {
+      body: {
+        row: DragableBodyRow,
+        cell: EditableCell,
+      },
+    };
+
     const colClass = {
       lineHeight: 1,
       marginBottom: '10px',
@@ -107,7 +285,7 @@ export default class ProcedureSlide extends PureComponent {
       minWidth: '40px',
     };
 
-    const columns = [
+    let columns = [
       {
         title: '序号',
         dataIndex: 'position',
@@ -119,12 +297,14 @@ export default class ProcedureSlide extends PureComponent {
         dataIndex: 'name',
         key: 'name',
         width: 100,
+        editable: true,
       },
       {
         title: '单价',
         dataIndex: 'price',
         key: 'price',
         width: 100,
+        editable: true,
       },
 
       {
@@ -132,6 +312,7 @@ export default class ProcedureSlide extends PureComponent {
         dataIndex: 'extra',
         key: 'extra',
         width: 200,
+        editable: true,
       },
 
       {
@@ -141,6 +322,22 @@ export default class ProcedureSlide extends PureComponent {
         render: text => <span>{text || '无'}</span>,
       },
     ];
+
+    columns = columns.map(col => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => ({
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave: this.handleSave,
+        }),
+      };
+    });
 
     return (
       <Drawer
@@ -200,16 +397,23 @@ export default class ProcedureSlide extends PureComponent {
         <Divider style={{ marginTop: 10, marginBottom: 0 }} />
         <Tabs defaultActiveKey="1" onChange={this.handleTabChange}>
           <TabPane tab="工序列表" key="1">
-            <Table
-              rowKey="id"
-              size="middle"
-              columns={columns}
-              dataSource={dataList}
-              pagination={pagination}
-              loading={loading}
-              onChange={this.handleTableChange}
-              scroll={{ y: windowH - 360 }}
-            />
+            <DndProvider backend={HTML5Backend}>
+              <Table
+                rowKey="id"
+                size="middle"
+                components={components}
+                columns={columns}
+                dataSource={dataList}
+                pagination={pagination}
+                loading={loading}
+                onChange={this.handleTableChange}
+                scroll={{ y: windowH - 360 }}
+                onRow={(record, index) => ({
+                  index,
+                  moveRow: this.moveRow,
+                })}
+              />
+            </DndProvider>
           </TabPane>
         </Tabs>
 
