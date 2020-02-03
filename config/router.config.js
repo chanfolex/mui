@@ -196,6 +196,19 @@ export default [
       },
 
       {
+        path: '/finance',
+        name: 'finance',
+        icon: 'book',
+        routes: [
+          {
+            path: '/finance/employee',
+            name: 'employee',
+            component: './Finance/Employee/Index',
+          },
+        ],
+      },
+
+      {
         path: '/system',
         name: 'system',
         icon: 'setting',

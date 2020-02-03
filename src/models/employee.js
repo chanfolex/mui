@@ -2,13 +2,13 @@ import {
   queryData,
   addData,
   updateData,
-  removeData,
-  queryDataItems,
-  editAll,
-} from '@/services/procedure';
+
+  // eslint-disable-next-line import/extensions
+} from '@/services/employee';
+// eslint-disable-next-line import/extensions
 
 export default {
-  namespace: 'procedure',
+  namespace: 'employee',
   state: {
     list: [],
     pagination: {
@@ -26,6 +26,10 @@ export default {
         yield put({ type: 'save', payload: res.data });
       }
     },
+    //   *fetchCategoryOption({ payload }, { call }) {
+    //     const response = yield call(queryCategoryOption, payload);
+    //     return response;
+    //   },
 
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addData, payload);
@@ -35,39 +39,14 @@ export default {
       });
       if (callback) callback(response);
     },
-
-    *fetchItems({ payload }, { call }) {
-      const response = yield call(queryDataItems, payload);
-      return response;
-    },
-
-    *update({ payload }, { call }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateData, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if(callback) callback();
-      return response;
+      if (callback) callback(response);
     },
 
-    *editAll({ payload }, { call }) {
-      const response = yield call(editAll, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if(callback) callback();
-      return response;
-    },
-    *delete({ payload }, { call }) {
-      const response = yield call(removeData, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if (callback) callback();
-      return response;
+    *reload(action, { put, select }) {
+      const pagination = yield select(state => state.employee.pagination);
+      yield put({ type: 'fetch', payload: { pagination: pagination.current } });
     },
   },
   reducers: {
@@ -85,12 +64,6 @@ export default {
       const { pagination } = state;
       pagination.current = action.payload;
       return { ...state, pagination };
-    },
-
-    add(state) {
-      return {
-        ...state,
-      };
     },
   },
 };
