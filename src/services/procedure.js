@@ -29,6 +29,18 @@ export async function updateData(params) {
   });
 }
 
+export async function editAll(params) {
+  return request('/api/procedure/editall', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: {
+      ...params,
+    },
+  });
+}
+
 export async function queryDataItems(params) {
   return request(`/api/procedure/getItems?${stringify(params)}`);
 }

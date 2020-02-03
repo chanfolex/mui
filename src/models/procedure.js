@@ -1,4 +1,11 @@
-import { queryData, addData, updateData, removeData, queryDataItems } from '@/services/procedure';
+import {
+  queryData,
+  addData,
+  updateData,
+  removeData,
+  queryDataItems,
+  editAll,
+} from '@/services/procedure';
 
 export default {
   namespace: 'procedure',
@@ -33,6 +40,16 @@ export default {
 
     *update({ payload }, { call }) {
       const response = yield call(updateData, payload);
+      // yield put({
+      //   type: 'save',
+      //   payload: response,
+      // })
+      // if(callback) callback();
+      return response;
+    },
+
+    *editAll({ payload }, { call }) {
+      const response = yield call(editAll, payload);
       // yield put({
       //   type: 'save',
       //   payload: response,
