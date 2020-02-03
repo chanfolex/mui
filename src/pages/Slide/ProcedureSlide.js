@@ -15,6 +15,8 @@ import {
   Popover,
   Button,
   InputNumber,
+  Modal,
+  message,
 } from 'antd';
 
 const FormItem = Form.Item;
@@ -104,6 +106,8 @@ export default class ProcedureSlide extends PureComponent {
       extraValue: '',
       nameValue: '',
       priceValue: '',
+      adjustVisible: false,
+      adjustData: [],
     };
   }
 
@@ -188,10 +192,7 @@ export default class ProcedureSlide extends PureComponent {
   };
 
   sureName = index => {
-    console.log(index);
     const { dataList, nameValue } = this.state;
-    console.log(nameValue);
-    console.log(dataList);
     dataList[index].name = nameValue;
     if (nameValue) {
       this.setState({
@@ -231,6 +232,100 @@ export default class ProcedureSlide extends PureComponent {
     }
   };
 
+  getAdjustName = (e, index) => {
+    const { adjustData } = this.state;
+    adjustData[index].name = e.target.value;
+    this.setState({ adjustData: JSON.parse(JSON.stringify(adjustData)) });
+  };
+
+  getAdjustPrice = (value, index) => {
+    const { adjustData } = this.state;
+    if (!value) return;
+    adjustData[index].price = value;
+    this.setState({ adjustData: JSON.parse(JSON.stringify(adjustData)) });
+  };
+
+  getAdjustExtra = (e, index) => {
+    const { adjustData } = this.state;
+    adjustData[index].extra = e.target.value;
+    this.setState({ adjustData: JSON.parse(JSON.stringify(adjustData)) });
+  };
+
+  adjust = () => {
+    const { dataList } = this.state;
+    this.setState({
+      adjustVisible: true,
+      adjustData: dataList.length
+        ? JSON.parse(JSON.stringify(dataList))
+        : [
+            {
+              name: '',
+              position: 1,
+              price: '',
+              extra: '',
+            },
+          ],
+    });
+  };
+
+  addDataList = index => {
+    const { adjustData } = this.state;
+    const inx = adjustData[index + 1] && adjustData[index + 1].position;
+    adjustData.splice(index + 1, 0, {
+      name: '',
+      position: inx || adjustData[index].position + 1,
+      price: '',
+      extra: '',
+    });
+    const data = adjustData.map((item, i) => {
+      if (i > index + 1) {
+        // eslint-disable-next-line no-param-reassign
+        item.position += 1;
+      }
+      return item;
+    });
+    this.setState({ adjustData: JSON.parse(JSON.stringify(data)) });
+  };
+
+  // eslint-disable-next-line consistent-return
+  deleteDataList = index => {
+    const { adjustData } = this.state;
+    if (adjustData.length <= 1) return message.info('至少存在一个操作项');
+    adjustData.splice(index, 1);
+    const data = adjustData.map((item, i) => {
+      if (i >= index) {
+        // eslint-disable-next-line no-param-reassign
+        item.position -= 1;
+      }
+      return item;
+    });
+    this.setState({ adjustData: JSON.parse(JSON.stringify(data)) });
+  };
+
+  adjustCancel = () => {
+    this.setState({
+      adjustVisible: false,
+    });
+  };
+
+  adjustSubmit = () => {
+    const { dispatch, formRow } = this.props;
+    const { adjustData } = this.state;
+    console.log(adjustData);
+    dispatch({
+      type: 'procedure/fetchItems',
+      payload: {
+        des: adjustData,
+        product: formRow.id,
+      },
+    }).then(res => {
+      if (res.code && res.code === 200) {
+        this.fetchData();
+        this.setState({ adjustVisible: false });
+      }
+    });
+  };
+
   renderSimpleForm() {
     const { form } = this.props;
 
@@ -251,7 +346,16 @@ export default class ProcedureSlide extends PureComponent {
 
   render() {
     const { visible, onClose, formRow } = this.props;
-    const { dataList, pagination, loading, nameValue, extraValue, priceValue } = this.state;
+    const {
+      dataList,
+      pagination,
+      loading,
+      nameValue,
+      extraValue,
+      priceValue,
+      adjustVisible,
+      adjustData,
+    } = this.state;
 
     const windowH = window.innerHeight;
 
@@ -263,8 +367,12 @@ export default class ProcedureSlide extends PureComponent {
       },
     };
 
+    const totalPrice = adjustData.reduce((pre, cur) => Number(pre) + Number(cur.price), 0);
+
     const colClass = {
-      lineHeight: 1,
+      height: 50,
+      display: 'flex',
+      alignItems: 'center',
       marginBottom: '10px',
     };
     const spanClass = {
@@ -371,6 +479,68 @@ export default class ProcedureSlide extends PureComponent {
       },
     ];
 
+    const adjustColumns = [
+      {
+        title: '序号',
+        dataIndex: 'position',
+        key: 'position',
+        width: 100,
+      },
+      {
+        title: '名称',
+        dataIndex: 'name',
+        key: 'name',
+        width: 200,
+        render: (text, record, index) => (
+          <Input value={text} onChange={e => this.getAdjustName(e, index)} />
+        ),
+      },
+      {
+        title: '单价',
+        dataIndex: 'price',
+        key: 'price',
+        width: 200,
+        render: (text, record, index) => (
+          <InputNumber
+            defaultValue={0}
+            value={text || 0}
+            onChange={value => this.getAdjustPrice(value, index)}
+          />
+        ),
+      },
+      {
+        title: '备注',
+        dataIndex: 'extra',
+        key: 'extra',
+        width: 200,
+        render: (text, record, index) => (
+          <Input value={text} onChange={e => this.getAdjustExtra(e, index)} />
+        ),
+      },
+      {
+        title: '操作',
+        key: 'opr',
+        width: 100,
+        render: (text, record, index) => (
+          <div>
+            <Button
+              type="primary"
+              shape="circle"
+              icon="plus"
+              onClick={() => this.addDataList(index)}
+            />
+            <Button
+              type="danger"
+              shape="circle"
+              icon="delete"
+              style={{ marginLeft: 10 }}
+              onClick={() => this.deleteDataList(index)}
+            />
+          </div>
+        ),
+      },
+    ];
+
     return (
       <Drawer
         width="50%"
@@ -382,6 +552,38 @@ export default class ProcedureSlide extends PureComponent {
         visible={visible}
       >
         <Row>
+          <div style={{ height: 100 }}>
+            <div style={{ height: 50, display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <div>客户名称</div>
+                <div>1</div>
+              </div>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <div>联系人</div>
+                <div>1</div>
+              </div>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <div>类型</div>
+                <div>1</div>
+              </div>
+            </div>
+            <div style={{ height: 50, display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <div>国家地区</div>
+                <div>1</div>
+              </div>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <div>联系电话</div>
+                <div>1</div>
+              </div>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <Button type="primary" onClick={this.adjust}>
+                  整体调整
+                </Button>
+              </div>
+            </div>
+          </div>
+          <Divider style={{ marginTop: 10, marginBottom: 0 }} />
           <Col span={8}>
             <div style={colClass}>
               <span style={spanClass}>存货名称:</span>
@@ -426,7 +628,6 @@ export default class ProcedureSlide extends PureComponent {
             </div>
           </Col> */}
         </Row>
-        <Divider style={{ marginTop: 10, marginBottom: 0 }} />
         <Tabs defaultActiveKey="1" onChange={this.handleTabChange}>
           <TabPane tab="工序列表" key="1">
             <DndProvider backend={HTML5Backend}>
@@ -480,6 +681,32 @@ export default class ProcedureSlide extends PureComponent {
             parentRow={formRow}
           />
         )} */}
+        <Modal
+          title="整体调整"
+          width={1000}
+          visible={adjustVisible}
+          onCancel={this.adjustCancel}
+          footer={[
+            <Button key="back" onClick={this.adjustCancel}>
+              取消
+            </Button>,
+            <Button key="submit" type="primary" loading={loading} onClick={this.adjustSubmit}>
+              提交
+            </Button>,
+          ]}
+        >
+          <Table columns={adjustColumns} dataSource={adjustData} pagination={false} />
+          <div
+            style={{
+              height: 50,
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+          >
+            加工合计: {totalPrice}
+          </div>
+        </Modal>
       </Drawer>
     );
   }
