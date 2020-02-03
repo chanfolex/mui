@@ -174,6 +174,7 @@ export default class ProcedureSlide extends PureComponent {
   handleSave = () => {};
 
   moveRow = (dragIndex, hoverIndex) => {
+    this.changeDataSubmit(dragIndex, hoverIndex);
     const { dataList } = this.state;
     const dragRow = dataList[dragIndex];
 
@@ -199,6 +200,7 @@ export default class ProcedureSlide extends PureComponent {
         dataList,
         nameValue: '',
       });
+      setTimeout(() => this.changeDataSubmit(index), 10);
     }
   };
 
@@ -214,6 +216,7 @@ export default class ProcedureSlide extends PureComponent {
         dataList,
         priceValue: '',
       });
+      setTimeout(() => this.changeDataSubmit(index), 10);
     }
   };
 
@@ -229,6 +232,7 @@ export default class ProcedureSlide extends PureComponent {
         dataList,
         extraValue: '',
       });
+      setTimeout(() => this.changeDataSubmit(index), 10);
     }
   };
 
@@ -308,12 +312,14 @@ export default class ProcedureSlide extends PureComponent {
     });
   };
 
+  // eslint-disable-next-line consistent-return
   adjustSubmit = () => {
     const { dispatch, formRow } = this.props;
     const { adjustData } = this.state;
-    console.log(adjustData);
+    if (!adjustData.every(item => item.name && item.price))
+      return message.info('名字和单价为必填项');
     dispatch({
-      type: 'procedure/fetchItems',
+      type: 'procedure/editAll',
       payload: {
         des: adjustData,
         product: formRow.id,
@@ -322,6 +328,35 @@ export default class ProcedureSlide extends PureComponent {
       if (res.code && res.code === 200) {
         this.fetchData();
         this.setState({ adjustVisible: false });
+        message.success('提交成功');
+      }
+    });
+  };
+
+  changeDataSubmit = (index, hoverIndex) => {
+    console.log(index);
+    console.log(hoverIndex);
+    const { dispatch } = this.props;
+    const { dataList } = this.state;
+    console.log(dataList);
+    const params = {
+      id: dataList[index].id,
+      name: dataList[index].name,
+      product: dataList[index].product,
+      price: dataList[index].price,
+      extra: dataList[index].extra,
+      // eslint-disable-next-line no-nested-ternary
+      position: dataList[Number(hoverIndex) === 0 ? 0 : hoverIndex || index].position,
+    };
+    console.log(params);
+    dispatch({
+      type: 'procedure/update',
+      payload: params,
+    }).then(res => {
+      console.log(res);
+      if (res.code && res.code === 200) {
+        if (hoverIndex) this.fetchData();
+        message.success('更新成功');
       }
     });
   };
@@ -409,7 +444,7 @@ export default class ProcedureSlide extends PureComponent {
             }
             title="更改"
           >
-            <div>{text}</div>
+            <div>{text || '无'}</div>
           </Popover>
         ),
       },
@@ -439,7 +474,7 @@ export default class ProcedureSlide extends PureComponent {
             }
             title="更改"
           >
-            <div>{text}</div>
+            <div>{text || '无'}</div>
           </Popover>
         ),
       },
@@ -466,7 +501,7 @@ export default class ProcedureSlide extends PureComponent {
             }
             title="更改"
           >
-            <div>{text}</div>
+            <div>{text || '无'}</div>
           </Popover>
         ),
       },
@@ -492,7 +527,17 @@ export default class ProcedureSlide extends PureComponent {
         key: 'name',
         width: 200,
         render: (text, record, index) => (
-          <Input value={text} onChange={e => this.getAdjustName(e, index)} />
+          <Input
+            prefix={
+              text ? (
+                <Icon type="check" style={{ color: '#1DA57A' }} />
+              ) : (
+                <Icon type="close" style={{ color: 'red' }} />
+              )
+            }
+            value={text}
+            onChange={e => this.getAdjustName(e, index)}
+          />
         ),
       },
       {
@@ -501,11 +546,19 @@ export default class ProcedureSlide extends PureComponent {
         key: 'price',
         width: 200,
         render: (text, record, index) => (
-          <InputNumber
-            defaultValue={0}
-            value={text || 0}
-            onChange={value => this.getAdjustPrice(value, index)}
-          />
+          <div>
+            {text ? (
+              <Icon type="check" style={{ color: '#1DA57A' }} />
+            ) : (
+              <Icon type="close" style={{ color: 'red' }} />
+            )}
+            <InputNumber
+              style={{ marginLeft: 5 }}
+              defaultValue={0}
+              value={text || 0}
+              onChange={value => this.getAdjustPrice(value, index)}
+            />
+          </div>
         ),
       },
       {
