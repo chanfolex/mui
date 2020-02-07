@@ -205,6 +205,16 @@ export default [
             name: 'employee',
             component: './Finance/Employee/Index',
           },
+          {
+            path: '/finance/settle',
+            name: 'settle',
+            component: './Finance/Settle/Index',
+          },
+          {
+            path: '/finance/card',
+            name: 'card',
+            component: './Finance/Card/Index',
+          },
         ],
       },
 

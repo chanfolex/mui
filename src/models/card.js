@@ -1,15 +1,7 @@
-import {
-  queryData,
-  addData,
-  updateData,
-  removeData,
-  queryDataItems,
-  editAll,
-  queryOption,
-} from '@/services/procedure';
+import { queryData, addData, updateData, queryOption } from '@/services/card';
 
 export default {
-  namespace: 'procedure',
+  namespace: 'card',
   state: {
     list: [],
     pagination: {
@@ -42,11 +34,6 @@ export default {
       if (callback) callback(response);
     },
 
-    *fetchItems({ payload }, { call }) {
-      const response = yield call(queryDataItems, payload);
-      return response;
-    },
-
     *update({ payload }, { call }) {
       const response = yield call(updateData, payload);
       // yield put({
@@ -54,25 +41,6 @@ export default {
       //   payload: response,
       // })
       // if(callback) callback();
-      return response;
-    },
-
-    *editAll({ payload }, { call }) {
-      const response = yield call(editAll, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if(callback) callback();
-      return response;
-    },
-    *delete({ payload }, { call }) {
-      const response = yield call(removeData, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if (callback) callback();
       return response;
     },
   },

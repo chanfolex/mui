@@ -2,11 +2,15 @@ import { stringify } from 'qs';
 import request from '@/utils/request';
 
 export async function queryData(params) {
-  return request(`/api/employee?${stringify(params)}`);
+  return request(`/api/card?${stringify(params)}`);
+}
+
+export async function queryOption(params) {
+  return request(`/api/card/option?${stringify(params)}`);
 }
 
 export async function addData(params) {
-  return request('/api/employee/create', {
+  return request('/api/card/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -17,12 +21,8 @@ export async function addData(params) {
   });
 }
 
-export async function queryOption(params) {
-  return request(`/api/employee/option?${stringify(params)}`);
-}
-
 export async function updateData(params) {
-  return request('/api/employee/save', {
+  return request('/api/card/save', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

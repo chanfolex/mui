@@ -29,6 +29,10 @@ export async function updateData(params) {
   });
 }
 
+export async function queryOption(params) {
+  return request(`/api/procedure/option?${stringify(params)}`);
+}
+
 export async function editAll(params) {
   return request('/api/procedure/editall', {
     method: 'POST',

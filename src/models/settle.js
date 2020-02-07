@@ -1,15 +1,7 @@
-import {
-  queryData,
-  addData,
-  updateData,
-  removeData,
-  queryDataItems,
-  editAll,
-  queryOption,
-} from '@/services/procedure';
+import { queryData, addData, updateData, queryDataItems } from '@/services/settle';
 
 export default {
-  namespace: 'procedure',
+  namespace: 'settle',
   state: {
     list: [],
     pagination: {
@@ -28,11 +20,6 @@ export default {
       }
     },
 
-    *fetchOption({ payload }, { call }) {
-      const response = yield call(queryOption, payload);
-      return response;
-    },
-
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addData, payload);
       yield put({
@@ -49,30 +36,6 @@ export default {
 
     *update({ payload }, { call }) {
       const response = yield call(updateData, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if(callback) callback();
-      return response;
-    },
-
-    *editAll({ payload }, { call }) {
-      const response = yield call(editAll, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if(callback) callback();
-      return response;
-    },
-    *delete({ payload }, { call }) {
-      const response = yield call(removeData, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if (callback) callback();
       return response;
     },
   },

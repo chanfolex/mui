@@ -122,6 +122,8 @@ export default {
   'menu.sales.return': '销售退货单',
 
   'menu.finance': '财务管理',
+  'menu.finance.employee': '员工管理',
+  'menu.finance.settle': '工序结算',
   'menu.finance.receivables': '收款确认',
   'menu.finance.payment': '采购付款申请',
   'menu.finance.paper': '单证付款申请',

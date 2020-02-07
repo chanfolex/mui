@@ -2,6 +2,7 @@ import {
   queryData,
   addData,
   updateData,
+  queryOption,
 
   // eslint-disable-next-line import/extensions
 } from '@/services/employee';
@@ -30,6 +31,10 @@ export default {
     //     const response = yield call(queryCategoryOption, payload);
     //     return response;
     //   },
+    *fetchOption({ payload }, { call }) {
+      const response = yield call(queryOption, payload);
+      return response;
+    },
 
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addData, payload);
