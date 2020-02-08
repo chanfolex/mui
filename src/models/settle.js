@@ -27,6 +27,7 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
+      return response;
     },
 
     *fetchItems({ payload }, { call }) {

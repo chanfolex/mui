@@ -1,14 +1,30 @@
 import React, { Component, Fragment } from 'react';
 
 import { connect } from 'dva';
-import { Card, Form, Table, Button, Divider, Popconfirm } from 'antd';
+import {
+  Card,
+  Form,
+  Table,
+  Button,
+  Divider,
+  Popconfirm,
+  Modal,
+  AutoComplete,
+  InputNumber,
+  Icon,
+  message,
+  Select,
+} from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
+// eslint-disable-next-line no-unused-vars
 import CreateSupporter from './Create';
 import UpdateSupporter from './Update';
 import styles from './index.less';
 // import ExamineModal from '../../Slide/ExamineModal';
 import Slide from '../../Slide/SupporterSlide';
+
+const { Option } = Select;
 
 @connect(({ settle }) => ({
   settle,
@@ -23,6 +39,24 @@ class Settle extends Component {
     categorys: [],
     drawerVisible: false,
     currentRecord: {},
+    staffDataSource: [],
+    searchStaffData: [],
+    cardDataSource: [],
+    searchCardData: [],
+    totalStaffSource: [],
+    procedureDataList: [],
+    cardData: {},
+    cardInfoValue: '',
+    cardListSource: [
+      {
+        index: 1,
+        price: '',
+        qualifiedNum: 0,
+        staff: '',
+        procedure: '',
+        staffValue: '',
+      },
+    ],
   };
 
   componentDidMount() {
@@ -136,6 +170,185 @@ class Settle extends Component {
     dispatch({ type: 'settle/update', payload: { id: fields.id, status: 2 } });
   };
 
+  onCardSearch = value => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'card/fetchOption',
+      payload: {
+        abbr: value,
+      },
+    }).then(result => {
+      console.log(result);
+      this.setState({
+        cardDataSource: result.data.map(item => item.sn),
+        searchCardData: result.data,
+      });
+    });
+  };
+
+  staffSearch = value => {
+    const { dispatch } = this.props;
+    const { totalStaffSource } = this.state;
+    dispatch({
+      type: 'employee/fetchOption',
+      payload: {
+        abbr: value,
+      },
+    }).then(result => {
+      totalStaffSource.push(...result.data);
+      this.setState({
+        staffDataSource: result.data.map(item => item.name),
+        totalStaffSource,
+        searchStaffData: result.data,
+      });
+    });
+  };
+
+  onStaffChange = (value, index) => {
+    const { cardListSource } = this.state;
+    cardListSource[index].staffValue = value;
+  };
+
+  selectStaff = (value, index) => {
+    const { cardListSource, searchStaffData } = this.state;
+    let nameSource = '';
+    searchStaffData.forEach(item => {
+      if (item.name === value) {
+        nameSource = item;
+      }
+    });
+    cardListSource[index].staff = nameSource;
+    this.setState({ cardListSource });
+  };
+
+  selectProcedure = (value, index) => {
+    const { procedureDataList, cardListSource } = this.state;
+    let procedureSource = '';
+    procedureDataList.forEach(item => {
+      if (item.id === value) procedureSource = item;
+    });
+    cardListSource[index].procedure = procedureSource;
+    this.setState({ cardListSource });
+  };
+
+  cardSelect = value => {
+    const { searchCardData } = this.state;
+    searchCardData.forEach(item => {
+      if (item.sn === value) {
+        this.setState({ cardData: item });
+      }
+    });
+    this.getProcedureList();
+  };
+
+  getProcedureList = () => {
+    const { cardData } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'procedure/fetchOption',
+      payload: {
+        product: cardData.product,
+      },
+    }).then(result => {
+      this.setState({
+        procedureDataList: result.data,
+      });
+    });
+  };
+
+  addCardList = () => {
+    const { cardListSource } = this.state;
+    cardListSource.push({
+      index: cardListSource.length + 1,
+      price: '',
+      qualifiedNum: 0,
+      staff: '',
+      procedure: '',
+      staffValue: '',
+    });
+    this.setState({ cardListSource });
+  };
+
+  // eslint-disable-next-line consistent-return
+  removeCardList = index => {
+    const { cardListSource } = this.state;
+    if (cardListSource.length <= 1) return message.info('必须存在操作行');
+    cardListSource.splice(index, 1);
+    cardListSource.map((item, i) => {
+      // eslint-disable-next-line no-param-reassign
+      if (i >= index) item.index = Number(item.index) - 1;
+      return item;
+    });
+    this.setState({ cardListSource });
+  };
+
+  getQualifiedNum = (value, index) => {
+    const { cardListSource } = this.state;
+    cardListSource[index].qualifiedNum = value;
+    this.setState({ cardListSource });
+  };
+
+  modalVisibleCancel = () => {
+    this.setState({
+      modalVisible: false,
+    });
+  };
+
+  cardInfoChange = value => {
+    this.setState({
+      cardInfoValue: value,
+    });
+  };
+
+  // eslint-disable-next-line consistent-return
+  workSubmit = () => {
+    const { dispatch } = this.props;
+    const { cardListSource, totalStaffSource, cardData } = this.state;
+    if (
+      !cardListSource.every(item => item.procedure && item.staff && item.qualifiedNum) ||
+      !cardListSource.every(item => totalStaffSource.some(less => less.name === item.staffValue))
+    )
+      return message.info('还有必填项未填');
+    const params = cardListSource.map(item => ({
+      procedure: item.procedure && item.procedure.id,
+      employee: item.staff && item.staff.id,
+      price: item.procedure && item.procedure.price,
+      num: item.qualifiedNum,
+      total: Number(item.procedure && item.procedure.price) * Number(item.qualifiedNum),
+    }));
+    dispatch({
+      type: 'settle/add',
+      payload: {
+        des: params,
+        card: cardData.product,
+      },
+    }).then(result => {
+      if (result.code === 200) {
+        message.success('添加成功');
+        this.setState({
+          staffDataSource: [],
+          searchStaffData: [],
+          cardDataSource: [],
+          searchCardData: [],
+          procedureDataList: [],
+          cardInfoValue: '',
+          cardData: {},
+          cardListSource: [
+            {
+              index: 1,
+              price: '',
+              qualifiedNum: 0,
+              staff: '',
+              procedure: '',
+              staffValue: '',
+            },
+          ],
+          modalVisible: false,
+        });
+      }
+    });
+  };
+
   render() {
     const {
       settle: { list, pagination },
@@ -149,12 +362,19 @@ class Settle extends Component {
       categorys,
       drawerVisible,
       currentRecord,
+      cardDataSource,
+      cardData,
+      cardListSource,
+      staffDataSource,
+      procedureDataList,
+      cardInfoValue,
+      totalStaffSource,
     } = this.state;
 
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
+    // const parentMethods = {
+    //   handleAdd: this.handleAdd,
+    //   handleModalVisible: this.handleModalVisible,
+    // };
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
@@ -162,6 +382,13 @@ class Settle extends Component {
 
     const paginationProps = { ...pagination };
 
+    const numTotal = cardListSource.reduce((preTotal, item) => {
+      if (item.qualifiedNum && item.procedure) {
+        // eslint-disable-next-line no-param-reassign
+        preTotal += Number(item.procedure && item.procedure.price) * Number(item.qualifiedNum);
+      }
+      return preTotal;
+    }, 0);
     const columns = [
       {
         title: '流通卡号',
@@ -293,6 +520,119 @@ class Settle extends Component {
       },
     ];
 
+    const cardColumns = [
+      {
+        title: '序号',
+        width: 50,
+        dataIndex: 'index',
+        key: 'index',
+      },
+      {
+        title: '工序',
+        width: 200,
+        dataIndex: 'procedure',
+        key: 'procedure',
+        render: (text, record, index) => (
+          <div>
+            {text ? (
+              <Icon type="check" style={{ color: '#1DA57A' }} />
+            ) : (
+              <Icon type="close" style={{ color: 'red' }} />
+            )}
+            <Select
+              style={{ width: 120, marginLeft: 10 }}
+              loading
+              onSelect={value => this.selectProcedure(value, index)}
+              value={text.id}
+            >
+              {procedureDataList.map(item => (
+                <Option value={item.id}>{item.name}</Option>
+              ))}
+            </Select>
+          </div>
+        ),
+      },
+      {
+        title: '单价',
+        width: 100,
+        key: 'price',
+        render: (text, record) => {
+          if (record.procedure) return <div>{record.procedure && record.procedure.price}</div>;
+          return null;
+        },
+      },
+      {
+        title: '员工',
+        width: 200,
+        dataIndex: 'staffValue',
+        key: 'staffValue',
+        render: (text, record, index) => (
+          <div>
+            {totalStaffSource.some(item => item.name === text) ? (
+              <Icon type="check" style={{ color: '#1DA57A' }} />
+            ) : (
+              <Icon type="close" style={{ color: 'red' }} />
+            )}
+            <AutoComplete
+              dataSource={staffDataSource}
+              style={{ width: 150, marginLeft: 10 }}
+              value={text}
+              onChange={value => this.onStaffChange(value, index)}
+              onSelect={value => this.selectStaff(value, index)}
+              onSearch={this.staffSearch}
+              placeholder="员工首字母搜索"
+            />
+          </div>
+        ),
+      },
+      {
+        title: '合格数',
+        width: 200,
+        dataIndex: 'qualifiedNum',
+        key: 'qualifiedNum',
+        render: (text, record, index) => (
+          <div>
+            {text ? (
+              <Icon type="check" style={{ color: '#1DA57A' }} />
+            ) : (
+              <Icon type="close" style={{ color: 'red' }} />
+            )}
+            <InputNumber
+              style={{ marginLeft: 10 }}
+              defaultValue={0}
+              min={0}
+              value={text}
+              onChange={value => this.getQualifiedNum(value, index)}
+            />
+          </div>
+        ),
+      },
+      {
+        title: '合计',
+        width: 100,
+        key: 'total',
+        render: (text, record) => {
+          if (record.procedure) {
+            return Number(record.procedure && record.procedure.price) * Number(record.qualifiedNum);
+          }
+          return null;
+        },
+      },
+      {
+        title: '操作',
+        render: (text, record, index) => (
+          <div>
+            <Button
+              type="danger"
+              shape="circle"
+              icon="delete"
+              onClick={() => this.removeCardList(index)}
+            />
+          </div>
+        ),
+      },
+    ];
+
     return (
       <PageHeaderWrapper title="">
         <Card bordered={false}>
@@ -340,14 +680,14 @@ class Settle extends Component {
           />
         )}
 
-        {modalVisible && (
+        {/* {modalVisible && (
           <CreateSupporter
             {...parentMethods}
             modalVisible={modalVisible}
             categorys={categorys}
             dispatch={dispatch}
           />
-        )}
+        )} */}
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateSupporter
             {...updateMethods}
@@ -357,6 +697,83 @@ class Settle extends Component {
             dispatch={dispatch}
           />
         ) : null}
+        <Modal
+          title="工序结算"
+          visible={modalVisible}
+          width={1000}
+          onOk={this.handleOk}
+          onCancel={this.modalVisibleCancel}
+          footer={[
+            <Button key="back" onClick={this.modalVisibleCancel}>
+              取消
+            </Button>,
+            <Button key="submit" type="primary" onClick={this.workSubmit}>
+              提交
+            </Button>,
+          ]}
+        >
+          <div style={{ height: 50, display: 'flex', alignItems: 'center' }}>
+            <div>流通卡号</div>
+            <div>
+              <AutoComplete
+                dataSource={cardDataSource}
+                style={{ width: 200, marginLeft: 20 }}
+                onSelect={this.cardSelect}
+                value={cardInfoValue}
+                onChange={this.cardInfoChange}
+                onSearch={this.onCardSearch}
+                placeholder="流通卡号搜索"
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              height: 50,
+              alignItems: 'center',
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ display: 'flex', flex: 1 }}>
+              <div>流通卡号</div>
+              <div style={{ marginLeft: 20 }}>{cardData.sn}</div>
+            </div>
+            <div style={{ display: 'flex', flex: 1 }}>
+              <div>产品名称</div>
+              <div style={{ marginLeft: 20 }}>{}</div>
+            </div>
+            <div style={{ display: 'flex', flex: 1 }}>
+              <div>开卡日期</div>
+              <div style={{ marginLeft: 20 }}>{cardData.create_time}</div>
+            </div>
+          </div>
+          <Divider />
+          <div>
+            <Table
+              rowKey="id"
+              size="middle"
+              columns={cardColumns}
+              dataSource={cardListSource}
+              pagination={false}
+              onChange={this.handleTableChange}
+              footer={() => (
+                <div>
+                  <Button type="primary" shape="circle" icon="plus" onClick={this.addCardList} />
+                </div>
+              )}
+            />
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              height: 50,
+              justifyContent: 'flex-end',
+              alignItems: 'flex-end',
+            }}
+          >
+            合计: {numTotal}
+          </div>
+        </Modal>
       </PageHeaderWrapper>
     );
   }

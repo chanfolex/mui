@@ -22,17 +22,7 @@ import {
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 
-const EditableContext = React.createContext();
 let dragingIndex = -1;
-
-const EditableRow = ({ form, index, ...props }) => (
-  <EditableContext.Provider value={form}>
-    <tr {...props} />
-  </EditableContext.Provider>
-);
-
-// eslint-disable-next-line no-unused-vars
-const EditableFormRow = Form.create()(EditableRow);
 
 class BodyRow extends React.Component {
   render() {
@@ -394,7 +384,6 @@ export default class ProcedureSlide extends PureComponent {
 
     const windowH = window.innerHeight;
 
-    // EditableFormRow 编辑效果
     // DragableBodyRow 拖动效果
     const components = {
       body: {
