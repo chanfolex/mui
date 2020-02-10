@@ -320,7 +320,7 @@ class Settle extends Component {
       type: 'settle/add',
       payload: {
         des: params,
-        card: cardData.product,
+        card: cardData.id,
       },
     }).then(result => {
       if (result.code === 200) {
