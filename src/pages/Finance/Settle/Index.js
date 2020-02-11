@@ -45,6 +45,7 @@ class Settle extends Component {
     searchCardData: [],
     totalStaffSource: [],
     procedureDataList: [],
+    isNotSubmit: false,
     cardData: {},
     cardInfoValue: '',
     cardListSource: [
@@ -300,6 +301,39 @@ class Settle extends Component {
     });
   };
 
+  clearCardData = () => {
+    const { cardListSource } = this.state;
+    cardListSource.map(item => {
+      // eslint-disable-next-line no-param-reassign
+      item.price = '';
+      // eslint-disable-next-line no-param-reassign
+      item.procedure = '';
+      return item;
+    });
+    this.setState({
+      cardDataSource: [],
+      searchCardData: [],
+      procedureDataList: [],
+      cardData: {},
+      cardInfoValue: '',
+      cardListSource,
+    });
+  };
+
+  clearStaffListData = () => {
+    this.setState({
+      staffDataSource: [],
+      searchStaffData: [],
+    });
+  };
+
+  getIcon = text =>
+    text ? (
+      <Icon type="check" style={{ color: '#1DA57A' }} />
+    ) : (
+      <Icon type="close" style={{ color: 'red' }} />
+    );
+
   // eslint-disable-next-line consistent-return
   workSubmit = () => {
     const { dispatch } = this.props;
@@ -307,8 +341,10 @@ class Settle extends Component {
     if (
       !cardListSource.every(item => item.procedure && item.staff && item.qualifiedNum) ||
       !cardListSource.every(item => totalStaffSource.some(less => less.name === item.staffValue))
-    )
+    ) {
+      this.setState({ isNotSubmit: true });
       return message.info('还有必填项未填');
+    }
     const params = cardListSource.map(item => ({
       procedure: item.procedure && item.procedure.id,
       employee: item.staff && item.staff.id,
@@ -369,6 +405,7 @@ class Settle extends Component {
       procedureDataList,
       cardInfoValue,
       totalStaffSource,
+      isNotSubmit,
     } = this.state;
 
     // const parentMethods = {
@@ -534,11 +571,7 @@ class Settle extends Component {
         key: 'procedure',
         render: (text, record, index) => (
           <div>
-            {text ? (
-              <Icon type="check" style={{ color: '#1DA57A' }} />
-            ) : (
-              <Icon type="close" style={{ color: 'red' }} />
-            )}
+            {isNotSubmit ? this.getIcon(text) : null}
             <Select
               style={{ width: 120, marginLeft: 10 }}
               loading
@@ -563,16 +596,12 @@ class Settle extends Component {
       },
       {
         title: '员工',
-        width: 200,
+        width: 300,
         dataIndex: 'staffValue',
         key: 'staffValue',
         render: (text, record, index) => (
           <div>
-            {totalStaffSource.some(item => item.name === text) ? (
-              <Icon type="check" style={{ color: '#1DA57A' }} />
-            ) : (
-              <Icon type="close" style={{ color: 'red' }} />
-            )}
+            {isNotSubmit ? this.getIcon(totalStaffSource.some(item => item.name === text)) : null}
             <AutoComplete
               dataSource={staffDataSource}
               style={{ width: 150, marginLeft: 10 }}
@@ -581,6 +610,13 @@ class Settle extends Component {
               onSelect={value => this.selectStaff(value, index)}
               onSearch={this.staffSearch}
               placeholder="员工首字母搜索"
+            />
+            <Button
+              style={{ marginLeft: 10 }}
+              type="danger"
+              shape="circle"
+              icon="delete"
+              onClick={this.clearStaffListData}
             />
           </div>
         ),
@@ -592,11 +628,7 @@ class Settle extends Component {
         key: 'qualifiedNum',
         render: (text, record, index) => (
           <div>
-            {text ? (
-              <Icon type="check" style={{ color: '#1DA57A' }} />
-            ) : (
-              <Icon type="close" style={{ color: 'red' }} />
-            )}
+            {isNotSubmit ? this.getIcon(text) : null}
             <InputNumber
               style={{ marginLeft: 10 }}
               defaultValue={0}
@@ -700,7 +732,7 @@ class Settle extends Component {
         <Modal
           title="工序结算"
           visible={modalVisible}
-          width={1000}
+          width={1100}
           onOk={this.handleOk}
           onCancel={this.modalVisibleCancel}
           footer={[
@@ -725,6 +757,9 @@ class Settle extends Component {
                 placeholder="流通卡号搜索"
               />
             </div>
+            <div style={{ marginLeft: 10 }}>
+              <Button type="danger" shape="circle" icon="delete" onClick={this.clearCardData} />
+            </div>
           </div>
           <div
             style={{
@@ -740,7 +775,7 @@ class Settle extends Component {
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
               <div>产品名称</div>
-              <div style={{ marginLeft: 20 }}>{}</div>
+              <div style={{ marginLeft: 20 }}>{cardData.product && cardData.product.name}</div>
             </div>
             <div style={{ display: 'flex', flex: 1 }}>
               <div>开卡日期</div>
