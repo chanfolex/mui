@@ -308,6 +308,10 @@ class Settle extends Component {
       item.price = '';
       // eslint-disable-next-line no-param-reassign
       item.procedure = '';
+      // eslint-disable-next-line no-param-reassign
+      item.staffValue = '';
+      // eslint-disable-next-line no-param-reassign
+      item.staff = '';
       return item;
     });
     this.setState({
@@ -320,10 +324,14 @@ class Settle extends Component {
     });
   };
 
-  clearStaffListData = () => {
+  clearStaffListData = index => {
+    const { cardListSource } = this.state;
+    cardListSource[index].staffValue = '';
+    cardListSource[index].staff = '';
     this.setState({
       staffDataSource: [],
       searchStaffData: [],
+      cardListSource,
     });
   };
 
@@ -616,7 +624,9 @@ class Settle extends Component {
               type="danger"
               shape="circle"
               icon="delete"
-              onClick={this.clearStaffListData}
+              onClick={() => {
+                this.clearStaffListData(index);
+              }}
             />
           </div>
         ),
