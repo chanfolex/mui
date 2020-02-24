@@ -46,7 +46,7 @@ class SaleContractInsert extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ordate: '',
+      ordate: `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
       curIndex: 0,
       supporter: '',
       searchModalState: false,
@@ -252,6 +252,7 @@ class SaleContractInsert extends Component {
     const {
       form,
       dispatch,
+      product,
       salesContract: { contractSn },
     } = this.props;
     const { ordate, supporter, des, juserValue } = this.state;
@@ -271,8 +272,14 @@ class SaleContractInsert extends Component {
           payment: values.payment,
           extra: values.extra,
           packing: values.packing,
+          sn: contractSn,
+          client: product.supporters.filter(item => {
+            // eslint-disable-next-line eqeqeq
+            if (item.id == supporter) return true;
+            return false;
+          })[0].name,
+          ctime: ordate,
           des: filterData.map(el => {
-            console.log(el);
             const formVal = {
               shape: el.shape || el.product.shape || '',
               name: el.name || el.product.name || '',

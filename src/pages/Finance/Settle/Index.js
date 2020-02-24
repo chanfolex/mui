@@ -239,7 +239,7 @@ class Settle extends Component {
         this.setState({ cardData: item });
       }
     });
-    this.getProcedureList();
+    setTimeout(() => this.getProcedureList(), 10);
   };
 
   getProcedureList = () => {

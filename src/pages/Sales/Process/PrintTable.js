@@ -172,7 +172,7 @@ class PrintTable extends PureComponent {
             </th>
             <th>供应商</th>
             <th colSpan="7">
-              <input style={styleObj.printInput} value={print.client && print.supporter.name} />
+              <input style={styleObj.printInput} value={print.client || print.supporter.name} />
             </th>
             <th>合同日期</th>
             <th colSpan="7">
