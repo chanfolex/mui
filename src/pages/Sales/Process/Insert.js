@@ -102,12 +102,12 @@ class ProcessInsert extends Component {
         dataIndex: 'total',
         key: 'total',
       },
-      {
-        title: '仓库',
-        width: 150,
-        dataIndex: 'storage.name',
-        key: 'storage.name',
-      },
+      // {
+      //   title: '仓库',
+      //   width: 150,
+      //   dataIndex: 'storage.name',
+      //   key: 'storage.name',
+      // },
       {
         title: '经手人',
         width: 150,

@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/prefer-default-export
 export const styleObj = {
   printArea: {
+    margin: '0 0 130px 0',
     width: '100%',
     fontSize: '12px',
     align: 'center',

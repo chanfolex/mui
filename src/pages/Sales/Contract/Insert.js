@@ -62,7 +62,6 @@ class SaleContractInsert extends Component {
       searchContent: null,
       selectStorages: null,
       itemIndex: null,
-      storageValue: null,
       totalSum: 0,
       page: 1,
       printRecordData: {},
@@ -255,7 +254,7 @@ class SaleContractInsert extends Component {
       dispatch,
       salesContract: { contractSn },
     } = this.props;
-    const { ordate, supporter, des, storageValue, juserValue } = this.state;
+    const { ordate, supporter, des, juserValue } = this.state;
     form.validateFields((err, values) => {
       if (!err) {
         if (!des.length) return message.warning('请至少填写一个产品信息');
@@ -267,7 +266,7 @@ class SaleContractInsert extends Component {
           contractSn,
           ordate,
           supporter,
-          storage: storageValue,
+          // storage: storageValue,
           juser: juserValue,
           payment: values.payment,
           extra: values.extra,
@@ -335,7 +334,6 @@ class SaleContractInsert extends Component {
         unit: '',
         barsn: '',
       })),
-      storageValue: null,
       juserValue: null,
       supporter: '',
     });
@@ -489,10 +487,6 @@ class SaleContractInsert extends Component {
     const { des } = this.state;
     des[index].batchValue = value;
     this.setState({ des });
-  };
-
-  storageChange = value => {
-    this.setState({ storageValue: value });
   };
 
   userChange = value => {
@@ -659,23 +653,23 @@ class SaleContractInsert extends Component {
           return <span>{text.shape}</span>;
         },
       },
-      {
-        title: '包装(箱)',
-        width: 150,
-        key: 'pack',
-        render: text => {
-          if (text.pack) {
-            return (
-              <span>
-                {text.pack}
-                /箱
-              </span>
-            );
-          }
-          return <span>{text.shape}</span>;
-        },
-      },
-      { title: '可用数量', width: 150, dataIndex: 'currentnum', key: 'currentnum' },
+      // {
+      //   title: '包装(箱)',
+      //   width: 150,
+      //   key: 'pack',
+      //   render: text => {
+      //     if (text.pack) {
+      //       return (
+      //         <span>
+      //           {text.pack}
+      //           /箱
+      //         </span>
+      //       );
+      //     }
+      //     return <span>{text.shape}</span>;
+      //   },
+      // },
+      // { title: '可用数量', width: 150, dataIndex: 'currentnum', key: 'currentnum' },
       {
         title: '数量',
         width: 150,
@@ -1146,7 +1140,7 @@ class SaleContractInsert extends Component {
             <main>
               <div style={{ marginTop: -22 }}>{contractSn}</div>
             </main>
-            <main>
+            {/* <main>
               <div style={{ marginTop: -22 }}>仓库</div>
               <div>
                 <FormItem {...formItemLayout}>
@@ -1168,7 +1162,7 @@ class SaleContractInsert extends Component {
                   )}
                 </FormItem>
               </div>
-            </main>
+            </main> */}
             <main>
               <div style={{ marginTop: -22 }}>经办人</div>
               <div>

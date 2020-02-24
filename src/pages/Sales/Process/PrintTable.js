@@ -178,6 +178,14 @@ class PrintTable extends PureComponent {
               <input style={styleObj.printInput} value={print.ctime} />
             </th>
           </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th colSpan="7">&nbsp;</th>
+            <th>&nbsp;</th>
+            <th colSpan="7">&nbsp;</th>
+            <th>&nbsp;</th>
+            <th colSpan="7">&nbsp;</th>
+          </tr>
         </tbody>
       </table>
     );
@@ -212,6 +220,25 @@ class PrintTable extends PureComponent {
     <table style={{ width: '100%', height: 30 }}>
       <tbody style={styleObj.footer}>
         <tr>
+          <th>&nbsp;</th>
+          <th>
+            <div style={styleObj.footerSpace} />
+          </th>
+          <th colSpan="4">
+            <input style={styleObj.printInputFooter} />
+          </th>
+          <th>&nbsp;</th>
+          <th>
+            <div style={styleObj.footerSpace} />
+          </th>
+          <th colSpan="4">
+            <input style={styleObj.printInputFooter} />
+          </th>
+          <th>&nbsp;</th>
+          <th>&nbsp;</th>
+        </tr>
+
+        <tr>
           <th>供应商（签字）</th>
           <th>
             <div style={styleObj.footerSpace} />
@@ -244,7 +271,7 @@ class PrintTable extends PureComponent {
     const { printGroupData } = this.state;
     return printGroupData.map((item, index) => (
       <div style={styleObj.printArea}>
-        {this.createTitle('台州卡特机械有限公司入库单')}
+        {this.createTitle('台州卡特机械有限公司 采购入库单')}
         {this.createHeader()}
         {this.createForm(printCol, item)}
         {this.createFooter({ current: index + 1, total: printGroupData.length })}

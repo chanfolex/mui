@@ -52,7 +52,7 @@ export default {
       return response;
     },
     *fetchSupporterOption({ payload }, { call, put }) {
-      const res = yield call(querySupporterOption, payload);
+      const res = yield call(queryClientOption, payload);
       if (res.code === 200) {
         yield put({ type: 'saveSupporter', payload: res.data });
       }
@@ -60,7 +60,7 @@ export default {
     },
 
     *fetchClientOption({ payload }, { call, put }) {
-      const res = yield call(queryClientOption, payload);
+      const res = yield call(querySupporterOption, payload);
       if (res.code === 200) {
         yield put({ type: 'saveClient', payload: res.data });
       }
