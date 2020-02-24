@@ -272,7 +272,10 @@ class SaleContractInsert extends Component {
           extra: values.extra,
           packing: values.packing,
           des: filterData.map(el => {
+            console.log(el);
             const formVal = {
+              shape: el.shape || el.product.shape || '',
+              name: el.name || el.product.name || '',
               product: el.id ? el.id : '',
               price: el.priceValue,
               num: el.numValue,

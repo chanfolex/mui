@@ -44,10 +44,11 @@ class PrintTable extends PureComponent {
       },
     ];
     const { print } = this.props;
+    console.log(print);
     const printData = print.des.map((el, i) => ({
       number: i + 1,
-      shape: el.product.shape,
-      name: el.product.name,
+      shape: el.shape || el.product.shape,
+      name: el.name || el.product.name,
       price: el.price,
       num: el.num,
       total: el.total,

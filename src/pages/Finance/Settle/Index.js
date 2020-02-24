@@ -248,7 +248,7 @@ class Settle extends Component {
     dispatch({
       type: 'procedure/fetchOption',
       payload: {
-        product: cardData.product,
+        product: cardData.product && cardData.product.id,
       },
     }).then(result => {
       this.setState({
