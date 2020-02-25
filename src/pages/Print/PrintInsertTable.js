@@ -4,7 +4,7 @@ import { Row, Col, Button, Card, message, InputNumber } from 'antd';
 // eslint-disable-next-line import/no-unresolved
 import { styleObj } from './printStyle';
 
-class PrintTable extends PureComponent {
+class PrintInsertTable extends PureComponent {
   state = {
     printData: [],
     printCol: [],
@@ -348,4 +348,4 @@ class PrintTable extends PureComponent {
   }
 }
 
-export default PrintTable;
+export default PrintInsertTable;
