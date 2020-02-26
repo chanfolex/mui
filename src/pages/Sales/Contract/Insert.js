@@ -286,6 +286,7 @@ class SaleContractInsert extends Component {
               product: el.id ? el.id : '',
               price: el.priceValue,
               num: el.numValue,
+              total: Number(el.priceValue) * Number(el.numValue),
               batch: el.batch || el.batchValue,
               start: el.date || '',
               supporter: 1,
