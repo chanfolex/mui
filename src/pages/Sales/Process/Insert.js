@@ -6,7 +6,7 @@ import { Card, Form, Table, Popconfirm, Divider } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
 import Slide from '../../Slide/InsertSlide';
-import PrintModal from './PrintModal';
+import PrintModal from '../../Print/PrintInsertModal';
 import styles from './Index.less';
 
 @connect(({ process }) => ({

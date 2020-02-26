@@ -3,13 +3,13 @@ import { connect } from 'dva';
 
 import { Form, Modal } from 'antd';
 // eslint-disable-next-line import/no-unresolved
-import PrintTable from './printTable';
+import PrintTable from './printInsertTable';
 
 @connect(({ customer }) => ({
   customer,
 }))
 @Form.create()
-export default class PrintModal extends Component {
+export default class PrintInsertModal extends Component {
   constructor(props) {
     super(props);
     this.printHtml = React.createRef();
