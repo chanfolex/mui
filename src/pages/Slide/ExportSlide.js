@@ -150,52 +150,11 @@ export default class ExportSlide extends PureComponent {
         key: 'product.name',
         width: 100,
       },
-      {
-        title: '单位',
-        dataIndex: 'product.type',
-        key: 'product.type',
-        width: 100,
-      },
-      {
-        title: '生产企业',
-        dataIndex: 'product.company',
-        key: 'product.company',
-        width: 100,
-      },
-      {
-        title: '批准文号',
-        dataIndex: 'product.sn',
-        key: 'product.sn',
-        width: 100,
-      },
-      {
-        title: '生产日期',
-        dataIndex: 'product.start',
-        key: 'product.start',
-        width: 100,
-      },
-      {
-        title: '有效日期',
-        dataIndex: 'product.end',
-        key: 'product.end',
-        width: 100,
-      },
-      {
-        title: '售价',
-        dataIndex: 'price',
-        key: 'price',
-        width: 100,
-      },
+     
       {
         title: '数量',
         dataIndex: 'num',
         key: 'num',
-        width: 100,
-      },
-      {
-        title: '合计',
-        dataIndex: 'total',
-        key: 'total',
         width: 100,
       },
 

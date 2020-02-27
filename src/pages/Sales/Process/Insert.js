@@ -92,13 +92,13 @@ class ProcessInsert extends Component {
       },
       {
         title: '供应商',
-        width: 150,
+        width: 200,
         dataIndex: 'supporter.name',
         key: 'supporter.name',
       },
       {
         title: '总金额',
-        width: 300,
+        width: 100,
         dataIndex: 'total',
         key: 'total',
       },
@@ -110,12 +110,6 @@ class ProcessInsert extends Component {
       // },
       {
         title: '经手人',
-        width: 150,
-        dataIndex: 'cuser.nickname',
-        key: 'cuser.nickname',
-      },
-      {
-        title: '制单人',
         width: 150,
         dataIndex: 'cuser.nickname',
         key: 'cuser.nickname',

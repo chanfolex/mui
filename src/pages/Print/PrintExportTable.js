@@ -4,7 +4,7 @@ import { Row, Col, Button, Card, message, InputNumber } from 'antd';
 // eslint-disable-next-line import/no-unresolved
 import { styleObj } from './printStyle';
 
-class PrintInsertTable extends PureComponent {
+class PrintExportTable extends PureComponent {
   state = {
     printData: [],
     printCol: [],
@@ -26,19 +26,10 @@ class PrintInsertTable extends PureComponent {
         key: 'shape',
         name: '型号',
       },
-      
-      // {
-      //   key: 'price',
-      //   name: '单价',
-      // },
       {
         key: 'num',
         name: '数量',
       },
-      // {
-      //   key: 'total',
-      //   name: '合计',
-      // },
       {
         key: 'extra',
         name: '备注',
@@ -49,9 +40,9 @@ class PrintInsertTable extends PureComponent {
       number: i + 1,
       shape: el.shape || el.product.shape,
       name: el.name || el.product.name,
-      // price: parseFloat(el.price).toFixed(2),
+      // price: el.price,
       num: el.num,
-       // total: parseFloat(el.total).toFixed(2),
+      // total: el.total,
       extra: el.extra,
     }));
 
@@ -170,9 +161,9 @@ class PrintInsertTable extends PureComponent {
             <th colSpan="7">
               <input style={styleObj.printInput} value={print.sn} />
             </th>
-            <th>供应商</th>
+            <th>客户</th>
             <th colSpan="7">
-              <input style={styleObj.printInput} value={print.supporter.name} />
+              <input style={styleObj.printInput} value={print.client.name||print.clientName} />
             </th>
             <th>订单日期</th>
             <th colSpan="7">
@@ -240,7 +231,7 @@ class PrintInsertTable extends PureComponent {
         </tr>
 
         <tr>
-          <th>供应商（签字）</th>
+          <th>客户（签字）</th>
           <th>
             <div style={styleObj.footerSpace} />
           </th>
@@ -272,7 +263,7 @@ class PrintInsertTable extends PureComponent {
     const { printGroupData } = this.state;
     return printGroupData.map((item, index) => (
       <div style={styleObj.printArea}>
-        {this.createTitle('台州卡特机械有限公司 采购入库单')}
+        {this.createTitle('台州卡特机械有限公司 销售出库单')}
         {this.createHeader()}
         {this.createForm(printCol, item)}
         {this.createFooter({ current: index + 1, total: printGroupData.length })}
@@ -348,4 +339,4 @@ class PrintInsertTable extends PureComponent {
   }
 }
 
-export default PrintInsertTable;
+export default PrintExportTable;

@@ -2,10 +2,11 @@ import React, { Component, Fragment } from 'react';
 
 import { connect } from 'dva';
 
-import { Card, Form, Table, Popconfirm } from 'antd';
+import { Card, Form, Table, Popconfirm,Divider} from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
 import Slide from '../../Slide/ExportSlide';
+import PrintModal from '../../Print/PrintExportModal';
 
 import styles from './Index.less';
 
@@ -96,26 +97,9 @@ class ProcessExport extends Component {
         dataIndex: 'client.name',
         key: 'client.name',
       },
-      {
-        title: '总金额',
-        width: 300,
-        dataIndex: 'total',
-        key: 'total',
-      },
-      {
-        title: '仓库',
-        width: 150,
-        dataIndex: 'storage',
-        key: 'storage',
-      },
-      {
+   
+       {
         title: '经手人',
-        width: 150,
-        dataIndex: 'cuser.nickname',
-        key: 'cuser.nickname',
-      },
-      {
-        title: '制单人',
         width: 150,
         dataIndex: 'cuser.nickname',
         key: 'cuser.nickname',
@@ -128,7 +112,7 @@ class ProcessExport extends Component {
       },
       {
         title: '操作',
-        width: 250,
+        width: 150,
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
@@ -141,6 +125,10 @@ class ProcessExport extends Component {
               <a>编辑</a>
             </EditModal>
             <Divider type="vertical" /> */}
+            <PrintModal record={record}>
+              <a>打印</a>
+            </PrintModal>
+            <Divider type="vertical" />
             <Popconfirm
               title="你确定删除吗?"
               onConfirm={() => this.handleDelete(record)}
