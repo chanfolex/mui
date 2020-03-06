@@ -266,13 +266,13 @@ class SaleContractExport extends Component {
         const obj = {
           contractSn,
           ordate,
-          // client,
+          client,
           juser: juserValue,
           payment: values.payment,
           extra: values.extra,
           packing: values.packing,
           sn: contractSn,
-          client: product.clients.filter(item => {
+          clientName: product.clients.filter(item => {
             // eslint-disable-next-line eqeqeq
             if (item.id == client) return true;
             return false;

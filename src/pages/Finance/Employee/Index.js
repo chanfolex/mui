@@ -250,6 +250,18 @@ class EmployeeIndex extends PureComponent {
         width: 150,
         key: 'name',
       },
+      {
+        title: '地址',
+        dataIndex: 'address',
+        width: 150,
+        key: 'address',
+      },
+      {
+        title: '身份证',
+        dataIndex: 'idcard',
+        width: 150,
+        key: 'idcard',
+      },
 
       {
         title: '备注',

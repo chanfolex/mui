@@ -116,7 +116,7 @@ class PrintExportTable extends PureComponent {
             </th>
             <th>客户</th>
             <th colSpan="7">
-              <input style={styleObj.printInput} value={print.client||print.client.name} />
+              <input style={styleObj.printInput} value={print.clientName||print.client.name} />
             </th>
             <th>订单日期</th>
             <th colSpan="7">

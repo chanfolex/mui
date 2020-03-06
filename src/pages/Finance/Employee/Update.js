@@ -17,6 +17,8 @@ export default class UpdateEmployee extends Component {
       formVals: {
         id: props.values.id,
         name: props.values.name,
+        address: props.values.address,
+        idcard: props.values.idcard,
       },
     };
   }
@@ -41,7 +43,7 @@ export default class UpdateEmployee extends Component {
     const okHandle = () => {
       form.validateFields((errors, values) => {
         if (errors) return;
-        //  values.id = formVals.id;
+         values.id = formVals.id;
         handleUpdate(values);
         form.resetFields();
       });
@@ -70,11 +72,40 @@ export default class UpdateEmployee extends Component {
                   })(<Input placeholder="请输入名称" size="large" />)}
                 </FormItem>
 
+                <FormItem
+                  labelCol={{ span: 5 }}
+                  wrapperCol={{ span: 18 }}
+                  label="地址"
+                  hasFeedback
+                >
+                  {form.getFieldDecorator('address', {
+                    rules: [{ required: false, whitespace: true, message: '名称是必填项' }],
+                    initialValue: formVals.address,
+                  })(<Input placeholder="请输入地址" size="large" />)}
+                </FormItem>
+
+
+                <FormItem
+                  labelCol={{ span: 5 }}
+                  wrapperCol={{ span: 18 }}
+                  label="身份证"
+                  hasFeedback
+                >
+                  {form.getFieldDecorator('idcard', {
+                    rules: [{ required: false, whitespace: true, message: '名称是必填项' }],
+                    initialValue: formVals.idcard,
+                  })(<Input placeholder="请输入身份证" size="large" />)}
+                </FormItem>
+
+
+
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="备注">
                   {form.getFieldDecorator('intro', {
                     initialValue: formVals.intro,
                   })(<TextArea placeholder="请输入备注" size="large" />)}
                 </FormItem>
+
+
               </Col>
             </Row>
           </TabPane>
