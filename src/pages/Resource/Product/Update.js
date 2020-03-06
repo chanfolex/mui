@@ -29,7 +29,7 @@ export default class UpdateProduct extends Component {
         // end: props.values.end,
         intro: props.values.intro,
         category: props.values.category ? props.values.category.id : '',
-        supporter: props.values.category ? props.values.supporter.id : '',
+        supporter: props.values.supporter ? props.values.supporter.id : '',
         unit: props.values.unit ? props.values.unit.id : '',
       },
     };

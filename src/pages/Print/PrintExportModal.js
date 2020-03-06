@@ -36,6 +36,15 @@ export default class PrintExportModal extends Component {
   render() {
     const { visible } = this.state;
     const { children, record, showModel, controlHideModelHandler } = this.props;
+    let totalNum = 0;
+    let totalPrice = 0;
+    if (record.des) {
+      totalNum = record && record.des.reduce((pre, cur) => Number(pre) + Number(cur.num), 0);
+      totalPrice =
+        record &&
+        record.des.reduce((pre, cur) => Number(pre) + Number(cur.num) * Number(cur.price), 0);
+    }
+
     return (
       <span>
         <span onClick={this.showModelHandler}>{children}</span>
@@ -51,6 +60,17 @@ export default class PrintExportModal extends Component {
           onCancel={controlHideModelHandler || this.hideModelHandler}
         >
           <PrintTable print={record} />
+          <div
+            style={{
+              height: 50,
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ marginRight: 20 }}>共{totalNum}个</div>
+            <div>￥ {totalPrice}</div>
+          </div>
         </Modal>
       </span>
     );

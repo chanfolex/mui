@@ -26,9 +26,18 @@ class PrintExportTable extends PureComponent {
         key: 'shape',
         name: '型号',
       },
+      
+      {
+        key: 'price',
+        name: '单价',
+      },
       {
         key: 'num',
         name: '数量',
+      },
+      {
+        key: 'total',
+        name: '合计',
       },
       {
         key: 'extra',
@@ -40,9 +49,9 @@ class PrintExportTable extends PureComponent {
       number: i + 1,
       shape: el.shape || el.product.shape,
       name: el.name || el.product.name,
-      // price: el.price,
+      price: parseFloat(el.price).toFixed(2),
       num: el.num,
-      // total: el.total,
+      total: parseFloat(el.total).toFixed(2),
       extra: el.extra,
     }));
 
@@ -51,28 +60,14 @@ class PrintExportTable extends PureComponent {
         number: '',
         shape: '',
         name: '',
-        // price: '',
+        price: '',
         num: '',
-        // total: '',
+        total: '',
         extra: '',
       });
     }
-    // const printData = [
-    //   { number: 1, goodsName: '1111', goodsType: '2222', unitName: 'sfs', specifications: 'sfsdf' },
-    //   { number: 1, goodsName: '1111', goodsType: '2222', unitName: 'sfs', specifications: 'sfsdf' },
-    //   { number: 1, goodsName: '1111', goodsType: '2222', unitName: 'sfs', specifications: 'sfsdf' },
-    //   { number: 1, goodsName: '1111', goodsType: '2222', unitName: 'sfs', specifications: 'sfsdf' },
-    // ];
+  
     const { pageNumber } = this.state;
-    // const { print:{ data } } = this.props;
-    // formPrintData.forEach((i,index)=>{
-    //   const colData = {};
-    //   printCol.forEach(j=>{
-    //     colData[j.key] = i[j.key];
-    //   })
-    //   colData.number = index+1;
-    //   printData.push(colData);
-    // });
 
     const printGroupData = this.page(pageNumber, printData);
     this.setState({
@@ -82,48 +77,6 @@ class PrintExportTable extends PureComponent {
     });
   }
 
-  // componentWillReceiveProps(nextProps){
-  // const printCol = [
-  //   {
-  //     key:'number',
-  //     name:'序号',
-  //   },{
-  //     key:'goodsName',
-  //     name:'商品名称',
-  //   },{
-  //     key:'goodsType',
-  //     name:'商品类型',
-  //   },{
-  //     key:'unitName',
-  //     name:'单位',
-  //   },{
-  //     key:'specifications',
-  //     name:'规格',
-  //   }];
-  //   const printData =[
-  //     [1,2,3,4,5],
-  //     [1,2,3,4,5],
-  //     [1,2,3,4,5],
-  //     [1,2,3,4,5],
-  //     [1,2,3,4,5],
-  //   ];
-  // const { pageNumber } = this.state;
-  // const { print:{ data } } = nextProps;
-  // formPrintData.forEach((i,index)=>{
-  //   const colData = {};
-  //   printCol.forEach(j=>{
-  //     colData[j.key] = i[j.key];
-  //   })
-  //   colData.number = index+1;
-  //   printData.push(colData);
-  // });
-  // const printGroupData = this.page(pageNumber,printData);
-  // this.setState({
-  //   printData,
-  //   printCol,
-  //   printGroupData,
-  // })
-  // }
 
   createTitle = title => (
     <div>
@@ -163,7 +116,7 @@ class PrintExportTable extends PureComponent {
             </th>
             <th>客户</th>
             <th colSpan="7">
-              <input style={styleObj.printInput} value={print.client.name||print.clientName} />
+              <input style={styleObj.printInput} value={print.client||print.client.name} />
             </th>
             <th>订单日期</th>
             <th colSpan="7">

@@ -27,18 +27,18 @@ class PrintInsertTable extends PureComponent {
         name: '型号',
       },
       
-      // {
-      //   key: 'price',
-      //   name: '单价',
-      // },
+      {
+        key: 'price',
+        name: '单价',
+      },
       {
         key: 'num',
         name: '数量',
       },
-      // {
-      //   key: 'total',
-      //   name: '合计',
-      // },
+      {
+        key: 'total',
+        name: '合计',
+      },
       {
         key: 'extra',
         name: '备注',
@@ -49,9 +49,9 @@ class PrintInsertTable extends PureComponent {
       number: i + 1,
       shape: el.shape || el.product.shape,
       name: el.name || el.product.name,
-      // price: parseFloat(el.price).toFixed(2),
+      price: parseFloat(el.price).toFixed(2),
       num: el.num,
-       // total: parseFloat(el.total).toFixed(2),
+      total: parseFloat(el.total).toFixed(2),
       extra: el.extra,
     }));
 
@@ -60,9 +60,9 @@ class PrintInsertTable extends PureComponent {
         number: '',
         shape: '',
         name: '',
-        // price: '',
+        price: '',
         num: '',
-        // total: '',
+        total: '',
         extra: '',
       });
     }
@@ -172,7 +172,7 @@ class PrintInsertTable extends PureComponent {
             </th>
             <th>供应商</th>
             <th colSpan="7">
-              <input style={styleObj.printInput} value={print.supporter.name} />
+              <input style={styleObj.printInput} value={print.client||print.supporter.name} />
             </th>
             <th>订单日期</th>
             <th colSpan="7">

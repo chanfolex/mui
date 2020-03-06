@@ -157,11 +157,11 @@ export default [
         icon: 'book',
         authority: [31, 32, 33, 34, 35, 36],
         routes: [
-          {
-            path: '/sales/storage',
-            name: 'storage',
-            component: './Sales/Storage/Index',
-          },
+          // {
+          //   path: '/sales/storage',
+          //   name: 'storage',
+          //   component: './Sales/Storage/Index',
+          // },
           {
             path: '/sales/insert',
             name: 'insert',

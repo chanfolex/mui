@@ -42,7 +42,7 @@ const { Option } = AutoComplete;
   // loading: loading.effects['chart/fetch'],
 }))
 @Form.create()
-class contractExport extends Component {
+class SaleContractExport extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -259,33 +259,37 @@ class contractExport extends Component {
     form.validateFields((err, values) => {
       if (!err) {
         if (!des.length) return message.warning('请至少填写一个产品信息');
-        if (!des.some(item => item.numValue)) {
-          return message.warning('您选择的产品数量未填写完整');
+        if (!des.some(item => item.numValue && item.priceValue)) {
+          return message.warning('您选择的产品价格或数量未填写完整');
         }
-        const filterData = des.filter(item => item.numValue);
+        const filterData = des.filter(item => item.numValue && item.priceValue);
         const obj = {
           contractSn,
           ordate,
-          client,
-          // storage: storageValue,
+          // client,
           juser: juserValue,
           payment: values.payment,
           extra: values.extra,
           packing: values.packing,
           sn: contractSn,
-          ctime: ordate,
-          clientName: product.clients.filter(item => {
+          client: product.clients.filter(item => {
             // eslint-disable-next-line eqeqeq
             if (item.id == client) return true;
             return false;
           })[0].name,
+          ctime: ordate,
           des: filterData.map(el => {
             const formVal = {
               shape: el.shape || el.product.shape || '',
               name: el.name || el.product.name || '',
               product: el.id ? el.id : '',
+              price: el.priceValue,
               num: el.numValue,
+              total: Number(el.priceValue) * Number(el.numValue),
               batch: el.batch || el.batchValue,
+              start: el.date || '',
+              supporter: 1,
+              storage: 1,
               extra: values.extra,
             };
             return formVal;
@@ -293,7 +297,6 @@ class contractExport extends Component {
         };
         return dispatch({ type: 'salesContract/create', payload: obj }).then(() => {
           message.success('添加成功');
-          console.log(client);
           this.clearFromData();
           this.openPrintModel(obj);
         });
@@ -342,7 +345,7 @@ class contractExport extends Component {
         barsn: '',
       })),
       juserValue: null,
-      client: '',
+      supporter: '',
     });
     form.resetFields();
   };
@@ -698,8 +701,29 @@ class contractExport extends Component {
           return <div />;
         },
       },
-     
-     
+      {
+        title: '单价',
+        width: 100,
+        key: 'price',
+        render: (text, record, index) => (
+          <InputNumber
+            placeholder="单价"
+            value={record.priceValue}
+            onChange={value => this.priceChange(value, index)}
+          />
+        ),
+      },
+      {
+        title: '合计',
+        width: 150,
+        key: 'account',
+        render: text => {
+          if (text.numValue && text.priceValue) {
+            return <span>{text.numValue * text.priceValue}</span>;
+          }
+          return null;
+        },
+      },
       {
         title: '操作',
         key: 'operation',
@@ -761,7 +785,7 @@ class contractExport extends Component {
                       style={{ width: 120 }}
                       onSelect={this.onSelectClient}
                       onSearch={this.handleClientSearch}
-                      placeholder="首字母客户搜索"
+                      placeholder="搜索"
                       dropdownMatchSelectWidth={false}
                       dropdownStyle={{ width: 100 }}
                     >
@@ -928,4 +952,4 @@ class contractExport extends Component {
   }
 }
 
-export default contractExport;
+export default SaleContractExport;
