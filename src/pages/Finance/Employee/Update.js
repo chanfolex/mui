@@ -19,6 +19,7 @@ export default class UpdateEmployee extends Component {
         name: props.values.name,
         address: props.values.address,
         idcard: props.values.idcard,
+        tel:props.values.tel,
       },
     };
   }
@@ -82,6 +83,17 @@ export default class UpdateEmployee extends Component {
                     rules: [{ required: false, whitespace: true, message: '名称是必填项' }],
                     initialValue: formVals.address,
                   })(<Input placeholder="请输入地址" size="large" />)}
+                </FormItem>
+                <FormItem
+                  labelCol={{ span: 5 }}
+                  wrapperCol={{ span: 18 }}
+                  label="电话"
+                  hasFeedback
+                >
+                  {form.getFieldDecorator('tel', {
+                    rules: [{ required: false, whitespace: true, message: '名称是必填项' }],
+                    initialValue: formVals.tel,
+                  })(<Input placeholder="请输入电话" size="large" />)}
                 </FormItem>
 
 

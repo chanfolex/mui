@@ -64,6 +64,18 @@ export default class CreateEmployee extends Component {
                   })(<Input placeholder="请输入地址" size="large" />)}
                 </FormItem>
 
+                <FormItem
+                  labelCol={{ span: 5 }}
+                  wrapperCol={{ span: 18 }}
+                  label="电话"
+                  hasFeedback
+                >
+                  {form.getFieldDecorator('tel', {
+                    rules: [{ required: false, whitespace: true, message: '名称是必填项' }],
+                  })(<Input placeholder="请输入电话" size="large" />)}
+                </FormItem>
+
+
 
                 <FormItem
                   labelCol={{ span: 5 }}

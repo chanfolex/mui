@@ -46,7 +46,7 @@ class SaleContractExport extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ordate: `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
+      ordate:moment().format('YYYY-MM-DD'),
       curIndex: 0,
       client: '',
       searchModalState: false,

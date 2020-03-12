@@ -7,6 +7,7 @@ import Zmage from 'react-zmage';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import CreateProduct from './Create';
 import UpdateProduct from './Update';
+import GetCard from './GetCard';
 import TableInputSearch from '@/components/common/TableInputSearch';
 import Slide from '../../Slide/ProcedureSlide';
 
@@ -24,6 +25,7 @@ class Product extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
+    getcardModalVisible:false,
     stepFormValues: {},
     categorys: [],
     units: [],
@@ -145,6 +147,14 @@ class Product extends PureComponent {
     });
   };
 
+  handleGetModalVisible = (flag, record) => {
+    this.setState({
+      getcardModalVisible: !!flag,
+      stepFormValues: record || {},
+    });
+  };
+
+
   // 新增产品
   handleAdd = fields => {
     const {
@@ -178,6 +188,24 @@ class Product extends PureComponent {
         this.fetchList({ pagination: pagination.current });
         message.success('保存成功');
         this.handleUpdateModalVisible();
+      },
+    });
+  };
+
+  handleAddcard = fields => {
+    const {
+      dispatch,
+      product: { pagination },
+    } = this.props;
+    dispatch({
+      type: 'card/add',
+      payload: {
+        ...fields,
+      },
+      callback: () => {
+        this.fetchList({ pagination: pagination.current });
+        message.success('开卡成功');
+        this.handleGetModalVisible();
       },
     });
   };
@@ -242,6 +270,7 @@ class Product extends PureComponent {
     const {
       modalVisible,
       updateModalVisible,
+      getcardModalVisible,
       stepFormValues,
       categorys,
       units,
@@ -257,6 +286,8 @@ class Product extends PureComponent {
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
+      handleAddcard:this.handleAddcard,
+      handleGetModalVisible:this.handleGetModalVisible,
     };
     const paginationProps = {
       // showSizeChanger: true,
@@ -388,17 +419,15 @@ class Product extends PureComponent {
             <a onClick={() => this.showDrawer(record)}>工序列表</a>
             <Divider type="vertical" />
 
-            {currentUser.role.id === 1 ||
-            currentUser.role.id === 13 ||
-            currentUser.role.id === 20 ||
-            currentUser.role.id === 18 ? (
-              <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-            ) : (
-              <a onClick={() => this.handleUpdateModalVisible(true, record)} disabled>
+          
+              <a onClick={() => this.handleUpdateModalVisible(true, record)} >
                 编辑
               </a>
-            )}
-
+      
+              <Divider type="vertical" />
+              <a onClick={() => this.handleGetModalVisible(true, record)} >
+                开卡
+              </a>
             <Divider type="vertical" />
             <Popconfirm
               title="你确定删除吗?"
@@ -495,6 +524,18 @@ class Product extends PureComponent {
           <UpdateProduct
             {...updateMethods}
             updateModalVisible={updateModalVisible}
+            values={stepFormValues}
+            categorys={categorys}
+            units={units}
+            supporters={supporters}
+            dispatch={dispatch}
+          />
+        ) : null}
+
+{stepFormValues && Object.keys(stepFormValues).length ? (
+          <GetCard
+            {...updateMethods}
+            getcardModalVisible={getcardModalVisible}
             values={stepFormValues}
             categorys={categorys}
             units={units}

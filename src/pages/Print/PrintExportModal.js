@@ -43,6 +43,9 @@ export default class PrintExportModal extends Component {
       totalPrice =
         record &&
         record.des.reduce((pre, cur) => Number(pre) + Number(cur.num) * Number(cur.price), 0);
+
+        record.totalNum=parseFloat(totalNum).toFixed(3);
+        record.totalPrice=parseFloat(totalPrice).toFixed(2);
     }
 
     return (
@@ -68,8 +71,8 @@ export default class PrintExportModal extends Component {
               alignItems: 'center',
             }}
           >
-            <div style={{ marginRight: 20 }}>共{totalNum}个</div>
-            <div>￥ {totalPrice}</div>
+            {/* <div style={{ marginRight: 20 }}>共{totalNum}个</div>
+            <div>￥ {totalPrice}</div> */}
           </div>
         </Modal>
       </span>

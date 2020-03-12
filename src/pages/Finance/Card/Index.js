@@ -1,37 +1,36 @@
 import React, { Component, Fragment } from 'react';
 
 import { connect } from 'dva';
-import { Card, Form, Table, Button, Divider, Popconfirm } from 'antd';
+import { Card, Form, Table, Button, Divider, message,Popconfirm,Select } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
-import CreateSupporter from './Create';
-import UpdateSupporter from './Update';
 import styles from './index.less';
-// import ExamineModal from '../../Slide/ExamineModal';
-import Slide from '../../Slide/SupporterSlide';
 
 @connect(({ card }) => ({
   card,
   // loading: loading.models.product,
 }))
 @Form.create()
-class SettleCard extends Component {
+class cardRecorder extends Component {
   state = {
     modalVisible: false,
     updateModalVisible: false,
-    stepFormValues: {},
     categorys: [],
+    abbr: '',
+    client: '',
+    stepFormValues: {},
     drawerVisible: false,
     currentRecord: {},
   };
 
+ 
   componentDidMount() {
     const { dispatch } = this.props;
-    this.fetchList();
 
+    this.fetchList();
     // 查询分类
     dispatch({
-      type: 'product/fetchGradeOption',
+      type: 'product/fetchClientOption',
     }).then(res => {
       if (res.code === 200) {
         this.setState({
@@ -39,6 +38,8 @@ class SettleCard extends Component {
         });
       }
     });
+
+    
   }
 
   showDrawer = record => {
@@ -54,81 +55,71 @@ class SettleCard extends Component {
     });
   };
 
-  // 查询询盘列表
-  fetchList = (params = {}) => {
+
+   // 查询列表
+   fetchList = (params = {}) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'card/fetch', payload: params });
+    const { client, abbr } = this.state;
+    const param = { ...params };
+    if (client) param.client = client;
+    if (abbr) param.abbr = abbr;
+    dispatch({ type: 'card/fetch', payload: param });
   };
 
-  // 新增
-  handleAdd = fields => {
-    const { dispatch } = this.props;
+
+  handleDelete = fields => {
+    const {
+      dispatch,
+      card: { pagination },
+    } = this.props;
     dispatch({
-      type: 'card/add',
+      type: 'card/update',
       payload: {
-        ...fields,
+        id: fields.id,
+        status: 2,
       },
-      callback: () => {
-        this.handleModalVisible();
+      callback: res => {
+        if (res.code === 200) {
+          this.fetchList({ pagination: pagination.current });
+          message.success('删除成功');
+        }
       },
     });
   };
 
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'card/update',
-      payload: {
-        ...fields,
-      },
-      callback: () => {
-        // const { page } = this.state;
-        // this.fetchList({ pagination: page });
-        // message.success('保存成功');
-        this.handleUpdateModalVisible();
-      },
+   // 分类选择查询
+   handleCategoryChange = val => {
+    // const params = val ? {} : {};
+    this.setState({ client: val }, () => {
+      this.fetchList();
     });
   };
 
   // 分页查询
   handleTableChange = (pagination, filters, sorter) => {
+    const { abbr, client } = this.state;
     const param = { pagination: pagination.current };
     if (sorter.columnKey === 'price') {
       param.sort = `price ${sorter.order === 'descend' ? 'desc' : 'asc'}`;
     }
+    if (abbr) param.abbr = abbr;
+    if (client) param.client = client;
     this.fetchList(param);
   };
 
-  // 询盘编辑
-  editHandler = (id, values) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'card/update', payload: { id, ...values } });
+  handleSearch = val => {
+    this.setState(
+      {
+        ...val,
+      },
+      () => {
+        this.fetchList();
+      }
+    );
   };
 
-  handleModalVisible = flag => {
-    this.setState({
-      modalVisible: !!flag,
-    });
-  };
 
-  // 审核通道
-  examineHandler = (id, fields) => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'card/update', payload: { id, ...fields } });
-  };
 
-  handleUpdateModalVisible = (flag, record) => {
-    this.setState({
-      updateModalVisible: !!flag,
-      stepFormValues: record || {},
-    });
-  };
-
-  // 询盘删除
-  handleDelete = fields => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'card/update', payload: { id: fields.id, status: 2 } });
-  };
 
   render() {
     const {
@@ -137,18 +128,11 @@ class SettleCard extends Component {
     } = this.props;
 
     const {
-      modalVisible,
-      updateModalVisible,
-      stepFormValues,
-      categorys,
       drawerVisible,
       currentRecord,
+      categorys,
     } = this.state;
 
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
@@ -158,77 +142,25 @@ class SettleCard extends Component {
 
     const columns = [
       {
-        title: '序号',
+        title: '卡号',
         width: 150,
-        dataIndex: 'sn',
-        key: 'position',
+        dataIndex:'sn',
+        key: 'sn',
       },
       {
-        title: '名称',
+        title: '产品名称',
         width: 250,
-        dataIndex: 'product',
-        key: 'product',
+        dataIndex:'product.name',
+        key: 'product.name',
       },
-      {
-        title: '单价',
+       {
+        title: '投产数量',
         width: 150,
-        dataIndex: 'num',
+        dataIndex:'num',
         key: 'num',
       },
-      {
-        title: '备注',
-        width: 150,
-        dataIndex: 'create_time',
-        key: 'create_time',
-      },
-      // {
-      //   title: '备案',
-      //   dataIndex: 'beian',
-      //   width: 150,
-      //   key: 'beian',
-      //   render: beian =>
-      //     beian.length === 0 ? (
-      //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
-      //     ) : (
-      //       <Zmage src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
-      //     ),
-      // },
-      // {
-      //   title: '许可证',
-      //   dataIndex: 'license',
-      //   width: 150,
-      //   key: 'license',
-      //   render: license =>
-      //     license.length === 0 ? (
-      //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
-      //     ) : (
-      //       <Zmage
-      //         src={license}
-      //         style={{ display: 'inline-block', width: 80, height: 80 }}
-      //         alt=""
-      //       />
-      //     ),
-      // },
-      {
-        title: '添加人',
-        width: 100,
-        dataIndex: 'cuser.name',
-        key: 'cuser.name',
-      },
-      // {
-      //   title: '资质审核',
-      //   width: 150,
-      //   dataIndex: 'state',
-      //   key: 'state',
-      //   render: text => (
-      //     <Icon
-      //       type="check-circle"
-      //       theme="filled"
-      //       style={{ color: text === 1 ? '#36ab60' : '#bfbfbf' }}
-      //     />
-      //   ),
-      // },
-
+    
+   
       {
         title: '添加时间',
         width: 130,
@@ -241,15 +173,7 @@ class SettleCard extends Component {
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
-            {/* <ExamineModal record={record} onOk={this.examineHandler.bind(null, record.id)}>
-              <a>审核</a>
-            </ExamineModal> */}
-
-            <Divider type="vertical" />
-
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-
-            <Divider type="vertical" />
+           
             <Popconfirm
               title="你确定删除吗?"
               onConfirm={() => this.handleDelete(record)}
@@ -268,18 +192,23 @@ class SettleCard extends Component {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
+            <Select
                 size="large"
-                onClick={() => this.handleModalVisible(true)}
+                style={{ width: 200, marginRight: 20 }}
+                placeholder="选择客户"
+                allowClear
+                onChange={this.handleCategoryChange}
               >
-                新建
-              </Button>
+                {categorys.map(el => (
+                  <Option key={el.id} value={el.id}>
+                    {el.name}
+                  </Option>
+                ))}
+              </Select>
               <div className={styles.tableListForm}>
                 <TableInputSearch
-                  field="abbr"
-                  placeholder="首字母搜索"
+                  field="sn"
+                  placeholder="订单编号搜索"
                   handlerEnter={this.fetchList}
                 />
               </div>
@@ -291,7 +220,7 @@ class SettleCard extends Component {
               dataSource={list}
               pagination={paginationProps}
               onChange={this.handleTableChange}
-              scroll={{ x: 1500, y: 540 }}
+              scroll={{ x: 1500, y: 650 }}
               onRow={record => ({
                 onDoubleClick: () => {
                   this.showDrawer(record);
@@ -309,27 +238,9 @@ class SettleCard extends Component {
             dispatch={dispatch}
           />
         )}
-
-        {modalVisible && (
-          <CreateSupporter
-            {...parentMethods}
-            modalVisible={modalVisible}
-            categorys={categorys}
-            dispatch={dispatch}
-          />
-        )}
-        {stepFormValues && Object.keys(stepFormValues).length ? (
-          <UpdateSupporter
-            {...updateMethods}
-            updateModalVisible={updateModalVisible}
-            values={stepFormValues}
-            categorys={categorys}
-            dispatch={dispatch}
-          />
-        ) : null}
       </PageHeaderWrapper>
     );
   }
 }
 
-export default SettleCard;
+export default cardRecorder;

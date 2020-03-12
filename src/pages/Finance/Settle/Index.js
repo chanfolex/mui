@@ -543,15 +543,6 @@ class Settle extends Component {
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
-            {/* <ExamineModal record={record} onOk={this.examineHandler.bind(null, record.id)}>
-              <a>审核</a>
-            </ExamineModal> */}
-
-            <Divider type="vertical" />
-
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-
-            <Divider type="vertical" />
             <Popconfirm
               title="你确定删除吗?"
               onConfirm={() => this.handleDelete(record)}

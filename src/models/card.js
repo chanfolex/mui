@@ -33,15 +33,9 @@ export default {
       });
       if (callback) callback(response);
     },
-
-    *update({ payload }, { call }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateData, payload);
-      // yield put({
-      //   type: 'save',
-      //   payload: response,
-      // })
-      // if(callback) callback();
-      return response;
+      if (callback) callback(response);
     },
   },
   reducers: {

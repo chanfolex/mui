@@ -257,22 +257,28 @@ class EmployeeIndex extends PureComponent {
         key: 'address',
       },
       {
+        title: '电话',
+        dataIndex: 'tel',
+        width: 100,
+        key: 'tel',
+      },
+      {
         title: '身份证',
         dataIndex: 'idcard',
-        width: 150,
+        width: 100,
         key: 'idcard',
       },
 
       {
         title: '备注',
-        width: 200,
+        width: 100,
         dataIndex: 'intro',
         key: 'intro',
         render: text => <p>{text}</p>,
       },
       {
         title: '创建日期',
-        width: 200,
+        width: 100,
         dataIndex: 'ctime',
         key: 'ctime',
         render: text => <p>{text}</p>,
@@ -283,34 +289,16 @@ class EmployeeIndex extends PureComponent {
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
-            {currentUser.role.id === 1 ||
-            currentUser.role.id === 13 ||
-            currentUser.role.id === 20 ||
-            currentUser.role.id === 18 ? (
-              <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
-            ) : (
-              <a onClick={() => this.handleUpdateModalVisible(true, record)} disabled>
-                编辑
-              </a>
-            )}
-
-            <Divider type="vertical" />
+          
             <Popconfirm
               title="你确定删除吗?"
               onConfirm={() => this.handleDelete(record)}
               okText="是"
               cancelText="否"
             >
-              {currentUser.role.id === 1 ||
-              currentUser.role.id === 13 ||
-              currentUser.role.id === 20 ||
-              currentUser.role.id === 18 ? (
+        
                 <a href="#">删除</a>
-              ) : (
-                <a href="#" disabled>
-                  删除
-                </a>
-              )}
+            
             </Popconfirm>
           </Fragment>
         ),
@@ -322,19 +310,7 @@ class EmployeeIndex extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              {/* <Select
-                size="large"
-                style={{ width: 200, marginRight: 20 }}
-                placeholder="选择产品分类"
-                allowClear
-                onChange={this.handleCategoryChange}
-              >
-                {categorys.map(el => (
-                  <Option key={el.id} value={el.id}>
-                    {el.name}
-                  </Option>
-                ))}
-              </Select> */}
+             
               <Button
                 icon="plus"
                 type="primary"
