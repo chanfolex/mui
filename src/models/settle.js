@@ -35,9 +35,9 @@ export default {
       return response;
     },
 
-    *update({ payload }, { call }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateData, payload);
-      return response;
+      if (callback) callback(response);
     },
   },
   reducers: {

@@ -151,7 +151,7 @@ class EmployeeIndex extends PureComponent {
       },
       callback: () => {
         this.fetchList({ pagination: pagination.current });
-        message.success('保存成功');
+        message.success('更新成功');
         this.handleUpdateModalVisible();
       },
     });
@@ -289,7 +289,9 @@ class EmployeeIndex extends PureComponent {
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
-          
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+
+            <Divider type="vertical" />
             <Popconfirm
               title="你确定删除吗?"
               onConfirm={() => this.handleDelete(record)}

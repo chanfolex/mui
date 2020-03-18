@@ -109,21 +109,43 @@ class Settle extends Component {
     });
   };
 
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
+  // handleUpdate = fields => {
+  //   const { dispatch } = this.props;
+  //   dispatch({
+  //     type: 'settle/update',
+  //     payload: {
+  //       ...fields,
+  //     },
+  //     callback: () => {
+  //       // const { page } = this.state;
+  //       // this.fetchList({ pagination: page });
+  //       // message.success('保存成功');
+  //       this.handleUpdateModalVisible();
+  //     },
+  //   });
+  // };
+
+  handleDelete = fields => {
+    const {
+      dispatch,
+      settle: { pagination },
+    } = this.props;
     dispatch({
       type: 'settle/update',
       payload: {
-        ...fields,
+        id: fields.id,
+        status: 2,
       },
-      callback: () => {
-        // const { page } = this.state;
-        // this.fetchList({ pagination: page });
-        // message.success('保存成功');
-        this.handleUpdateModalVisible();
+      callback: res => {
+        console.log('ok');
+        if (res.code === 200) {
+          this.fetchList({ pagination: pagination.current });
+          message.success('删除成功');
+        }
       },
     });
   };
+
 
   // 分页查询
   handleTableChange = (pagination, filters, sorter) => {
@@ -165,11 +187,11 @@ class Settle extends Component {
     });
   };
 
-  // 询盘删除
-  handleDelete = fields => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'settle/update', payload: { id: fields.id, status: 2 } });
-  };
+  // // 询盘删除
+  // handleDelete = fields => {
+  //   const { dispatch } = this.props;
+  //   dispatch({ type: 'settle/update', payload: { id: fields.id, status: 2 } });
+  // };
 
   onCardSearch = value => {
     const { dispatch } = this.props;
@@ -483,34 +505,7 @@ class Settle extends Component {
         dataIndex: 'extra',
         key: 'extra',
       },
-      // {
-      //   title: '备案',
-      //   dataIndex: 'beian',
-      //   width: 150,
-      //   key: 'beian',
-      //   render: beian =>
-      //     beian.length === 0 ? (
-      //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
-      //     ) : (
-      //       <Zmage src={beian} style={{ display: 'inline-block', width: 80, height: 80 }} alt="" />
-      //     ),
-      // },
-      // {
-      //   title: '许可证',
-      //   dataIndex: 'license',
-      //   width: 150,
-      //   key: 'license',
-      //   render: license =>
-      //     license.length === 0 ? (
-      //       <div style={{ width: 80, height: 80, lineHeight: 80 }} />
-      //     ) : (
-      //       <Zmage
-      //         src={license}
-      //         style={{ display: 'inline-block', width: 80, height: 80 }}
-      //         alt=""
-      //       />
-      //     ),
-      // },
+      
       {
         title: '添加人',
         width: 100,
