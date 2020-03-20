@@ -56,15 +56,15 @@ class Product extends PureComponent {
 
     // 查询二级分类
     // 发送参数category 查询二级分类
-    dispatch({
-      type: 'product/fetchCategoryTinyOption',
-    }).then(res => {
-      if (res.code === 200) {
-        this.setState({
-          categorytinys: res.data,
-        });
-      }
-    });
+    // dispatch({
+    //   type: 'product/fetchCategoryTinyOption',
+    // }).then(res => {
+    //   if (res.code === 200) {
+    //     this.setState({
+    //       categorytinys: res.data,
+    //     });
+    //   }
+    // });
 
     dispatch({
       type: 'product/fetchSupporterOption',
@@ -104,17 +104,18 @@ class Product extends PureComponent {
 
   // 查询二级分类
   // 发送参数category 查询二级分类
-  handleSecondClassify = () => {
-    // const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'product/fetchCategoryTinyOption',
-    // }).then(res => {
-    //   if (res.code === 200) {
-    //     this.setState({
-    //       categorytinys: res.data,
-    //     });
-    //   }
-    // });
+  handleSecondClassify = (id, value) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'product/fetchCategoryTinyOption',
+      payload: { abbr: value, category: id },
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({
+          categorytinys: res.data,
+        });
+      }
+    });
   };
 
   showDrawer = record => {
@@ -319,6 +320,7 @@ class Product extends PureComponent {
       units,
       supporters,
       drawerVisible,
+      categorytinys,
       currentRecord,
     } = this.state;
 
@@ -326,7 +328,7 @@ class Product extends PureComponent {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
       handleFirstClassify: this.handleFirstClassify,
-      handleSecondClassify:this.handleSecondClassify
+      handleSecondClassify: this.handleSecondClassify,
     };
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
@@ -555,6 +557,7 @@ class Product extends PureComponent {
             {...parentMethods}
             modalVisible={modalVisible}
             categorys={categorys}
+            categorytinys={categorytinys}
             units={units}
             supporters={supporters}
             dispatch={dispatch}

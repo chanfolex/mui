@@ -15,6 +15,7 @@ export default class CreateProduct extends Component {
     super(props);
     this.state = {
       selectState: true,
+      categorysId:''
     };
   }
 
@@ -28,12 +29,14 @@ export default class CreateProduct extends Component {
   };
 
   render() {
+
     const {
       modalVisible,
       form,
       handleAdd,
       handleModalVisible,
       categorys,
+      categorytinys,
       units,
       supporters,
       handleFirstClassify,
@@ -51,6 +54,13 @@ export default class CreateProduct extends Component {
       });
     };
     const onTabChange = () => {};
+
+    const onChangeFirstClassify = (e) =>{
+      this.setState({
+        selectState: e === undefined,
+        categorysId: e
+      })
+    }
 
     return (
       <Modal
@@ -119,8 +129,9 @@ export default class CreateProduct extends Component {
                       placeholder="请选择分类"
                       style={{ width: '100%' }}
                       size="large"
+                      filterOption={false}
                       onSearch={e => handleFirstClassify(e)}
-                      onChange={e => this.setState({ selectState: e === undefined })}
+                      onChange={e => onChangeFirstClassify(e)}
                     >
                       {categorys.map(el => (
                         <Option key={el.id} value={el.id}>
@@ -141,10 +152,12 @@ export default class CreateProduct extends Component {
                       placeholder="请选择分类"
                       style={{ width: '100%' }}
                       size="large"
-                      onSearch={e => handleSecondClassify(e)}
+                      filterOption={false}
+                      onFocus={() => handleSecondClassify(this.state.categorysId,'')}
+                      onSearch={e => handleSecondClassify(this.state.categorysId,e)}
                       disabled={this.state.selectState}
                     >
-                      {categorys.map(el => (
+                      {categorytinys.map(el => (
                         <Option key={el.id} value={el.id}>
                           {el.name}
                         </Option>
