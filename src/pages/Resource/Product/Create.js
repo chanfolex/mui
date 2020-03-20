@@ -33,6 +33,7 @@ export default class CreateProduct extends Component {
       categorys,
       units,
       supporters,
+      handleClassifySearch,
     } = this.props;
 
     const okHandle = () => {
@@ -101,12 +102,37 @@ export default class CreateProduct extends Component {
                     </Select>
                   )}
                 </FormItem>
-                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="分类">
-                  {form.getFieldDecorator('category', {
+
+                {/* 对以下代码进行修改 */}
+
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="一级分类">
+                  {form.getFieldDecorator('category1', {
                     rules: [{ required: true, message: '分类是必填项' }],
                   })(
                     <Select
                       allowClear
+                      showSearch
+                      placeholder="请选择分类"
+                      style={{ width: '100%' }}
+                      size="large"
+                      onSearch={e => handleClassifySearch(e)}
+                    >
+                      {categorys.map(el => (
+                        <Option key={el.id} value={el.id}>
+                          {el.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="二级分类">
+                  {form.getFieldDecorator('category2', {
+                    rules: [{ required: true, message: '分类是必填项' }],
+                  })(
+                    <Select
+                      allowClear
+                      showSearch
                       placeholder="请选择分类"
                       style={{ width: '100%' }}
                       size="large"
@@ -119,6 +145,8 @@ export default class CreateProduct extends Component {
                     </Select>
                   )}
                 </FormItem>
+
+                {/* 对以上代码进行修改 */}
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="规格" hasFeedback>
                   {form.getFieldDecorator('shape', {

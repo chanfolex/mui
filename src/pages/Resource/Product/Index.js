@@ -5,10 +5,10 @@ import { Card, Form, Input, Select, Table, Button, message, Divider, Popconfirm 
 import Zmage from 'react-zmage';
 // import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import TableInputSearch from '@/components/common/TableInputSearch';
 import CreateProduct from './Create';
 import UpdateProduct from './Update';
 import GetCard from './GetCard';
-import TableInputSearch from '@/components/common/TableInputSearch';
 import Slide from '../../Slide/ProcedureSlide';
 
 import styles from './product.less';
@@ -25,7 +25,7 @@ class Product extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
-    getcardModalVisible:false,
+    getcardModalVisible: false,
     stepFormValues: {},
     categorys: [],
     categorytinys: [],
@@ -42,8 +42,7 @@ class Product extends PureComponent {
     const { dispatch } = this.props;
 
     this.fetchList();
-    
-    
+
     // 查询一级分类
     dispatch({
       type: 'product/fetchCategoryOption',
@@ -55,9 +54,9 @@ class Product extends PureComponent {
       }
     });
 
-     // 查询二级分类
-     //发送参数category 查询二级分类
-     dispatch({
+    // 查询二级分类
+    // 发送参数category 查询二级分类
+    dispatch({
       type: 'product/fetchCategoryTinyOption',
     }).then(res => {
       if (res.code === 200) {
@@ -66,9 +65,6 @@ class Product extends PureComponent {
         });
       }
     });
-
-
-    
 
     dispatch({
       type: 'product/fetchSupporterOption',
@@ -90,6 +86,22 @@ class Product extends PureComponent {
       }
     });
   }
+
+  // 分类搜索
+  handleClassifySearch = value => {
+    const { dispatch } = this.props;
+    // 查询一级分类
+    dispatch({
+      type: 'product/fetchCategoryOption',
+      payload: { abbr: value },
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({
+          categorys: res.data,
+        });
+      }
+    });
+  };
 
   showDrawer = record => {
     this.setState({
@@ -171,7 +183,6 @@ class Product extends PureComponent {
       stepFormValues: record || {},
     });
   };
-
 
   // 新增产品
   handleAdd = fields => {
@@ -300,12 +311,13 @@ class Product extends PureComponent {
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
+      handleClassifySearch: this.handleClassifySearch,
     };
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
-      handleAddcard:this.handleAddcard,
-      handleGetModalVisible:this.handleGetModalVisible,
+      handleAddcard: this.handleAddcard,
+      handleGetModalVisible: this.handleGetModalVisible,
     };
     const paginationProps = {
       // showSizeChanger: true,
@@ -437,15 +449,10 @@ class Product extends PureComponent {
             <a onClick={() => this.showDrawer(record)}>工序列表</a>
             <Divider type="vertical" />
 
-          
-              <a onClick={() => this.handleUpdateModalVisible(true, record)} >
-                编辑
-              </a>
-      
-              <Divider type="vertical" />
-              <a onClick={() => this.handleGetModalVisible(true, record)} >
-                开卡
-              </a>
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+
+            <Divider type="vertical" />
+            <a onClick={() => this.handleGetModalVisible(true, record)}>开卡</a>
             <Divider type="vertical" />
             <Popconfirm
               title="你确定删除吗?"
@@ -550,7 +557,7 @@ class Product extends PureComponent {
           />
         ) : null}
 
-{stepFormValues && Object.keys(stepFormValues).length ? (
+        {stepFormValues && Object.keys(stepFormValues).length ? (
           <GetCard
             {...updateMethods}
             getcardModalVisible={getcardModalVisible}
