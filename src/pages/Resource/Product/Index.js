@@ -28,6 +28,7 @@ class Product extends PureComponent {
     getcardModalVisible:false,
     stepFormValues: {},
     categorys: [],
+    categorytinys: [],
     units: [],
     supporters: [],
     abbr: '',
@@ -41,7 +42,9 @@ class Product extends PureComponent {
     const { dispatch } = this.props;
 
     this.fetchList();
-    // 查询分类
+    
+    
+    // 查询一级分类
     dispatch({
       type: 'product/fetchCategoryOption',
     }).then(res => {
@@ -51,6 +54,21 @@ class Product extends PureComponent {
         });
       }
     });
+
+     // 查询二级分类
+     //发送参数category 查询二级分类
+     dispatch({
+      type: 'product/fetchCategoryTinyOption',
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({
+          categorytinys: res.data,
+        });
+      }
+    });
+
+
+    
 
     dispatch({
       type: 'product/fetchSupporterOption',

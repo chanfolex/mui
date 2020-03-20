@@ -6,10 +6,12 @@ import {
   queryTypeOption,
   queryGradeOption,
   queryClientOption,
+  
   // eslint-disable-next-line import/extensions
 } from '@/services/product';
 // eslint-disable-next-line import/extensions
 import { queryCategoryOption } from '@/services/category';
+import { queryCategoryTinyOption } from '@/services/categorytiny';
 
 export default {
   namespace: 'product',
@@ -36,6 +38,12 @@ export default {
       const response = yield call(queryCategoryOption, payload);
       return response;
     },
+
+    *fetchCategoryTinyOption({ payload }, { call }) {
+      const response = yield call(queryCategoryTinyOption, payload);
+      return response;
+    },
+
 
     *fetchProductOption({ payload }, { call }) {
       const response = yield call(queryProduct, payload);
