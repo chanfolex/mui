@@ -87,10 +87,9 @@ class Product extends PureComponent {
     });
   }
 
-  // 分类搜索
-  handleClassifySearch = value => {
+  // 查询一级分类
+  handleFirstClassify = value => {
     const { dispatch } = this.props;
-    // 查询一级分类
     dispatch({
       type: 'product/fetchCategoryOption',
       payload: { abbr: value },
@@ -101,6 +100,21 @@ class Product extends PureComponent {
         });
       }
     });
+  };
+
+  // 查询二级分类
+  // 发送参数category 查询二级分类
+  handleSecondClassify = () => {
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'product/fetchCategoryTinyOption',
+    // }).then(res => {
+    //   if (res.code === 200) {
+    //     this.setState({
+    //       categorytinys: res.data,
+    //     });
+    //   }
+    // });
   };
 
   showDrawer = record => {
@@ -311,7 +325,8 @@ class Product extends PureComponent {
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      handleClassifySearch: this.handleClassifySearch,
+      handleFirstClassify: this.handleFirstClassify,
+      handleSecondClassify:this.handleSecondClassify
     };
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,

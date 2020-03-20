@@ -11,9 +11,12 @@ const { TabPane } = Tabs;
 
 @Form.create()
 export default class CreateProduct extends Component {
-  // constructor(props) {
-  //   super(props);
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectState: true,
+    };
+  }
 
   handleUploadChange = ({ fileList }) => {
     console.log('cc');
@@ -33,7 +36,8 @@ export default class CreateProduct extends Component {
       categorys,
       units,
       supporters,
-      handleClassifySearch,
+      handleFirstClassify,
+      handleSecondClassify
     } = this.props;
 
     const okHandle = () => {
@@ -105,7 +109,7 @@ export default class CreateProduct extends Component {
 
                 {/* 对以下代码进行修改 */}
 
-                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="一级分类">
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="分类">
                   {form.getFieldDecorator('category1', {
                     rules: [{ required: true, message: '分类是必填项' }],
                   })(
@@ -115,7 +119,8 @@ export default class CreateProduct extends Component {
                       placeholder="请选择分类"
                       style={{ width: '100%' }}
                       size="large"
-                      onSearch={e => handleClassifySearch(e)}
+                      onSearch={e => handleFirstClassify(e)}
+                      onChange={e => this.setState({ selectState: e === undefined })}
                     >
                       {categorys.map(el => (
                         <Option key={el.id} value={el.id}>
@@ -136,6 +141,8 @@ export default class CreateProduct extends Component {
                       placeholder="请选择分类"
                       style={{ width: '100%' }}
                       size="large"
+                      onSearch={e => handleSecondClassify(e)}
+                      disabled={this.state.selectState}
                     >
                       {categorys.map(el => (
                         <Option key={el.id} value={el.id}>
