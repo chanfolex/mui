@@ -14,8 +14,8 @@ export default class CreateProduct extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectState: true,
-      categorysId:''
+      selectDisabled: true, // 二级分类是否禁止
+      categorysId:'' // 当前选中的一级分类
     };
   }
 
@@ -57,9 +57,11 @@ export default class CreateProduct extends Component {
 
     const onChangeFirstClassify = (e) =>{
       this.setState({
-        selectState: e === undefined,
+        // eslint-disable-next-line react/no-unused-state
+        selectDisabled: e === undefined,
         categorysId: e
       })
+      this.props.form.setFields({"category2":""})
     }
 
     return (
@@ -128,10 +130,12 @@ export default class CreateProduct extends Component {
                       showSearch
                       placeholder="请选择分类"
                       style={{ width: '100%' }}
+                      autoClearSearchValue
                       size="large"
                       filterOption={false}
                       onSearch={e => handleFirstClassify(e)}
                       onChange={e => onChangeFirstClassify(e)}
+                      onFocus={() => handleFirstClassify('')}
                     >
                       {categorys.map(el => (
                         <Option key={el.id} value={el.id}>
@@ -153,9 +157,12 @@ export default class CreateProduct extends Component {
                       style={{ width: '100%' }}
                       size="large"
                       filterOption={false}
+                      // eslint-disable-next-line react/destructuring-assignment
                       onFocus={() => handleSecondClassify(this.state.categorysId,'')}
+                      // eslint-disable-next-line react/destructuring-assignment
                       onSearch={e => handleSecondClassify(this.state.categorysId,e)}
-                      disabled={this.state.selectState}
+                      // eslint-disable-next-line react/destructuring-assignment
+                      disabled={this.state.selectDisabled}
                     >
                       {categorytinys.map(el => (
                         <Option key={el.id} value={el.id}>

@@ -43,29 +43,6 @@ class Product extends PureComponent {
 
     this.fetchList();
 
-    // 查询一级分类
-    dispatch({
-      type: 'product/fetchCategoryOption',
-    }).then(res => {
-      if (res.code === 200) {
-        this.setState({
-          categorys: res.data,
-        });
-      }
-    });
-
-    // 查询二级分类
-    // 发送参数category 查询二级分类
-    // dispatch({
-    //   type: 'product/fetchCategoryTinyOption',
-    // }).then(res => {
-    //   if (res.code === 200) {
-    //     this.setState({
-    //       categorytinys: res.data,
-    //     });
-    //   }
-    // });
-
     dispatch({
       type: 'product/fetchSupporterOption',
     }).then(res => {
