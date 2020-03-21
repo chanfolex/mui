@@ -29,9 +29,12 @@ export default class UpdateProduct extends Component {
         // end: props.values.end,
         intro: props.values.intro,
         category: props.values.category ? props.values.category.id : '',
+        categorytiny: props.values.categorytiny ? props.values.categorytiny.id : '',
         supporter: props.values.supporter ? props.values.supporter.id : '',
         unit: props.values.unit ? props.values.unit.id : '',
       },
+      selectDisabled: false, // 二级分类是否禁止
+      categoryId:'' // 当前选中的一级分类
     };
   }
 
@@ -46,6 +49,13 @@ export default class UpdateProduct extends Component {
         url: el,
       })),
     });
+    // eslint-disable-next-line react/destructuring-assignment
+    this.props.handleFirstClassify('')
+    this.setState({
+      categoryId:this.props.values.category.id,
+    })
+    // eslint-disable-next-line react/destructuring-assignment
+    this.props.handleSecondClassify(this.props.values.category.id,'')
   }
 
   handleUploadChange = ({ fileList }) =>
@@ -56,6 +66,8 @@ export default class UpdateProduct extends Component {
       url: file.response ? file.response.data : file.url,
     }));
 
+    
+
   render() {
     const { formVals } = this.state;
     const {
@@ -64,10 +76,12 @@ export default class UpdateProduct extends Component {
       handleUpdate,
       handleUpdateModalVisible,
       categorys,
+      categorytinys,
       units,
       supporters,
+      handleFirstClassify,
+      handleSecondClassify
     } = this.props;
-
     const okHandle = () => {
       form.validateFields((errors, values) => {
         if (errors) return;
@@ -81,6 +95,17 @@ export default class UpdateProduct extends Component {
       });
     };
     const onTabChange = () => {};
+
+    const onChangeFirstClassify = (e) =>{
+      this.setState({
+        // eslint-disable-next-line react/no-unused-state
+        selectDisabled: e === undefined,
+        // eslint-disable-next-line react/no-unused-state
+        categoryId: e
+      })
+      // eslint-disable-next-line react/destructuring-assignment
+      this.props.form.setFields({"categorytiny":""})
+    }
 
     return (
       <Modal
@@ -147,11 +172,44 @@ export default class UpdateProduct extends Component {
                   })(
                     <Select
                       allowClear
+                      showSearch
                       placeholder="请选择分类"
                       style={{ width: '100%' }}
                       size="large"
+                      filterOption={false}
+                      onSearch={e => handleFirstClassify(e)}
+                      onChange={e => onChangeFirstClassify(e)}
+                      onFocus={() => handleFirstClassify('')}
                     >
                       {categorys.map(el => (
+                        <Option key={el.id} value={el.id}>
+                          {el.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </FormItem>
+
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="二级分类">
+                  {form.getFieldDecorator('categorytiny', {
+                    rules: [{ required: true, message: '分类是必填项' }],
+                    initialValue: formVals.categorytiny,
+                  })(
+                    <Select
+                      allowClear
+                      showSearch
+                      placeholder="请选择分类"
+                      style={{ width: '100%' }}
+                      size="large"
+                      filterOption={false}
+                      // eslint-disable-next-line react/destructuring-assignment
+                      onFocus={() => handleSecondClassify(this.state.categoryId,'')}
+                      // eslint-disable-next-line react/destructuring-assignment
+                      onSearch={e => handleSecondClassify(this.state.categoryId,e)}
+                      // eslint-disable-next-line react/destructuring-assignment
+                      disabled={this.state.selectDisabled}
+                    >
+                      {categorytinys.map(el => (
                         <Option key={el.id} value={el.id}>
                           {el.name}
                         </Option>

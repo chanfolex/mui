@@ -15,7 +15,7 @@ export default class CreateProduct extends Component {
     super(props);
     this.state = {
       selectDisabled: true, // 二级分类是否禁止
-      categorysId:'' // 当前选中的一级分类
+      categoryId:'' // 当前选中的一级分类
     };
   }
 
@@ -59,9 +59,10 @@ export default class CreateProduct extends Component {
       this.setState({
         // eslint-disable-next-line react/no-unused-state
         selectDisabled: e === undefined,
-        categorysId: e
+        categoryId: e
       })
-      this.props.form.setFields({"category2":""})
+      // eslint-disable-next-line react/destructuring-assignment
+      this.props.form.setFields({"categorytiny":""})
     }
 
     return (
@@ -122,7 +123,7 @@ export default class CreateProduct extends Component {
                 {/* 对以下代码进行修改 */}
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="分类">
-                  {form.getFieldDecorator('category1', {
+                  {form.getFieldDecorator('category', {
                     rules: [{ required: true, message: '分类是必填项' }],
                   })(
                     <Select
@@ -147,7 +148,7 @@ export default class CreateProduct extends Component {
                 </FormItem>
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="二级分类">
-                  {form.getFieldDecorator('category2', {
+                  {form.getFieldDecorator('categorytiny', {
                     rules: [{ required: true, message: '分类是必填项' }],
                   })(
                     <Select
@@ -158,9 +159,9 @@ export default class CreateProduct extends Component {
                       size="large"
                       filterOption={false}
                       // eslint-disable-next-line react/destructuring-assignment
-                      onFocus={() => handleSecondClassify(this.state.categorysId,'')}
+                      onFocus={() => handleSecondClassify(this.state.categoryId,'')}
                       // eslint-disable-next-line react/destructuring-assignment
-                      onSearch={e => handleSecondClassify(this.state.categorysId,e)}
+                      onSearch={e => handleSecondClassify(this.state.categoryId,e)}
                       // eslint-disable-next-line react/destructuring-assignment
                       disabled={this.state.selectDisabled}
                     >

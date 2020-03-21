@@ -312,6 +312,8 @@ class Product extends PureComponent {
       handleUpdate: this.handleUpdate,
       handleAddcard: this.handleAddcard,
       handleGetModalVisible: this.handleGetModalVisible,
+      handleFirstClassify: this.handleFirstClassify,
+      handleSecondClassify: this.handleSecondClassify,
     };
     const paginationProps = {
       // showSizeChanger: true,
@@ -546,6 +548,7 @@ class Product extends PureComponent {
             updateModalVisible={updateModalVisible}
             values={stepFormValues}
             categorys={categorys}
+            categorytinys={categorytinys}
             units={units}
             supporters={supporters}
             dispatch={dispatch}
