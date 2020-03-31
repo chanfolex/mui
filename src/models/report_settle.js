@@ -1,7 +1,7 @@
-import { queryData, addData, updateData, queryDataItems,queryEmployeeDataItems } from '@/services/settle';
+import { queryData, addData, updateData, queryOption,getSN,queryDataItems,deleteData } from '@/services/report_settle';
 
 export default {
-  namespace: 'settle',
+  namespace: 'report_settle',
   state: {
     list: [],
     pagination: {
@@ -9,6 +9,7 @@ export default {
       current: 1,
       pageSize: 10,
     },
+    contractSn:'',
   },
 
   effects: {
@@ -20,6 +21,11 @@ export default {
       }
     },
 
+    *fetchOption({ payload }, { call }) {
+      const response = yield call(queryOption, payload);
+      return response;
+    },
+
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addData, payload);
       yield put({
@@ -27,25 +33,30 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
-      return response;
+    },
+    *fetchSn({ payload }, { call, put }) {
+      const res = yield call(getSN, payload);
+      if (res.code === 200) {
+        yield put({ type: 'saveSn', payload: res.data });
+      }
     },
 
     *fetchItems({ payload }, { call }) {
       const response = yield call(queryDataItems, payload);
       return response;
     },
-
-    *fetchEmployeeItems({ payload }, { call }) {
-      const response = yield call(queryEmployeeDataItems, payload);
-      return response;
-    },
-
-
-
     *update({ payload, callback }, { call }) {
       const response = yield call(updateData, payload);
       if (callback) callback(response);
     },
+    *delete({ payload, callback }, { call }) {
+      const response = yield call(deleteData, payload);
+      if (callback) callback(response);
+    },
+
+
+
+  
   },
   reducers: {
     save(state, action) {
@@ -56,6 +67,10 @@ export default {
         pageSize: 10,
       };
       return { ...state, list, pagination };
+    },
+
+    saveSn(state, action) {
+      return { ...state, contractSn: action.payload };
     },
 
     setPaginationCurrent(state, action) {

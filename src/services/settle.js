@@ -17,6 +17,10 @@ export async function addData(params) {
   });
 }
 
+export async function queryEmployeeDataItems(params) {
+  return request(`/api/settle/getEmployeeItems?${stringify(params)}`);
+}
+
 export async function updateData(params) {
   return request('/api/settle/save', {
     method: 'POST',

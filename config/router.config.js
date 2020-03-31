@@ -195,6 +195,21 @@ export default [
         ],
       },
 
+
+      {
+        path: '/report',
+        name: 'report',
+        icon: 'book',
+        routes: [
+          {
+            path: '/report/settle',
+            name: 'settle',
+            component: './Report/Settle/Recorder',
+          },
+         
+        ],
+      },
+
       {
         path: '/finance',
         name: 'finance',
