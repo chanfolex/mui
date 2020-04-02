@@ -46,7 +46,7 @@ class SaleContractInsert extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ordate:moment().format('YYYY-MM-DD'),
+      ordate: moment().format('YYYY-MM-DD'),
       curIndex: 0,
       supporter: '',
       searchModalState: false,
@@ -160,7 +160,10 @@ class SaleContractInsert extends Component {
       payload: params,
     }).then(res => {
       if (res.code === 200) {
-        this.setState({ products: res.data, totalSum: res.data.sum });
+        this.setState({
+          products: res.data,
+          totalSum: res.data.sum,
+        });
       }
     });
   };
@@ -398,11 +401,12 @@ class SaleContractInsert extends Component {
   // };
 
   openSearchModal = index => {
-    console.log(index);
     this.setState({ searchModalState: true, itemIndex: index });
   };
 
   selectCategory = (item, index) => {
+    this.recordDataList = [];
+    this.selectedRows = [];
     this.setState({ page: 1 });
     if (index) {
       this.setState({ categoryIndex: index });
@@ -411,8 +415,8 @@ class SaleContractInsert extends Component {
     }
     setTimeout(() => {
       this.getProduction({});
-      this.recordData();
-    }, 10);
+      // this.recordData();
+    }, 100);
   };
 
   selectStorage = value => {
@@ -442,6 +446,7 @@ class SaleContractInsert extends Component {
     if (this.timerSend) clearTimeout(this.timerSend);
     this.setState({
       searchContent: e.target.value,
+      page: 1,
     });
     this.timerSend = setTimeout(() => {
       this.getProduction();
@@ -451,6 +456,7 @@ class SaleContractInsert extends Component {
 
   submit = () => {
     this.recordDataList = this.recordDataList.concat(...this.selectedRows);
+    console.log(this.recordDataList);
     if (!this.recordDataList.length) {
       return message.warning('您没有选择任何表单数据，不可以提交');
     }
@@ -512,6 +518,13 @@ class SaleContractInsert extends Component {
 
   recordData = () => {
     this.recordDataList = this.recordDataList.concat(...this.selectedRows);
+  };
+
+  enterProduction = () => {
+    this.setState({
+      page: 1,
+    });
+    setTimeout(() => this.getProduction(), 100);
   };
 
   render() {
@@ -882,7 +895,7 @@ class SaleContractInsert extends Component {
               <Input
                 placeholder="产品拼音首字母搜索"
                 onChange={this.searchContent}
-                onPressEnter={this.getProduction}
+                onPressEnter={this.enterProduction}
               />
             </div>
           </div>
