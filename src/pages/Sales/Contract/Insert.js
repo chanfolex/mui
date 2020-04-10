@@ -405,8 +405,6 @@ class SaleContractInsert extends Component {
   };
 
   selectCategory = (item, index) => {
-    this.recordDataList = [];
-    this.selectedRows = [];
     this.setState({ page: 1 });
     if (index) {
       this.setState({ categoryIndex: index });
@@ -415,7 +413,7 @@ class SaleContractInsert extends Component {
     }
     setTimeout(() => {
       this.getProduction({});
-      // this.recordData();
+      this.recordData();
     }, 100);
   };
 
