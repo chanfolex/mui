@@ -165,11 +165,13 @@ export default [
           {
             path: '/sales/insert',
             name: 'insert',
+            authority: 31,
             component: './Sales/Contract/Insert',
           },
           {
             path: '/sales/export',
             name: 'export',
+            authority: 32,
             component: './Sales/Contract/Export',
           },
           // {
@@ -185,11 +187,13 @@ export default [
           {
             path: '/sales/insert_recorder',
             name: 'insert_recorder',
+            authority: 33,
             component: './Sales/Process/Insert',
           },
           {
             path: '/sales/export_recorder',
             name: 'export_recorder',
+            authority: 34,
             component: './Sales/Process/Export',
           },
         ],
@@ -200,10 +204,12 @@ export default [
         path: '/report',
         name: 'report',
         icon: 'book',
+        authority: [41],
         routes: [
           {
             path: '/report/settle',
             name: 'settle',
+            authority: 41,
             component: './Report/Settle/Recorder',
           },
          
@@ -214,20 +220,24 @@ export default [
         path: '/finance',
         name: 'finance',
         icon: 'book',
+        authority: [51,52,53,54],
         routes: [
           {
             path: '/finance/employee',
             name: 'employee',
+            authority: 51,
             component: './Finance/Employee/Index',
           },
           {
             path: '/finance/settle',
             name: 'settle',
+            authority: 52,
             component: './Finance/Settle/Index',
           },
           {
             path: '/finance/card',
             name: 'card',
+            authority: 53,
             component: './Finance/Card/Index',
           },
         ],
@@ -237,24 +247,24 @@ export default [
         path: '/system',
         name: 'system',
         icon: 'setting',
-        authority: [41, 42, 43],
+        authority: [61, 62, 63],
         routes: [
           {
             path: '/system/user',
             name: 'user',
-            authority: 41,
+            authority: 61,
             component: './System/User/User',
           },
           {
             path: '/system/role',
             name: 'role',
-            authority: 42,
+            authority: 62,
             component: './System/Role/Role',
           },
           {
             path: '/system/info',
             name: 'info',
-            authority: 43,
+            authority: 63,
             component: './System/System',
           },
         ],

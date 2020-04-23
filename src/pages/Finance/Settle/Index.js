@@ -147,14 +147,27 @@ class Settle extends Component {
   };
 
 
-  // 分页查询
-  handleTableChange = (pagination, filters, sorter) => {
-    const param = { pagination: pagination.current };
-    if (sorter.columnKey === 'price') {
-      param.sort = `price ${sorter.order === 'descend' ? 'desc' : 'asc'}`;
-    }
-    this.fetchList(param);
-  };
+  // // 分页查询
+  // handleTableChange = (pagination, filters, sorter) => {
+  //   const param = { pagination: pagination.current };
+  //   if (sorter.columnKey === 'price') {
+  //     param.sort = `price ${sorter.order === 'descend' ? 'desc' : 'asc'}`;
+  //   }
+  //   this.fetchList(param);
+  // };
+
+
+    // 分页查询
+    handleTableChange = (pagination, filters, sorter) => {
+      const { sn, client } = this.state;
+      const param = { pagination: pagination.current };
+      if (sorter.columnKey === 'price') {
+        param.sort = `price ${sorter.order === 'descend' ? 'desc' : 'asc'}`;
+      }
+      if (sn) param.sn = sn;
+      if (client) param.client = client;
+      this.fetchList(param);
+    };
 
   // 询盘编辑
   editHandler = (id, values) => {
@@ -676,7 +689,7 @@ class Settle extends Component {
               </Button>
               <div className={styles.tableListForm}>
                 <TableInputSearch
-                  field="abbr"
+                  field="sn"
                   placeholder="首字母搜索"
                   handlerEnter={this.fetchList}
                 />
@@ -690,23 +703,23 @@ class Settle extends Component {
               pagination={paginationProps}
               onChange={this.handleTableChange}
               scroll={{ x: 1500, y: 540 }}
-              onRow={record => ({
-                onDoubleClick: () => {
-                  this.showDrawer(record);
-                }, // 点击行
-              })}
+              // onRow={record => ({
+              //   onDoubleClick: () => {
+              //     this.showDrawer(record);
+              //   }, // 点击行
+              // })}
             />
           </div>
         </Card>
 
-        {drawerVisible && (
+        {/* {drawerVisible && (
           <Slide
             visible={drawerVisible}
             formRow={currentRecord}
             onClose={this.onDrawerClose}
             dispatch={dispatch}
           />
-        )}
+        )} */}
 
         {/* {modalVisible && (
           <CreateSupporter
