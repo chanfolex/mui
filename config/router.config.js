@@ -240,6 +240,18 @@ export default [
             authority: 53,
             component: './Finance/Card/Index',
           },
+          {
+            path: '/finance/payin',
+            name: 'payin',
+            authority: 33,
+            component: './Sales/Process/Insert',
+          },
+          {
+            path: '/finance/payout',
+            name: 'payout',
+            authority: 53,
+            component: './Finance/Card/Index',
+          },
         ],
       },
 

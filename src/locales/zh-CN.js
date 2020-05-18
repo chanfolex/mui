@@ -124,6 +124,9 @@ export default {
   'menu.finance': '财务管理',
   'menu.finance.employee': '员工管理',
   'menu.finance.settle': '工序结算',
+  'menu.finance.card': '流通卡记录',
+  'menu.finance.payin': '应收账款',
+  'menu.finance.payout': '应付账款',
   'menu.finance.receivables': '收款确认',
   'menu.finance.payment': '采购付款申请',
   'menu.finance.paper': '单证付款申请',
@@ -135,6 +138,7 @@ export default {
 
   'menu.report': '报表管理',
   'menu.report.client': '客户报表',
+  'menu.report.settle': '工资报表',
 
   'menu.system': '系统管理',
   'menu.system.user': '用户管理',

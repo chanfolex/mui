@@ -322,7 +322,7 @@ class SaleContractExport extends Component {
 
   // 清除页面表单数据
   clearFromData = () => {
-    const { form } = this.props;
+    const { form,dispatch } = this.props;
     this.setState({
       des: [1, 2, 3].map(() => ({
         name: '',
@@ -348,6 +348,7 @@ class SaleContractExport extends Component {
       supporter: '',
     });
     form.resetFields();
+    dispatch({ type: 'salesContract/fetchSaleContractSn' });
   };
 
   // 合同搜索
