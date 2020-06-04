@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Row, Col, Form, Input, Select, Modal, Tabs } from 'antd';
+import { Row, Col, Form, Input, Select, Modal, Tabs, message } from 'antd';
 
 import UploadFile from '@/components/UploadFile';
 import styles from './product.less';
@@ -92,7 +92,8 @@ export default class UpdateProduct extends Component {
         values.cover = values.cover.map(el => el.url);
         // eslint-disable-next-line no-param-reassign
         values.id = formVals.id;
-        handleUpdate(Object.assign(values, { bom: formVals.bom }));
+        const bomData = formVals.bom[0].product === '' ? [] : formVals.bom;
+        handleUpdate(Object.assign(values, { bom: bomData }));
         form.resetFields();
       });
     };
@@ -113,22 +114,33 @@ export default class UpdateProduct extends Component {
     const addHandle = () => {
       // eslint-disable-next-line no-shadow
       const { formVals } = this.state;
-      const data = Object.assign(formVals, {
-        bom: [...formVals.bom, { product: '', num: '' }],
-      });
-      this.setState({
-        formVals: data,
-      });
+      if (
+        formVals.bom[formVals.bom.length - 1].product !== '' &&
+        formVals.bom[formVals.bom.length - 1].num !== ''
+      ) {
+        const data = Object.assign(formVals, {
+          bom: [...formVals.bom, { product: '', num: '' }],
+        });
+        this.setState({
+          formVals: data,
+        });
+      } else {
+        message.error('请填写完整产品后再添加');
+      }
     };
 
     // tabs2删除
     const deleteHandle = i => {
       // eslint-disable-next-line no-shadow
       const { formVals } = this.state;
-      formVals.bom.splice(i, 1);
-      this.setState({
-        formVals,
-      });
+      if (formVals.bom.length > 1) {
+        formVals.bom.splice(i, 1);
+        this.setState({
+          formVals,
+        });
+      } else {
+        message.warning('请至少保留一项产品');
+      }
     };
 
     return (
@@ -304,9 +316,14 @@ export default class UpdateProduct extends Component {
                       {
                         required: true,
                         type: 'number',
-                        message: '必须是数字类型',
                         transform(value) {
                           return value ? Number(value) : '';
+                        },
+                        validator(rule, value, callback) {
+                          if (typeof value === 'number' || value === '') {
+                            return callback();
+                          }
+                          return callback('必须是数字类型');
                         },
                       },
                     ],

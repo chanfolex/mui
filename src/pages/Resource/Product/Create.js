@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Row, Col, Form, Input, Select, Modal, Tabs } from 'antd';
+import { Row, Col, Form, Input, Select, Modal, Tabs, message } from 'antd';
 import UploadFile from '@/components/UploadFile';
 import styles from './product.less';
 import ProductItem from './ProductItem';
@@ -52,7 +52,8 @@ export default class CreateProduct extends Component {
         // eslint-disable-next-line no-param-reassign
         values.cover = values.cover.map(el => el.url);
         // eslint-disable-next-line no-use-before-define
-        handleAdd(Object.assign(values, { bom }));
+        const bomData = bom[0].product === '' ? [] : bom;
+        handleAdd(Object.assign(values, { bomData }));
         form.resetFields();
       });
     };
@@ -70,18 +71,26 @@ export default class CreateProduct extends Component {
 
     // tabs2添加
     const addHandle = () => {
-      this.setState({
-        // eslint-disable-next-line no-plusplus
-        bom: [...bom, { product: '', num: '' }],
-      });
+      if (bom[bom.length - 1].product !== '' && bom[bom.length - 1].num !== '') {
+        this.setState({
+          // eslint-disable-next-line no-plusplus
+          bom: [...bom, { product: '', num: '' }],
+        });
+      } else {
+        message.error('请填写完整产品后再添加');
+      }
     };
 
     // tabs2删除
     const deleteHandle = i => {
-      bom.splice(i, 1);
-      this.setState({
-        bom,
-      });
+      if (bom.length > 1) {
+        bom.splice(i, 1);
+        this.setState({
+          bom,
+        });
+      } else {
+        message.warning('请至少保留一项产品');
+      }
     };
 
     return (
