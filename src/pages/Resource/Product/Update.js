@@ -26,7 +26,7 @@ export default class UpdateProduct extends Component {
         price: props.values.price,
         price_fob: props.values.price_fob,
         num: props.values.num,
-        bom: props.values.bom,
+        bom: props.values.bom.length > 0 ? props.values.bom : [{ product: '', num: '' }],
         // start: props.values.start,
         // end: props.values.end,
         intro: props.values.intro,
