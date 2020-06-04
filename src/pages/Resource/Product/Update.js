@@ -315,19 +315,10 @@ export default class UpdateProduct extends Component {
                     rules: [
                       {
                         required: true,
-                        type: 'number',
-                        transform(value) {
-                          return value ? Number(value) : '';
-                        },
-                        validator(rule, value, callback) {
-                          if (typeof value === 'number' || value === '') {
-                            return callback();
-                          }
-                          return callback('必须是数字类型');
-                        },
+                        message: '必须是数字类型',
                       },
                     ],
-                  })(<Input placeholder="请输入包装计量（/箱）" size="large" />)}
+                  })(<Input placeholder="请输入包装计量（/箱）" size="large" type="number" />)}
                 </FormItem>
 
                 <FormItem
