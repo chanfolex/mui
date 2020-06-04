@@ -6,7 +6,7 @@ import {
   queryTypeOption,
   queryGradeOption,
   queryClientOption,
-  
+
   // eslint-disable-next-line import/extensions
 } from '@/services/product';
 // eslint-disable-next-line import/extensions
@@ -43,7 +43,6 @@ export default {
       const response = yield call(queryCategoryTinyOption, payload);
       return response;
     },
-
 
     *fetchProductOption({ payload }, { call }) {
       const response = yield call(queryProduct, payload);

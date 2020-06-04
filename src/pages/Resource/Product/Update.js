@@ -4,6 +4,7 @@ import { Row, Col, Form, Input, Select, Modal, Tabs } from 'antd';
 
 import UploadFile from '@/components/UploadFile';
 import styles from './product.less';
+import ProductItem from './ProductItem';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -25,6 +26,7 @@ export default class UpdateProduct extends Component {
         price: props.values.price,
         price_fob: props.values.price_fob,
         num: props.values.num,
+        bom: props.values.bom,
         // start: props.values.start,
         // end: props.values.end,
         intro: props.values.intro,
@@ -34,7 +36,7 @@ export default class UpdateProduct extends Component {
         unit: props.values.unit ? props.values.unit.id : '',
       },
       selectDisabled: false, // 二级分类是否禁止
-      categoryId:'' // 当前选中的一级分类
+      categoryId: '', // 当前选中的一级分类
     };
   }
 
@@ -50,12 +52,13 @@ export default class UpdateProduct extends Component {
       })),
     });
     // eslint-disable-next-line react/destructuring-assignment
-    this.props.handleFirstClassify('')
+    this.props.handleFirstClassify('');
     this.setState({
-      categoryId:this.props.values.category.id,
-    })
+      // eslint-disable-next-line react/destructuring-assignment
+      categoryId: this.props.values.category.id,
+    });
     // eslint-disable-next-line react/destructuring-assignment
-    this.props.handleSecondClassify(this.props.values.category.id,'')
+    this.props.handleSecondClassify(this.props.values.category.id, '');
   }
 
   handleUploadChange = ({ fileList }) =>
@@ -65,8 +68,6 @@ export default class UpdateProduct extends Component {
       uid: file.uid,
       url: file.response ? file.response.data : file.url,
     }));
-
-    
 
   render() {
     const { formVals } = this.state;
@@ -80,7 +81,8 @@ export default class UpdateProduct extends Component {
       units,
       supporters,
       handleFirstClassify,
-      handleSecondClassify
+      handleSecondClassify,
+      dispatch,
     } = this.props;
     const okHandle = () => {
       form.validateFields((errors, values) => {
@@ -96,16 +98,38 @@ export default class UpdateProduct extends Component {
     };
     const onTabChange = () => {};
 
-    const onChangeFirstClassify = (e) =>{
+    const onChangeFirstClassify = e => {
       this.setState({
         // eslint-disable-next-line react/no-unused-state
         selectDisabled: e === undefined,
         // eslint-disable-next-line react/no-unused-state
-        categoryId: e
-      })
+        categoryId: e,
+      });
       // eslint-disable-next-line react/destructuring-assignment
-      this.props.form.setFields({"categorytiny":""})
-    }
+      this.props.form.setFields({ categorytiny: '' });
+    };
+
+    // tabs2添加
+    const addHandle = () => {
+      // eslint-disable-next-line no-shadow
+      const { formVals } = this.state;
+      const data = Object.assign(formVals, {
+        bom: [...formVals.bom, { product: '', num: '' }],
+      });
+      this.setState({
+        formVals: data,
+      });
+    };
+
+    // tabs2删除
+    const deleteHandle = i => {
+      // eslint-disable-next-line no-shadow
+      const { formVals } = this.state;
+      formVals.bom.splice(i, 1);
+      this.setState({
+        formVals,
+      });
+    };
 
     return (
       <Modal
@@ -203,9 +227,9 @@ export default class UpdateProduct extends Component {
                       size="large"
                       filterOption={false}
                       // eslint-disable-next-line react/destructuring-assignment
-                      onFocus={() => handleSecondClassify(this.state.categoryId,'')}
+                      onFocus={() => handleSecondClassify(this.state.categoryId, '')}
                       // eslint-disable-next-line react/destructuring-assignment
-                      onSearch={e => handleSecondClassify(this.state.categoryId,e)}
+                      onSearch={e => handleSecondClassify(this.state.categoryId, e)}
                       // eslint-disable-next-line react/destructuring-assignment
                       disabled={this.state.selectDisabled}
                     >
@@ -371,6 +395,20 @@ export default class UpdateProduct extends Component {
                 </FormItem>
               </Col>
             </Row>
+          </TabPane>
+          <TabPane tab="bom 信息" key="2">
+            {formVals.bom.map((item, index) => (
+              <ProductItem
+                ref={`submitHandle${index}`}
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                addHandle={addHandle}
+                deleteHandle={deleteHandle}
+                id={index}
+                bom={item}
+                dispatch={dispatch}
+              />
+            ))}
           </TabPane>
           {/* <TabPane tab="供应商信息" key="2">
             <div className="supporter">
