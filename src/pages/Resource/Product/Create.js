@@ -10,6 +10,8 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
+let indexs = 1;
+
 @Form.create()
 export default class CreateProduct extends Component {
   constructor(props) {
@@ -17,7 +19,7 @@ export default class CreateProduct extends Component {
     this.state = {
       selectDisabled: true, // 二级分类是否禁止
       categoryId: '', // 当前选中的一级分类
-      bom: [{ product: '', num: '' }],
+      bom: [{ product: '', num: '', ids: 0 }],
     };
   }
 
@@ -49,14 +51,28 @@ export default class CreateProduct extends Component {
       form.validateFields((errors, values) => {
         if (errors) return;
         // eslint-disable-next-line no-param-reassign
-        // eslint-disable-next-line no-param-reassign
         values.cover = values.cover.map(el => el.url);
-        // eslint-disable-next-line no-use-before-define
-        const bomData = bom[0].product === '' ? [] : bom;
-        handleAdd(Object.assign(values, { bomData }));
-        form.resetFields();
+        if (bom.length > 1) {
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < bom.length; i++) {
+            if (bom[i].product === '' || bom[i].num === '') {
+              message.error('有数据未填写完整');
+              // eslint-disable-next-line no-return-assign
+              return;
+            }
+          }
+          handleAdd(Object.assign(values, { bom }));
+          form.resetFields();
+        } else {
+          const data = Object.assign(values, {
+            bom: bom[0].product === '' || bom[0].num === '' ? [] : bom,
+          });
+          handleAdd(data);
+          form.resetFields();
+        }
       });
     };
+
     const onTabChange = () => {};
 
     const onChangeFirstClassify = e => {
@@ -69,19 +85,19 @@ export default class CreateProduct extends Component {
       this.props.form.setFields({ categorytiny: '' });
     };
 
-    // tabs2添加
+    // bom添加
     const addHandle = () => {
       if (bom[bom.length - 1].product !== '' && bom[bom.length - 1].num !== '') {
         this.setState({
           // eslint-disable-next-line no-plusplus
-          bom: [...bom, { product: '', num: '' }],
+          bom: [...bom, { product: '', num: '', ids: indexs++ }],
         });
       } else {
-        message.error('请填写完整产品后再添加');
+        message.error('请先填写完整上一条内容');
       }
     };
 
-    // tabs2删除
+    // bom删除
     const deleteHandle = i => {
       if (bom.length > 1) {
         bom.splice(i, 1);
@@ -89,7 +105,10 @@ export default class CreateProduct extends Component {
           bom,
         });
       } else {
-        message.warning('请至少保留一项产品');
+        this.setState({
+          // eslint-disable-next-line no-plusplus
+          bom: [{ product: '', num: '', ids: indexs++ }],
+        });
       }
     };
 
@@ -356,8 +375,7 @@ export default class CreateProduct extends Component {
             {bom.map((item, index) => (
               <ProductItem
                 ref={`submitHandle${index}`}
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
+                key={item.ids}
                 addHandle={addHandle}
                 deleteHandle={deleteHandle}
                 id={index}

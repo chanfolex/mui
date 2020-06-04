@@ -43,13 +43,11 @@ class ProductItem extends React.Component {
     const { getFieldDecorator } = this.props.form;
     const { addHandle, deleteHandle, id, bom } = this.props;
     const { productOption } = this.state;
-    // eslint-disable-next-line react/destructuring-assignment
     return (
       <div>
         <Form layout="inline">
-          <Form.Item required label="产品">
+          <Form.Item label="产品">
             {getFieldDecorator('product', {
-              rules: [{ required: true, message: '请选择产品' }],
               initialValue: bom.name,
             })(
               <Select
@@ -57,7 +55,7 @@ class ProductItem extends React.Component {
                 showSearch
                 placeholder="请选择产品"
                 // eslint-disable-next-line no-return-assign
-                onChange={value => (bom.product = value)}
+                onChange={value => (bom.product = value === undefined ? '' : value)}
                 style={{ width: '200px' }}
                 filterOption={false}
                 onSearch={e => this.selectSearchHandle(e)}
@@ -70,9 +68,8 @@ class ProductItem extends React.Component {
               </Select>
             )}
           </Form.Item>
-          <Form.Item required label="数量">
+          <Form.Item label="数量">
             {getFieldDecorator('num', {
-              rules: [{ required: true, message: '请输入数量' }],
               initialValue: bom.num,
             })(
               <InputNumber
@@ -80,7 +77,7 @@ class ProductItem extends React.Component {
                 style={{ width: '200px' }}
                 min={0}
                 // eslint-disable-next-line no-return-assign
-                onChange={value => (bom.num = value)}
+                onChange={value => (bom.num = value === undefined ? '' : value)}
               />
             )}
           </Form.Item>

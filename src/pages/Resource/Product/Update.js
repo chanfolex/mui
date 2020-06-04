@@ -11,10 +11,22 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
+let indexs = 0;
+
 @Form.create()
 export default class UpdateProduct extends Component {
   constructor(props) {
     super(props);
+    if (props.values.bom.length > 0) {
+      // eslint-disable-next-line array-callback-return
+      props.values.bom.map((item, index) => {
+        // eslint-disable-next-line no-param-reassign
+        item.ids = index;
+      });
+    }
+    indexs = props.values.bom.length;
+    console.log(indexs);
+
     this.state = {
       formVals: {
         id: props.values.id,
@@ -26,7 +38,7 @@ export default class UpdateProduct extends Component {
         price: props.values.price,
         price_fob: props.values.price_fob,
         num: props.values.num,
-        bom: props.values.bom.length > 0 ? props.values.bom : [{ product: '', num: '' }],
+        bom: props.values.bom.length > 0 ? props.values.bom : [{ product: '', num: '', ids: 0 }],
         // start: props.values.start,
         // end: props.values.end,
         intro: props.values.intro,
@@ -84,19 +96,35 @@ export default class UpdateProduct extends Component {
       handleSecondClassify,
       dispatch,
     } = this.props;
+
     const okHandle = () => {
       form.validateFields((errors, values) => {
         if (errors) return;
         // eslint-disable-next-line no-param-reassign
-        // eslint-disable-next-line no-param-reassign
         values.cover = values.cover.map(el => el.url);
-        // eslint-disable-next-line no-param-reassign
-        values.id = formVals.id;
-        const bomData = formVals.bom[0].product === '' ? [] : formVals.bom;
-        handleUpdate(Object.assign(values, { bom: bomData }));
-        form.resetFields();
+
+        if (formVals.bom.length > 1) {
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < formVals.bom.length; i++) {
+            if (formVals.bom[i].product === '' || formVals.bom[i].num === '') {
+              message.error('有数据未填写完整');
+              // eslint-disable-next-line no-return-assign
+              return;
+            }
+          }
+          handleUpdate(Object.assign(values, { bom: formVals.bom }));
+          form.resetFields();
+        } else {
+          // 判断当前的数据是否都为空，若为空则直接传递
+          const data = Object.assign(values, {
+            bom: formVals.bom[0].product === '' || formVals.bom[0].num === '' ? [] : formVals.bom,
+          });
+          handleUpdate(data);
+          form.resetFields();
+        }
       });
     };
+
     const onTabChange = () => {};
 
     const onChangeFirstClassify = e => {
@@ -110,37 +138,33 @@ export default class UpdateProduct extends Component {
       this.props.form.setFields({ categorytiny: '' });
     };
 
-    // tabs2添加
+    // bom添加
     const addHandle = () => {
-      // eslint-disable-next-line no-shadow
-      const { formVals } = this.state;
-      if (
-        formVals.bom[formVals.bom.length - 1].product !== '' &&
-        formVals.bom[formVals.bom.length - 1].num !== ''
-      ) {
+      const { product, num } = formVals.bom[formVals.bom.length - 1];
+      if (product !== '' && num !== '') {
         const data = Object.assign(formVals, {
-          bom: [...formVals.bom, { product: '', num: '' }],
+          // eslint-disable-next-line no-plusplus
+          bom: [...formVals.bom, { product: '', num: '', ids: indexs++ }],
         });
         this.setState({
           formVals: data,
         });
       } else {
-        message.error('请填写完整产品后再添加');
+        message.error('请先填写完整上一条内容');
       }
     };
 
-    // tabs2删除
+    // bom删除
     const deleteHandle = i => {
-      // eslint-disable-next-line no-shadow
-      const { formVals } = this.state;
       if (formVals.bom.length > 1) {
         formVals.bom.splice(i, 1);
-        this.setState({
-          formVals,
-        });
       } else {
-        message.warning('请至少保留一项产品');
+        // eslint-disable-next-line no-plusplus
+        formVals.bom = [{ product: '', num: '', ids: indexs++ }];
       }
+      this.setState({
+        formVals,
+      });
     };
 
     return (
@@ -408,8 +432,7 @@ export default class UpdateProduct extends Component {
             {formVals.bom.map((item, index) => (
               <ProductItem
                 ref={`submitHandle${index}`}
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
+                key={item.ids}
                 addHandle={addHandle}
                 deleteHandle={deleteHandle}
                 id={index}
