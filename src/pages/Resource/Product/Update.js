@@ -92,7 +92,7 @@ export default class UpdateProduct extends Component {
         values.cover = values.cover.map(el => el.url);
         // eslint-disable-next-line no-param-reassign
         values.id = formVals.id;
-        handleUpdate(values);
+        handleUpdate(Object.assign(values, { bom: formVals.bom }));
         form.resetFields();
       });
     };

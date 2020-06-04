@@ -50,7 +50,7 @@ class ProductItem extends React.Component {
           <Form.Item required label="产品">
             {getFieldDecorator('product', {
               rules: [{ required: true, message: '请选择产品' }],
-              initialValue: bom.product,
+              initialValue: bom.name,
             })(
               <Select
                 allowClear
@@ -59,6 +59,7 @@ class ProductItem extends React.Component {
                 // eslint-disable-next-line no-return-assign
                 onChange={value => (bom.product = value)}
                 style={{ width: '200px' }}
+                filterOption={false}
                 onSearch={e => this.selectSearchHandle(e)}
               >
                 {productOption.map(el => (
