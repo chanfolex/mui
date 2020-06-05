@@ -1,3 +1,7 @@
+/* eslint-disable consistent-return */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
 
 import { Row, Col, Form, Input, Select, Modal, Tabs, message } from 'antd';
@@ -50,26 +54,19 @@ export default class CreateProduct extends Component {
     const okHandle = () => {
       form.validateFields((errors, values) => {
         if (errors) return;
-        // eslint-disable-next-line no-param-reassign
         values.cover = values.cover.map(el => el.url);
-        if (bom.length > 1) {
-          // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < bom.length; i++) {
-            if (bom[i].product === '' || bom[i].num === '') {
-              message.error('有数据未填写完整');
-              // eslint-disable-next-line no-return-assign
-              return;
-            }
+        // 对所有未填写的数据进行拦截
+        if (!bom.every(item => item.product && item.num)) {
+          // 单独对数据只有一条且都没有填写内容，进行放行。
+          if (bom.length === 1 && bom[0].product === '' && bom[0].num === '') {
+            handleAdd(Object.assign(values, { bom: [] }));
+            form.resetFields();
+            return;
           }
-          handleAdd(Object.assign(values, { bom }));
-          form.resetFields();
-        } else {
-          const data = Object.assign(values, {
-            bom: bom[0].product === '' || bom[0].num === '' ? [] : bom,
-          });
-          handleAdd(data);
-          form.resetFields();
+          return message.info('还有必填项没有未填');
         }
+        handleAdd(Object.assign(values, { bom }));
+        form.resetFields();
       });
     };
 
@@ -77,11 +74,9 @@ export default class CreateProduct extends Component {
 
     const onChangeFirstClassify = e => {
       this.setState({
-        // eslint-disable-next-line react/no-unused-state
         selectDisabled: e === undefined,
         categoryId: e,
       });
-      // eslint-disable-next-line react/destructuring-assignment
       this.props.form.setFields({ categorytiny: '' });
     };
 
@@ -89,7 +84,6 @@ export default class CreateProduct extends Component {
     const addHandle = () => {
       if (bom[bom.length - 1].product !== '' && bom[bom.length - 1].num !== '') {
         this.setState({
-          // eslint-disable-next-line no-plusplus
           bom: [...bom, { product: '', num: '', ids: indexs++ }],
         });
       } else {
@@ -106,7 +100,6 @@ export default class CreateProduct extends Component {
         });
       } else {
         this.setState({
-          // eslint-disable-next-line no-plusplus
           bom: [{ product: '', num: '', ids: indexs++ }],
         });
       }

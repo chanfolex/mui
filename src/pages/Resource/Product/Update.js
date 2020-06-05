@@ -1,3 +1,8 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable array-callback-return */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-param-reassign */
+/* eslint-disable consistent-return */
 import React, { Component } from 'react';
 
 import { Row, Col, Form, Input, Select, Modal, Tabs, message } from 'antd';
@@ -17,15 +22,10 @@ let indexs = 0;
 export default class UpdateProduct extends Component {
   constructor(props) {
     super(props);
-    if (props.values.bom.length > 0) {
-      // eslint-disable-next-line array-callback-return
-      props.values.bom.map((item, index) => {
-        // eslint-disable-next-line no-param-reassign
-        item.ids = index;
-      });
-    }
-    indexs = props.values.bom.length;
-    console.log(indexs);
+    props.values.bom.map((item, index) => {
+      item.ids = index;
+    });
+    indexs = props.values.bom.length + 1;
 
     this.state = {
       formVals: {
@@ -63,13 +63,10 @@ export default class UpdateProduct extends Component {
         url: el,
       })),
     });
-    // eslint-disable-next-line react/destructuring-assignment
     this.props.handleFirstClassify('');
     this.setState({
-      // eslint-disable-next-line react/destructuring-assignment
       categoryId: this.props.values.category.id,
     });
-    // eslint-disable-next-line react/destructuring-assignment
     this.props.handleSecondClassify(this.props.values.category.id, '');
   }
 
@@ -100,28 +97,24 @@ export default class UpdateProduct extends Component {
     const okHandle = () => {
       form.validateFields((errors, values) => {
         if (errors) return;
-        // eslint-disable-next-line no-param-reassign
         values.cover = values.cover.map(el => el.url);
-
-        if (formVals.bom.length > 1) {
-          // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < formVals.bom.length; i++) {
-            if (formVals.bom[i].product === '' || formVals.bom[i].num === '') {
-              message.error('有数据未填写完整');
-              // eslint-disable-next-line no-return-assign
-              return;
-            }
+        values.id = formVals.id;
+        // 对所有未填写的数据进行拦截
+        if (!formVals.bom.every(item => item.product && item.num)) {
+          // 单独对数据只有一条且都没有填写内容，进行放行。
+          if (
+            formVals.bom.length === 1 &&
+            formVals.bom[0].product === '' &&
+            formVals.bom[0].num === ''
+          ) {
+            handleUpdate(Object.assign(values, { bom: [] }));
+            form.resetFields();
+            return;
           }
-          handleUpdate(Object.assign(values, { bom: formVals.bom }));
-          form.resetFields();
-        } else {
-          // 判断当前的数据是否都为空，若为空则直接传递
-          const data = Object.assign(values, {
-            bom: formVals.bom[0].product === '' || formVals.bom[0].num === '' ? [] : formVals.bom,
-          });
-          handleUpdate(data);
-          form.resetFields();
+          return message.info('还有必填项没有未填');
         }
+        handleUpdate(Object.assign(values, { bom: formVals.bom }));
+        form.resetFields();
       });
     };
 
@@ -129,12 +122,9 @@ export default class UpdateProduct extends Component {
 
     const onChangeFirstClassify = e => {
       this.setState({
-        // eslint-disable-next-line react/no-unused-state
         selectDisabled: e === undefined,
-        // eslint-disable-next-line react/no-unused-state
         categoryId: e,
       });
-      // eslint-disable-next-line react/destructuring-assignment
       this.props.form.setFields({ categorytiny: '' });
     };
 
@@ -143,7 +133,6 @@ export default class UpdateProduct extends Component {
       const { product, num } = formVals.bom[formVals.bom.length - 1];
       if (product !== '' && num !== '') {
         const data = Object.assign(formVals, {
-          // eslint-disable-next-line no-plusplus
           bom: [...formVals.bom, { product: '', num: '', ids: indexs++ }],
         });
         this.setState({
@@ -159,7 +148,6 @@ export default class UpdateProduct extends Component {
       if (formVals.bom.length > 1) {
         formVals.bom.splice(i, 1);
       } else {
-        // eslint-disable-next-line no-plusplus
         formVals.bom = [{ product: '', num: '', ids: indexs++ }];
       }
       this.setState({
