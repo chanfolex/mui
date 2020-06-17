@@ -474,6 +474,7 @@ class SaleContractInsert extends Component {
       searchModalState: false,
       selectedRowKeys: [],
       selectStorages: null,
+      selectedProductList: [],
     });
     this.selectedRows = [];
     this.recordDataList = [];
@@ -961,7 +962,7 @@ class SaleContractInsert extends Component {
           </div>
         </div>
         <Modal
-          title="产品查询11"
+          title="产品查询"
           visible={searchModalState}
           onOk={this.hideModal}
           maskClosable={false}
@@ -1055,6 +1056,7 @@ class SaleContractInsert extends Component {
                   pagination={false}
                   columns={selectedColumns}
                   dataSource={selectedProductList}
+                  scroll={{ y: 550 }}
                 />
               </div>
             </Col>
