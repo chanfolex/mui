@@ -1,9 +1,14 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-return-assign */
+/* eslint-disable no-plusplus */
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import Dayjs from 'dayjs';
 // eslint-disable-next-line import/order
 import PrintModal from '../../Print/PrintInsertModal';
+import _ from 'lodash';
 
 import {
   Row,
@@ -20,6 +25,7 @@ import {
   Select,
   Modal,
   Table,
+  Icon,
 } from 'antd';
 import Debounce from 'lodash-decorators/debounce';
 // eslint-disable-next-line import/extensions
@@ -87,9 +93,10 @@ class SaleContractInsert extends Component {
         unit: '',
         barsn: '',
       })),
+      selectedProductList: [], // 存放已选商品
     };
     // 无需更新页面
-    this.selectedRows = [];
+    this.selectedRows = []; // 选中了某一个选项
     this.recordDataList = [];
   }
 
@@ -239,7 +246,6 @@ class SaleContractInsert extends Component {
       const arr = [...des];
       arr.splice(curIndex, 1, obj);
       this.setState({ des: arr });
-      console.log(arr);
     }
   };
 
@@ -326,7 +332,7 @@ class SaleContractInsert extends Component {
 
   // 清除页面表单数据
   clearFromData = () => {
-    const { form,dispatch } = this.props;
+    const { form, dispatch } = this.props;
     this.setState({
       des: [1, 2, 3].map(() => ({
         name: '',
@@ -455,7 +461,6 @@ class SaleContractInsert extends Component {
 
   submit = () => {
     this.recordDataList = this.recordDataList.concat(...this.selectedRows);
-    console.log(this.recordDataList);
     if (!this.recordDataList.length) {
       return message.warning('您没有选择任何表单数据，不可以提交');
     }
@@ -526,6 +531,57 @@ class SaleContractInsert extends Component {
     setTimeout(() => this.getProduction(), 100);
   };
 
+  // 已选商品
+  onSelectProduct = (record, selected) => {
+    const { selectedProductList } = this.state;
+    record.num = 1;
+    selected
+      ? selectedProductList.push(record)
+      : selectedProductList.splice(_.findIndex(selectedProductList, { id: record.id }), 1);
+    this.setState({
+      selectedProductList: _.uniqWith(selectedProductList, _.isEqual),
+    });
+  };
+
+  // 全选/全取消
+  onSelectAllProduct = (selected, selectedRows, changeRows) => {
+    const { selectedProductList } = this.state;
+    selectedRows.map(item => (item.num = 1));
+    this.setState({
+      selectedProductList: selected
+        ? _.uniqWith(selectedProductList.concat(selectedRows), _.isEqual)
+        : this.getArrDifference(changeRows, selectedProductList),
+    });
+  };
+
+  // 遍历去除两数组共有的数
+  getArrDifference = (changeRows, selectedProductList) => {
+    changeRows.map(item =>
+      selectedProductList.splice(_.findIndex(selectedProductList, ['id', item.id]), 1)
+    );
+    return selectedProductList;
+  };
+
+  // 删除选中
+  deleteItem = i => {
+    const { selectedProductList, selectedRowKeys } = this.state;
+    selectedProductList.splice(i, 1);
+    selectedRowKeys.splice(i, 1);
+    this.setState({
+      selectedProductList,
+      selectedRowKeys,
+    });
+  };
+
+  // 修改数量
+  onChangeNum = (v, i) => {
+    const { selectedProductList } = this.state;
+    selectedProductList[i].num = v;
+    this.setState({
+      selectedProductList,
+    });
+  };
+
   render() {
     const {
       product,
@@ -551,13 +607,10 @@ class SaleContractInsert extends Component {
       page,
       printRecordData,
       showModel,
+      selectedProductList,
     } = this.state;
     const iniKeys = des && des.length > 0 ? des.map((el, index) => index) : [];
-    // console.log(des)
-    // console.log(iniKeys)
     getFieldDecorator('keys', { initialValue: iniKeys });
-    // const keys = getFieldValue('keys');
-    // console.log('keys', keys);
     let total = 0;
     des.forEach(el => {
       if (el.numValue && el.priceValue) {
@@ -588,6 +641,8 @@ class SaleContractInsert extends Component {
         this.setState({ selectedRowKeys: selectedKeys });
         this.selectedRows = selectedRows;
       },
+      onSelect: this.onSelectProduct,
+      onSelectAll: this.onSelectAllProduct,
     };
     const tableList = [
       {
@@ -754,6 +809,46 @@ class SaleContractInsert extends Component {
       },
     ];
     const tableData = des;
+
+    // 已选商品
+    const selectedColumns = [
+      {
+        title: '库存编码',
+        dataIndex: 'price',
+      },
+      {
+        title: '产品名称',
+        dataIndex: 'name',
+      },
+      {
+        title: '产品批号',
+        dataIndex: 'id',
+      },
+      {
+        title: '数量',
+        dataIndex: 'num',
+        render: (text, record, index) => (
+          <InputNumber
+            min={1}
+            max={99}
+            defaultValue={1}
+            value={text}
+            onChange={v => this.onChangeNum(v, index)}
+          />
+        ),
+      },
+      {
+        dataIndex: 'handle',
+        render: (text, record, index) => (
+          <Icon
+            type="delete"
+            style={{ cursor: 'pointer' }}
+            onClick={() => this.deleteItem(index)}
+          />
+        ),
+      },
+    ];
+
     return (
       <PageHeaderWrapper title="">
         <div style={{ background: 'white', padding: 10 }}>
@@ -866,88 +961,104 @@ class SaleContractInsert extends Component {
           </div>
         </div>
         <Modal
-          title="产品查询"
+          title="产品查询11"
           visible={searchModalState}
           onOk={this.hideModal}
           maskClosable={false}
-          width={1024}
+          width={1280}
           onCancel={this.hideModal}
           footer={false}
         >
-          <div className={styles.searchModalHeader}>
-            <div>
-              <Select
-                allowClear
-                value={selectStorages}
-                placeholder="请选择仓库"
-                style={{ width: 200 }}
-                onChange={this.selectStorage}
-              >
-                {storages.map((el, i) => (
-                  <Option key={el.id} value={`${el.id}//${i}`}>
-                    {el.name}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-            <div>
-              <Input
-                placeholder="产品拼音首字母搜索"
-                onChange={this.searchContent}
-                onPressEnter={this.enterProduction}
-              />
-            </div>
-          </div>
-          <div
-            style={{
-              borderTop: '1px solid #f3f3f3',
-              borderBottom: '1px solid #f3f3f3',
-              display: 'flex',
-            }}
-          >
-            <Col
-              span={8}
-              style={{
-                borderLeft: '1px solid #f3f3f3',
-                borderRight: '1px solid #f3f3f3',
-                padding: 15,
-              }}
-            >
-              <div>产品分类</div>
-              <div style={{ background: '#f3f3f3' }} className={styles.searchModalLeft}>
-                {categorys.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className={
-                      categoryIndex === index || (!categoryIndex && !index)
-                        ? styles.searchModalLeftListIndexItem
-                        : styles.searchModalLeftListItem
-                    }
-                    onClick={() => this.selectCategory(item, index)}
+          <Row>
+            <Col span={14}>
+              <div className={styles.searchModalHeader}>
+                <div>
+                  <Select
+                    allowClear
+                    value={selectStorages}
+                    placeholder="请选择仓库"
+                    style={{ width: 200 }}
+                    onChange={this.selectStorage}
                   >
-                    {item.name}
+                    {storages.map((el, i) => (
+                      <Option key={el.id} value={`${el.id}//${i}`}>
+                        {el.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <Input
+                    placeholder="产品拼音首字母搜索"
+                    onChange={this.searchContent}
+                    onPressEnter={this.enterProduction}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  borderTop: '1px solid #f3f3f3',
+                  borderBottom: '1px solid #f3f3f3',
+                  display: 'flex',
+                }}
+              >
+                <Col
+                  span={8}
+                  style={{
+                    borderLeft: '1px solid #f3f3f3',
+                    borderRight: '1px solid #f3f3f3',
+                    padding: 15,
+                  }}
+                >
+                  <div>产品分类</div>
+                  <div style={{ background: '#f3f3f3' }} className={styles.searchModalLeft}>
+                    {categorys.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className={
+                          categoryIndex === index || (!categoryIndex && !index)
+                            ? styles.searchModalLeftListIndexItem
+                            : styles.searchModalLeftListItem
+                        }
+                        onClick={() => this.selectCategory(item, index)}
+                      >
+                        {item.name}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </Col>
+                <Col span={16} style={{ borderRight: '1px solid #f3f3f3', padding: 15 }}>
+                  <Table
+                    rowSelection={rowSelection}
+                    dataSource={dataSource}
+                    columns={columns}
+                    rowKey={(record, index) =>
+                      `${searchContent || 'none'}//${
+                        storageIndex ? storages[storageIndex].name : 'all'
+                      }//${
+                        categoryIndex ? categorys[categoryIndex].name : 'all'
+                      }//${page}//${index}`
+                    }
+                    pagination={{
+                      total: totalSum,
+                      onChange: this.pageChange,
+                      current: page,
+                    }}
+                  />
+                </Col>
               </div>
             </Col>
-            <Col span={16} style={{ borderRight: '1px solid #f3f3f3', padding: 15 }}>
-              <Table
-                rowSelection={rowSelection}
-                dataSource={dataSource}
-                columns={columns}
-                rowKey={(record, index) =>
-                  `${searchContent || 'none'}//${
-                    storageIndex ? storages[storageIndex].name : 'all'
-                  }//${categoryIndex ? categorys[categoryIndex].name : 'all'}//${page}//${index}`
-                }
-                pagination={{
-                  total: totalSum,
-                  onChange: this.pageChange,
-                  current: page,
-                }}
-              />
+            <Col span={10} style={{ paddingLeft: 15 }}>
+              <div style={{ border: '1px solid #eee' }}>
+                <div style={{ borderBottom: '1px solid #eee', padding: '15px' }}>已选商品</div>
+                <Table
+                  pagination={false}
+                  columns={selectedColumns}
+                  dataSource={selectedProductList}
+                />
+              </div>
             </Col>
-          </div>
+          </Row>
           <div className={styles.searchModalFooter}>
             <Button type="primary" onClick={this.hideModal}>
               关闭
