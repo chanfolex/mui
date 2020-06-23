@@ -535,7 +535,7 @@ class SaleContractInsert extends Component {
   // 已选商品
   onSelectProduct = (record, selected) => {
     const { selectedProductList } = this.state;
-    record.num = 1;
+    record.numValue = 1;
     selected
       ? selectedProductList.push(record)
       : selectedProductList.splice(_.findIndex(selectedProductList, { id: record.id }), 1);
@@ -547,7 +547,7 @@ class SaleContractInsert extends Component {
   // 全选/全取消
   onSelectAllProduct = (selected, selectedRows, changeRows) => {
     const { selectedProductList } = this.state;
-    selectedRows.map(item => (item.num = 1));
+    selectedRows.map(item => (item.numValue = 1));
     this.setState({
       selectedProductList: selected
         ? _.uniqWith(selectedProductList.concat(selectedRows), _.isEqual)
@@ -577,7 +577,7 @@ class SaleContractInsert extends Component {
   // 修改数量
   onChangeNum = (v, i) => {
     const { selectedProductList } = this.state;
-    selectedProductList[i].num = v;
+    selectedProductList[i].numValue = v;
     this.setState({
       selectedProductList,
     });
@@ -827,13 +827,14 @@ class SaleContractInsert extends Component {
       },
       {
         title: '数量',
-        dataIndex: 'num',
+        dataIndex: 'numValue',
         render: (text, record, index) => (
           <InputNumber
             min={1}
             max={99}
             defaultValue={1}
             value={text}
+            style={{ width: 60 }}
             onChange={v => this.onChangeNum(v, index)}
           />
         ),
