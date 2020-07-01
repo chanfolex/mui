@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-assign */
@@ -460,7 +461,7 @@ class SaleContractInsert extends Component {
   };
 
   submit = () => {
-    this.recordDataList = this.recordDataList.concat(...this.selectedRows);
+    this.recordDataList = this.state.selectedProductList;
     if (!this.recordDataList.length) {
       return message.warning('您没有选择任何表单数据，不可以提交');
     }
