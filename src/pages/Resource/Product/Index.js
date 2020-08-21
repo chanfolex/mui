@@ -95,6 +95,21 @@ class Product extends PureComponent {
     });
   };
 
+  // 单位选项查询
+  handleFirstUnit = value => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'product/fetchTypeOption',
+      payload: { abbr: value },
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({
+          units: res.data,
+        });
+      }
+    });
+  };
+
   showDrawer = record => {
     this.setState({
       drawerVisible: true,
@@ -306,6 +321,7 @@ class Product extends PureComponent {
       handleModalVisible: this.handleModalVisible,
       handleFirstClassify: this.handleFirstClassify,
       handleSecondClassify: this.handleSecondClassify,
+      handleFirstUnit: this.handleFirstUnit,
     };
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
@@ -367,7 +383,7 @@ class Product extends PureComponent {
         dataIndex: 'unit',
         width: 150,
         key: 'unit',
-        render: unit => <span>{unit ? unit.name : '无'}</span>,
+        render: unit => <span>{unit ? unit.map(item => `${item.name}、`) : '无'}</span>,
       },
       {
         title: '包装(箱)',

@@ -46,6 +46,7 @@ export default class CreateProduct extends Component {
       supporters,
       handleFirstClassify,
       handleSecondClassify,
+      handleFirstUnit,
       dispatch,
     } = this.props;
 
@@ -55,6 +56,7 @@ export default class CreateProduct extends Component {
       form.validateFields((errors, values) => {
         if (errors) return;
         values.cover = values.cover.map(el => el.url);
+        values.unit = String(values.type);
         // 对所有未填写的数据进行拦截
         if (!bom.every(item => item.product && item.num)) {
           // 单独对数据只有一条且都没有填写内容，进行放行。
@@ -240,6 +242,11 @@ export default class CreateProduct extends Component {
                       placeholder="请选择单位"
                       style={{ width: '100%' }}
                       size="large"
+                      mode="multiple"
+                      showSearch
+                      filterOption={false}
+                      onSearch={e => handleFirstUnit(e)}
+                      onFocus={() => handleFirstUnit('')}
                     >
                       {units.map(el => (
                         <Option key={el.id} value={el.id}>

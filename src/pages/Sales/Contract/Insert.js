@@ -832,7 +832,6 @@ class SaleContractInsert extends Component {
         render: (text, record, index) => (
           <InputNumber
             min={1}
-            max={99}
             defaultValue={1}
             value={text}
             style={{ width: 60 }}

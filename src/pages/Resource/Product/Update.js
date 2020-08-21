@@ -45,7 +45,8 @@ export default class UpdateProduct extends Component {
         category: props.values.category ? props.values.category.id : '',
         categorytiny: props.values.categorytiny ? props.values.categorytiny.id : '',
         supporter: props.values.supporter ? props.values.supporter.id : '',
-        unit: props.values.unit ? props.values.unit.id : '',
+        // unit: props.values.unit ? props.values.unit.id : '',
+        unit: props.values.unit ? props.values.unit.map(item => item.id) : '',
       },
       selectDisabled: false, // 二级分类是否禁止
       categoryId: '', // 当前选中的一级分类
@@ -99,6 +100,7 @@ export default class UpdateProduct extends Component {
         if (errors) return;
         values.cover = values.cover.map(el => el.url);
         values.id = formVals.id;
+        values.unit = String(values.unit);
         // 对所有未填写的数据进行拦截
         if (!formVals.bom.every(item => item.product && item.num)) {
           // 单独对数据只有一条且都没有填写内容，进行放行。
@@ -292,6 +294,12 @@ export default class UpdateProduct extends Component {
                       placeholder="请选择单位"
                       style={{ width: '100%' }}
                       size="large"
+                      mode="multiple"
+                      showSearch
+                      filterOption={false}
+                      // onSearch={e => handleFirstUnit(e)}
+                      // onChange={e => onChangeFirstUnit(e)}
+                      // onFocus={() => handleFirstUnit('')}
                     >
                       {units.map(el => (
                         <Option key={el.id} value={el.id}>
