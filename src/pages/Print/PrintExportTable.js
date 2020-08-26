@@ -26,10 +26,14 @@ class PrintExportTable extends PureComponent {
         key: 'shape',
         name: '型号',
       },
-      
+
       {
         key: 'price',
         name: '单价',
+      },
+      {
+        key: 'unit',
+        name: '单位',
       },
       {
         key: 'num',
@@ -50,6 +54,7 @@ class PrintExportTable extends PureComponent {
       shape: el.shape || el.product.shape,
       name: el.name || el.product.name,
       price: parseFloat(el.price).toFixed(2),
+      unit: el.unit,
       num: el.num,
       total: parseFloat(el.total).toFixed(2),
       extra: el.extra,
@@ -64,9 +69,10 @@ class PrintExportTable extends PureComponent {
         num: '',
         total: '',
         extra: '',
+        unit: '',
       });
     }
-  
+
     const { pageNumber } = this.state;
 
     const printGroupData = this.page(pageNumber, printData);
@@ -76,7 +82,6 @@ class PrintExportTable extends PureComponent {
       printGroupData,
     });
   }
-
 
   createTitle = title => (
     <div>
@@ -103,7 +108,7 @@ class PrintExportTable extends PureComponent {
             </th>
             <th>客户</th>
             <th colSpan="7">
-              <input style={styleObj.printInput} value={print.clientName||print.client.name} />
+              <input style={styleObj.printInput} value={print.clientName || print.client.name} />
             </th>
             <th>订单日期</th>
             <th colSpan="7">
@@ -148,55 +153,55 @@ class PrintExportTable extends PureComponent {
     </table>
   );
 
-  createFooter = (footerData) => {
+  createFooter = footerData => {
     const { print } = this.props;
     return (
       <table style={{ width: '100%', height: 30 }}>
-      <tbody style={styleObj.footer}>
-        <tr>
-          <th>经办人</th>
-          <th>
-            <div style={styleObj.footerSpace} />
-          </th>
-          <th colSpan="4">
-            <input style={styleObj.printInputFooter} />
-          </th>
-          <th></th>
-          <th>
-            <div style={styleObj.footerSpace} />
-          </th>
-          <th colSpan="4">
-            <input style={styleObj.printInputFooter} />
-          </th>
-          <th></th>
-          <th>
-            <div style={styleObj.footerSpace} />
-          </th>
-          <th colSpan="4">
-            <input style={styleObj.printInputFooter} />
-          </th>
-        </tr>
+        <tbody style={styleObj.footer}>
+          <tr>
+            <th>经办人</th>
+            <th>
+              <div style={styleObj.footerSpace} />
+            </th>
+            <th colSpan="4">
+              <input style={styleObj.printInputFooter} />
+            </th>
+            <th />
+            <th>
+              <div style={styleObj.footerSpace} />
+            </th>
+            <th colSpan="4">
+              <input style={styleObj.printInputFooter} />
+            </th>
+            <th />
+            <th>
+              <div style={styleObj.footerSpace} />
+            </th>
+            <th colSpan="4">
+              <input style={styleObj.printInputFooter} />
+            </th>
+          </tr>
 
-        <tr>
-          <th>合计数量</th>
-          <th>
-            <div style={styleObj.footerSpace} />
-          </th>
-          <th colSpan="4">
-          <input style={styleObj.printInputFooter} value={print.totalNum}  />
-          </th>
-          <th>合计金额(元)</th>
-          <th>
-            <div style={styleObj.footerSpace} />
-          </th>
-          <th colSpan="4">
-            <input style={styleObj.printInputFooter} value={print.totalPrice}  />
-          </th>
-          <th>{`第${footerData.current}页`}</th>
-          <th>{`共${footerData.total}页`}</th>
-        </tr>
-      </tbody>
-    </table>
+          <tr>
+            <th>合计数量</th>
+            <th>
+              <div style={styleObj.footerSpace} />
+            </th>
+            <th colSpan="4">
+              <input style={styleObj.printInputFooter} value={print.totalNum} />
+            </th>
+            <th>合计金额(元)</th>
+            <th>
+              <div style={styleObj.footerSpace} />
+            </th>
+            <th colSpan="4">
+              <input style={styleObj.printInputFooter} value={print.totalPrice} />
+            </th>
+            <th>{`第${footerData.current}页`}</th>
+            <th>{`共${footerData.total}页`}</th>
+          </tr>
+        </tbody>
+      </table>
     );
   };
 

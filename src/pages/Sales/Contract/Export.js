@@ -46,7 +46,7 @@ class SaleContractExport extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ordate:moment().format('YYYY-MM-DD'),
+      ordate: moment().format('YYYY-MM-DD'),
       curIndex: 0,
       client: '',
       searchModalState: false,
@@ -236,7 +236,6 @@ class SaleContractExport extends Component {
       const arr = [...des];
       arr.splice(curIndex, 1, obj);
       this.setState({ des: arr });
-      console.log(arr);
     }
   };
 
@@ -291,6 +290,9 @@ class SaleContractExport extends Component {
               supporter: 1,
               storage: 1,
               extra: values.extra,
+              unit: el.unit.map(
+                (item, index) => (index === el.unit.length - 1 ? `${item.name}` : `${item.name}|`)
+              ),
             };
             return formVal;
           }),
@@ -322,7 +324,7 @@ class SaleContractExport extends Component {
 
   // 清除页面表单数据
   clearFromData = () => {
-    const { form,dispatch } = this.props;
+    const { form, dispatch } = this.props;
     this.setState({
       des: [1, 2, 3].map(() => ({
         name: '',
@@ -345,7 +347,7 @@ class SaleContractExport extends Component {
         barsn: '',
       })),
       juserValue: null,
-      supporter: '',
+      // supporter: '',
     });
     form.resetFields();
     dispatch({ type: 'salesContract/fetchSaleContractSn' });
@@ -398,7 +400,6 @@ class SaleContractExport extends Component {
   // };
 
   openSearchModal = index => {
-    console.log(index);
     this.setState({ searchModalState: true, itemIndex: index });
   };
 
@@ -697,10 +698,16 @@ class SaleContractExport extends Component {
         title: '单位',
         width: 80,
         key: 'unit',
-        render: text => {
-          if (text.unit && text.unit.name) return <div>{text.unit.name}</div>;
-          return <div />;
-        },
+        render: text =>
+          text.unit === '' ? (
+            <div>11</div>
+          ) : (
+            <div>
+              {text.unit.map(
+                (item, index) => (index === text.unit.length - 1 ? `${item.name}` : `${item.name}|`)
+              )}
+            </div>
+          ),
       },
       {
         title: '单价',
@@ -790,8 +797,7 @@ class SaleContractExport extends Component {
                       dropdownMatchSelectWidth={false}
                       dropdownStyle={{ width: 100 }}
                     >
-                      {product &&
-                        product.clients.map(el => <Option key={el.id}>{el.name}</Option>)}
+                      {product && product.clients.map(el => <Option key={el.id}>{el.name}</Option>)}
                     </AutoComplete>
                   )}
                 </FormItem>
