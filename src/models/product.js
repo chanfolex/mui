@@ -6,6 +6,7 @@ import {
   queryTypeOption,
   queryGradeOption,
   queryClientOption,
+  getSn
 
   // eslint-disable-next-line import/extensions
 } from '@/services/product';
@@ -73,6 +74,12 @@ export default {
       }
       return res;
     },
+
+    *fetchSn({ payload }, { call }) {
+      const response = yield call(getSn, payload);
+      return response;
+    },
+
 
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addProduct, payload);

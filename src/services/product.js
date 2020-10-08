@@ -27,6 +27,12 @@ export async function addProduct(params) {
     },
   });
 }
+
+export async function getSn(params) {
+  return request(`/api/product/getsn?${stringify(params)}`);
+}
+
+
 export async function queryClientOption(params) {
   return request(`/api/client/option?${stringify(params)}`);
 }
