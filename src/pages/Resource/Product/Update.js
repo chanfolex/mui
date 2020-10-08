@@ -157,6 +157,19 @@ export default class UpdateProduct extends Component {
       });
     };
 
+    // 选择客户
+    const selectGuest = value => {
+      dispatch({
+        type: 'product/fetchSn',
+        payload: { supporter: value },
+      }).then(res => {
+        formVals.barsn = res.data;
+        this.setState({
+          formVals,
+        });
+      });
+    };
+
     return (
       <Modal
         width={800}
@@ -202,6 +215,7 @@ export default class UpdateProduct extends Component {
                   })(
                     <Select
                       allowClear
+                      onChange={selectGuest}
                       placeholder="请选择客户"
                       style={{ width: '100%' }}
                       size="large"

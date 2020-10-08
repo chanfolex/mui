@@ -107,6 +107,16 @@ export default class CreateProduct extends Component {
       }
     };
 
+    // 选择客户
+    const selectGuest = value => {
+      dispatch({
+        type: 'product/fetchSn',
+        payload: { supporter: value },
+      }).then(res => {
+        this.props.form.setFieldsValue({ barsn: res.data });
+      });
+    };
+
     return (
       <Modal
         width={800}
@@ -149,6 +159,7 @@ export default class CreateProduct extends Component {
                   })(
                     <Select
                       allowClear
+                      onChange={selectGuest}
                       placeholder="请选客户"
                       style={{ width: '100%' }}
                       size="large"
