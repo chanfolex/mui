@@ -6,7 +6,8 @@ import {
   queryTypeOption,
   queryGradeOption,
   queryClientOption,
-  getSn
+  queryEmployeeOption,
+  getSn,
 
   // eslint-disable-next-line import/extensions
 } from '@/services/product';
@@ -24,6 +25,7 @@ export default {
       pageSize: 10,
     },
     supporters: [],
+    employees: [],
     clients: [],
   },
 
@@ -67,6 +69,14 @@ export default {
       return res;
     },
 
+    *fetchEmployeeOption({ payload }, { call, put }) {
+      const res = yield call(queryEmployeeOption, payload);
+      if (res.code === 200) {
+        yield put({ type: 'saveEmployees', payload: res.data });
+      }
+      return res;
+    },
+
     *fetchClientOption({ payload }, { call, put }) {
       const res = yield call(querySupporterOption, payload);
       if (res.code === 200) {
@@ -79,7 +89,6 @@ export default {
       const response = yield call(getSn, payload);
       return response;
     },
-
 
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addProduct, payload);
@@ -110,6 +119,9 @@ export default {
         pageSize: 10,
       };
       return { ...state, list, pagination };
+    },
+    saveEmployees(state, action) {
+      return { ...state, employees: action.payload };
     },
     saveSupporter(state, action) {
       return { ...state, supporters: action.payload };

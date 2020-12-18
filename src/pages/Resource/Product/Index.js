@@ -1,7 +1,18 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 // import moment from 'moment';
-import { Card, Form, Input, Select, Table, Button, message, Divider, Popconfirm } from 'antd';
+import {
+  Card,
+  Form,
+  Input,
+  Select,
+  Table,
+  Button,
+  message,
+  Divider,
+  Popconfirm,
+  AutoComplete,
+} from 'antd';
 import Zmage from 'react-zmage';
 // import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -59,6 +70,16 @@ class Product extends PureComponent {
       if (res.code === 200) {
         this.setState({
           units: res.data,
+        });
+      }
+    });
+
+    dispatch({
+      type: 'employee/fetchOption',
+    }).then(res => {
+      if (res.code === 200) {
+        this.setState({
+          employees: res.data,
         });
       }
     });
@@ -314,6 +335,7 @@ class Product extends PureComponent {
       drawerVisible,
       categorytinys,
       currentRecord,
+      employees,
     } = this.state;
 
     const parentMethods = {
@@ -578,7 +600,7 @@ class Product extends PureComponent {
             values={stepFormValues}
             categorys={categorys}
             units={units}
-            supporters={supporters}
+            employees={employees}
             dispatch={dispatch}
           />
         ) : null}

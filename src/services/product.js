@@ -15,6 +15,10 @@ export async function queryProduct(params) {
   return request(`/api/product?${stringify(params)}`);
 }
 
+export async function queryEmployeeOption(params) {
+  return request(`/api/employee/option?${stringify(params)}`);
+}
+
 export async function addProduct(params) {
   return request('/api/product/create', {
     method: 'POST',
@@ -31,7 +35,6 @@ export async function addProduct(params) {
 export async function getSn(params) {
   return request(`/api/product/getsn?${stringify(params)}`);
 }
-
 
 export async function queryClientOption(params) {
   return request(`/api/client/option?${stringify(params)}`);

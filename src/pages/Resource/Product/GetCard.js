@@ -1,18 +1,37 @@
 import React, { Component } from 'react';
-
-import { Row, Col, Form, Input, Modal, Tabs } from 'antd';
-
+import { connect } from 'dva';
+import moment from 'moment';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Modal,
+  Tabs,
+  Select,
+  AutoComplete,
+  DatePicker,
+  message,
+} from 'antd';
+import Debounce from 'lodash-decorators/debounce';
 import styles from './product.less';
 
 const FormItem = Form.Item;
+const { Option } = AutoComplete;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
+@connect(({ product }) => ({
+  product,
+  // loading: loading.effects['chart/fetch'],
+}))
 @Form.create()
 export default class GetCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      employee: '',
+      ordate: moment().format('YYYY-MM-DD'),
       formVals: {
         id: props.values.id,
         name: props.values.name,
@@ -25,13 +44,32 @@ export default class GetCard extends Component {
     // const { formVals } = this.state;
   }
 
+  onDateChange = (date, dateString) => {
+    this.setState({
+      ordate: dateString,
+    });
+  };
+
+  @Debounce(500)
+  handleClientSearch = value => {
+    const { dispatch } = this.props;
+    if (value) {
+      dispatch({ type: 'product/fetchEmployeeOption', payload: { abbr: value } }).then(res => {
+        if (res && !res.data.length) return message.warning('搜索结果不存在');
+        return null;
+      });
+    }
+  };
+
   render() {
-    const { formVals } = this.state;
+    const { formVals, employee, ordate } = this.state;
     const {
       form,
       handleAddcard,
       getcardModalVisible,
       handleGetModalVisible,
+      employees,
+      product,
     } = this.props;
 
     const okHandle = () => {
@@ -77,6 +115,44 @@ export default class GetCard extends Component {
                   hasFeedback
                 >
                   {formVals.name}
+                </FormItem>
+
+                <FormItem
+                  labelCol={{ span: 5 }}
+                  wrapperCol={{ span: 18 }}
+                  label="领用人"
+                  disabled="true"
+                  hasFeedback
+                >
+                  {form.getFieldDecorator('employee', {
+                    rules: [{ required: true, message: '是必填项' }],
+                    initialValue: '',
+                  })(
+                    <AutoComplete
+                      allowClear
+                      style={{ width: 200 }}
+                      size="large"
+                      onSelect={this.onSelectClient}
+                      onSearch={this.handleClientSearch}
+                      placeholder="首字母搜索"
+                      dropdownMatchSelectWidth={false}
+                      dropdownStyle={{ width: 200 }}
+                    >
+                      {product &&
+                        product.employees.map(el => <Option key={el.id}>{el.name}</Option>)}
+                    </AutoComplete>
+                  )}
+                </FormItem>
+
+                <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="单据时间">
+                  {form.getFieldDecorator('date', {})(
+                    <DatePicker
+                      format="YYYY-MM-DD HH:mm:ss"
+                      onChange={this.onDateChange}
+                      placeholder="选择单据时间"
+                      defaultValue={moment()}
+                    />
+                  )}
                 </FormItem>
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="流通卡号">
