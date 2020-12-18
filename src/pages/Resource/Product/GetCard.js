@@ -145,12 +145,14 @@ export default class GetCard extends Component {
                 </FormItem>
 
                 <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} label="单据时间">
-                  {form.getFieldDecorator('date', {})(
+                  {form.getFieldDecorator('date', {
+                    initialValue: moment(),
+                  })(
                     <DatePicker
+                      style={{ width: 200 }}
                       format="YYYY-MM-DD HH:mm:ss"
                       onChange={this.onDateChange}
                       placeholder="选择单据时间"
-                      defaultValue={moment()}
                     />
                   )}
                 </FormItem>

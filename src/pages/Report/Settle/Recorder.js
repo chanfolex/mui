@@ -2,15 +2,16 @@ import React, { Component, Fragment } from 'react';
 
 import { connect } from 'dva';
 import moment from 'moment';
-import { Card, Form, Table, Button, Divider, message,Popconfirm,Select,DatePicker } from 'antd';
+import { Card, Form, Table, Button, Divider, message, Popconfirm, Select, DatePicker } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import TableInputSearch from '@/components/common/TableInputSearch';
 import styles from '../Index.less';
 import Slide from '../../Slide/SettleSlide';
 // import PrintModal from '../../Print/Report/ToolGet/ExportModal';
+const { MonthPicker } = DatePicker;
 
 @connect(({ report_settle }) => ({
-    report_settle,
+  report_settle,
   // loading: loading.models.product,
 }))
 @Form.create()
@@ -26,7 +27,6 @@ class ReportSettle extends Component {
     currentRecord: {},
   };
 
- 
   componentDidMount() {
     const { dispatch } = this.props;
 
@@ -41,8 +41,6 @@ class ReportSettle extends Component {
         });
       }
     });
-
-    
   }
 
   showDrawer = record => {
@@ -63,11 +61,11 @@ class ReportSettle extends Component {
       client: dateString,
     });
     this.fetchList();
-    console.log(this.state.client)
+    console.log(this.state.client);
   };
 
-   // 查询列表
-   fetchList = (params = {}) => {
+  // 查询列表
+  fetchList = (params = {}) => {
     const { dispatch } = this.props;
     const { client, abbr } = this.state;
     const param = { ...params };
@@ -75,7 +73,6 @@ class ReportSettle extends Component {
     if (abbr) param.abbr = abbr;
     dispatch({ type: 'report_settle/fetch', payload: param });
   };
-
 
   handleDelete = fields => {
     const {
@@ -86,7 +83,7 @@ class ReportSettle extends Component {
       type: 'report_settle/delete',
       payload: {
         id: fields.id,
-        sn:fields.sn,
+        sn: fields.sn,
         status: 2,
       },
       callback: res => {
@@ -98,8 +95,8 @@ class ReportSettle extends Component {
     });
   };
 
-   // 分类选择查询
-   handleCategoryChange = val => {
+  // 分类选择查询
+  handleCategoryChange = val => {
     // const params = val ? {} : {};
     this.setState({ client: val }, () => {
       this.fetchList();
@@ -129,20 +126,13 @@ class ReportSettle extends Component {
     );
   };
 
-
-
-
   render() {
     const {
       report_settle: { list, pagination },
       dispatch,
     } = this.props;
 
-    const {
-      drawerVisible,
-      currentRecord,
-      categorys,
-    } = this.state;
+    const { drawerVisible, currentRecord, categorys } = this.state;
 
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
@@ -152,26 +142,24 @@ class ReportSettle extends Component {
     const paginationProps = { ...pagination };
 
     const columns = [
-   
       {
         title: '姓名',
         width: 100,
-        dataIndex:'name',
+        dataIndex: 'name',
         key: 'name',
       },
       {
         title: '合计',
         width: 100,
-        dataIndex:'total',
+        dataIndex: 'total',
         key: 'total',
       },
       {
         title: '时间',
         width: 100,
-        dataIndex:'mapdate',
+        dataIndex: 'mapdate',
         key: 'mapdate',
       },
-   
 
       {
         title: '操作',
@@ -179,11 +167,9 @@ class ReportSettle extends Component {
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
-       {/* <PrintModal record={record}>
+            {/* <PrintModal record={record}>
               <a>打印</a>
             </PrintModal> */}
-           
-       
           </Fragment>
         ),
       },
@@ -194,7 +180,7 @@ class ReportSettle extends Component {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-            {/* <Select
+              {/* <Select
                 size="large"
                 style={{ width: 200, marginRight: 20 }}
                 placeholder="选择客户"
@@ -210,13 +196,12 @@ class ReportSettle extends Component {
               
               */}
 
-<DatePicker
-                  format="YYYY-MM"
-                  onChange={this.onDateChange}
-                  placeholder="选择单据时间"
-                  defaultValue={moment()}
-                />
-
+              <MonthPicker
+                format="YYYY-MM"
+                onChange={this.onDateChange}
+                placeholder="选择单据时间"
+                defaultValue={moment()}
+              />
 
               <div className={styles.tableListForm}>
                 <TableInputSearch
@@ -243,14 +228,14 @@ class ReportSettle extends Component {
           </div>
         </Card>
 
-         {drawerVisible && (
+        {drawerVisible && (
           <Slide
             visible={drawerVisible}
             formRow={currentRecord}
             onClose={this.onDrawerClose}
             dispatch={dispatch}
           />
-        )} 
+        )}
       </PageHeaderWrapper>
     );
   }
