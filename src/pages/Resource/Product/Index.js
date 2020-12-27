@@ -21,7 +21,7 @@ import CreateProduct from './Create';
 import UpdateProduct from './Update';
 import GetCard from './GetCard';
 import Slide from '../../Slide/ProcedureSlide';
-
+import BomSlide from '../../Slide/BomSlide';
 import styles from './product.less';
 
 const { Option } = Select;
@@ -45,6 +45,7 @@ class Product extends PureComponent {
     abbr: '',
     category: '',
     drawerVisible: false,
+    drawerBomVisible: false,
     currentRecord: {},
     // loading: false,
   };
@@ -140,10 +141,22 @@ class Product extends PureComponent {
 
   onDrawerClose = () => {
     this.setState({
-      drawerVisible: false,
+      drawerBomVisible: false,
     });
   };
 
+  showDrawerBom = record => {
+    this.setState({
+      drawerBomVisible: true,
+      currentRecord: record,
+    });
+  };
+
+  onDrawerBomClose = () => {
+    this.setState({
+      drawerBomVisible: false,
+    });
+  };
   content = index => (
     <div>
       <Input placeholder="请输入产品名称" />
@@ -333,6 +346,7 @@ class Product extends PureComponent {
       units,
       supporters,
       drawerVisible,
+      drawerBomVisible ,
       categorytinys,
       currentRecord,
       employees,
@@ -480,6 +494,8 @@ class Product extends PureComponent {
         fixed: 'right',
         render: (text, record) => (
           <Fragment>
+                <a onClick={() => this.showDrawerBom(record)}>BOM信息</a>
+            <Divider type="vertical" />
             <a onClick={() => this.showDrawer(record)}>工序列表</a>
             <Divider type="vertical" />
 
@@ -565,6 +581,14 @@ class Product extends PureComponent {
             visible={drawerVisible}
             formRow={currentRecord}
             onClose={this.onDrawerClose}
+            dispatch={dispatch}
+          />
+        )}
+        {drawerBomVisible && (
+          <BomSlide
+            visible={drawerBomVisible}
+            formRow={currentRecord}
+            onClose={this.onDrawerBomClose}
             dispatch={dispatch}
           />
         )}
