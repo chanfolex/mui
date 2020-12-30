@@ -1,5 +1,20 @@
 import React, { PureComponent } from 'react';
-import { Form, Drawer, Row, Col, Divider, Tabs, Table, Modal, Button, Select } from 'antd';
+import {
+  Form,
+  Drawer,
+  Row,
+  Col,
+  Divider,
+  Tabs,
+  Table,
+  Modal,
+  Button,
+  Select,
+  Message,
+  Input,
+  Upload,
+  Icon,
+} from 'antd';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -9,29 +24,44 @@ export default class BomSlide extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      tableData: [
-        {
-          key: '1',
-          name: 1,
-        },
-        {
-          key: '2',
-          name: 2,
-        },
-      ],
-      count: 3,
-      modalVisible: false,
-      temporaryData: [],
+      list: [], // 接口数据
+      currentTabs: 0, // 当前的tabs
+      productList: [], // 产品列表
+      count: 3, // 记录作用
+      modalVisible: false, // 是否显示modal
+      temporaryData: [], // 打开Modal之后临时存放
     };
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'bom/fetchitems',
-    // }).then(res => {
-    //   console.log(res)
-    // });
+    // 查询分类
+    dispatch({
+      type: 'bom/fetchItems',
+      payload: {
+        product: 671,
+      },
+    }).then(res => {
+      if (res.code == 200) {
+        this.setState({
+          list: res.data,
+        });
+      }
+    });
+  }
+
+  // 删除产品
+  deleteHandle(id) {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bom/update',
+      payload: {
+        status: 2,
+        id: id,
+      },
+    }).then(() => {
+      Message.success('删除成功');
+    });
   }
 
   // 产品基础信息
@@ -99,12 +129,27 @@ export default class BomSlide extends PureComponent {
 
   // 编辑弹框
   productModal = () => {
-    const { count, temporaryData, modalVisible } = this.state;
+    const { list, count, temporaryData, modalVisible, productList, currentTabs } = this.state;
+
+    const props = {
+      action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+      onChange({ file, fileList }) {
+        if (file.status !== 'uploading') {
+          console.log(file, fileList);
+        }
+      },
+      defaultFileList: [],
+    };
     // 增加一行
     const addItem = i => {
       temporaryData.splice(i + 1, 0, {
         key: `${count}`,
-        name: `${count}`,
+        id: '',
+        num: '',
+        product: {
+          id: '',
+          name: '',
+        },
       });
       // 这里需要调用删除接口
       this.setState({ temporaryData: [...temporaryData], count: count + 1 });
@@ -112,15 +157,44 @@ export default class BomSlide extends PureComponent {
 
     // 删除某一行
     const removeItem = i => {
-      temporaryData.splice(i, 1);
-      this.setState({ temporaryData: [...temporaryData] });
+      if (temporaryData.length <= 1) {
+        Message.error('这是最后一条数据不可删除');
+      } else {
+        temporaryData.splice(i, 1);
+        this.setState({ temporaryData: [...temporaryData] });
+      }
     };
 
     // 提交表单
     const handleOk = () => {
-      this.setState({
-        modalVisible: false,
+      const { dispatch } = this.props;
+      // 首先是数据清洗
+      let des = [];
+      let state = true;
+      temporaryData.map(item => {
+        if (item.product.id != '' && item.num.length > 0) {
+          des.push({ product: item.product.id, num: item.num, file: item.file });
+        } else {
+          state = false;
+        }
       });
+      if (state) {
+        dispatch({
+          type: 'bom/add',
+          payload: {
+            abbr: { type: list[currentTabs].id, des: des },
+          },
+        }).then(res => {
+          if (res.code == 200) {
+            this.setState({ productList: res.data.list });
+          }
+        });
+        this.setState({
+          modalVisible: false,
+        });
+      } else {
+        Message.error('请填写完整表单');
+      }
     };
 
     // 隐藏modal
@@ -130,35 +204,138 @@ export default class BomSlide extends PureComponent {
       });
     };
 
+    // 输入表单
+    const inputHandle = (v, i) => {
+      temporaryData[i].num = v;
+      this.setState({ temporaryData: [...temporaryData] });
+      console.log(temporaryData);
+    };
+
+    // 搜索
+    const searchHandle = value => {
+      const { dispatch } = this.props;
+      if (value == '') {
+        this.setState({ productList: [] });
+      } else {
+        // 查询分类
+        dispatch({
+          type: 'product/fetchProductOption',
+          payload: {
+            abbr: value,
+          },
+        }).then(res => {
+          if (res.code == 200) {
+            this.setState({ productList: res.data.list });
+          }
+        });
+      }
+    };
+
+    // 选择产品
+    const selectHandle = (v, i, o) => {
+      console.log(v);
+      console.log(o);
+      temporaryData[i].product = {
+        id: v,
+        name: o.props.children,
+      };
+      this.setState({ temporaryData: [...temporaryData] }, console.log(temporaryData));
+    };
+
     const columns = [
       {
         title: '组件编号',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'id',
+        width: 100,
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '组件名称',
+        dataIndex: 'product',
+        width: 200,
         render: (text, record, i) => (
           <Select
             showSearch
-            allowClear
-            style={{ width: 200 }}
-            placeholder="Select a person"
+            style={{ width: 160 }}
+            placeholder="搜索产品"
             optionFilterProp="children"
+            value={text.name}
+            onSearch={value => searchHandle(value)}
+            onSelect={(value, option) => selectHandle(value, i, option)}
             filterOption={(input, option) =>
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
           >
-            <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="tom">Tom</Option>
+            {productList.map((item, index) => (
+              <Option value={item.id} key={index} option={item}>
+                {item.name}
+              </Option>
+            ))}
           </Select>
         ),
       },
       {
-        title: '操作',
-        key: 'action',
+        title: '类型',
+        dataIndex: 'id',
+        width: 100,
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '材料',
+        dataIndex: 'id',
+        width: 100,
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '图号',
+        dataIndex: 'id',
+        width: 100,
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '数量',
+        dataIndex: 'num',
+        width: 160,
         render: (text, record, i) => (
-          <span>
+          <Input
+            placeholder="请输入数量"
+            type="number"
+            value={text}
+            onChange={e => inputHandle(e.target.value, i)}
+          />
+        ),
+      },
+      {
+        title: '图纸',
+        dataIndex: 'id',
+        width: 100,
+        render: (text, record, i) => {
+          record.file != null ? <Button type="primary" shape="circle" icon="play-circle" /> : null;
+        },
+      },
+      {
+        title: '上传图纸',
+        width: 200,
+        dataIndex: 'action',
+        render: (text, record, i) => (
+          <Upload {...props}>
             <Button type="primary" shape="circle" icon="cloud-upload" />
-            <Button type="primary" shape="circle" icon="plus" onClick={() => addItem(i)} />
+          </Upload>
+        ),
+      },
+      {
+        title: '操作',
+        dataIndex: 'action',
+        width: 200,
+        render: (text, record, i) => (
+          <span style={{ display: 'flex' }}>
+            <Button
+              type="primary"
+              shape="circle"
+              icon="plus"
+              onClick={() => addItem(i)}
+              style={{ margin: '0 10px' }}
+            />
             <Button type="primary" shape="circle" icon="delete" onClick={() => removeItem(i)} />
           </span>
         ),
@@ -186,38 +363,89 @@ export default class BomSlide extends PureComponent {
 
   render() {
     const { visible, onClose } = this.props;
-    const { tableData } = this.state;
+    const { list, currentTabs } = this.state;
     // 删除某条数据
-    const deleteItem = index => {
-      tableData.splice(index, 1);
+    const deleteItem = (index, data) => {
+      this.deleteHandle(data.id);
+      list[currentTabs].des.splice(index, 1);
       // 这里需要调用删除接口
-      this.setState({ tableData: [...tableData] });
+      this.setState({ list: [...list] });
     };
 
     // 是否显示modal
     const showModal = () => {
+      let data = {
+        id: '',
+        num: '',
+        product: {},
+      };
       this.setState({
         modalVisible: true,
-        temporaryData: JSON.parse(JSON.stringify(tableData)),
+        temporaryData:
+          list[currentTabs].des.length > 0
+            ? JSON.parse(JSON.stringify(list[currentTabs].des))
+            : [data],
       });
     };
 
     // 切换tabs页面
-    const handleTabChange = () => {
-      // console.log(key);
+    const handleTabChange = key => {
+      this.setState({ currentTabs: key });
     };
 
     const columns = [
       {
         title: '组件编号',
-        dataIndex: 'name',
-        key: 'name',
+        dataIndex: 'id',
+        key: 'id',
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '组件名称',
+        dataIndex: 'product',
+        key: 'product',
+        render: text => <a>{text.name}</a>,
+      },
+      {
+        title: '类型',
+        dataIndex: 'id',
+        key: 'id1',
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '材料',
+        dataIndex: 'id',
+        key: 'id2',
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '库存数量',
+        dataIndex: 'id',
+        key: 'id3',
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '订单数量',
+        dataIndex: 'id',
+        key: 'id4',
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '待生产',
+        dataIndex: 'id',
+        key: 'id5',
+        render: text => <a>{text}</a>,
+      },
+      {
+        title: '图号',
+        dataIndex: 'id',
+        key: 'id6',
         render: text => <a>{text}</a>,
       },
       {
         title: '操作',
         key: 'action',
-        render: (text, record, index) => <a onClick={() => deleteItem(index)}>删除</a>,
+        render: (text, record, index) => <a onClick={() => deleteItem(index, text)}>删除</a>,
       },
     ];
 
@@ -232,16 +460,12 @@ export default class BomSlide extends PureComponent {
       >
         {this.productInfo()}
         <Divider style={{ marginTop: 10, marginBottom: 0 }} />
-        <Tabs defaultActiveKey="1" onChange={handleTabChange}>
-          <TabPane tab="TAB1" key="1">
-            <Table columns={columns} dataSource={tableData} />
-          </TabPane>
-          <TabPane tab="TAB2" key="2">
-            <Table columns={columns} dataSource={tableData} />
-          </TabPane>
-          <TabPane tab="TAB3" key="3">
-            <Table columns={columns} dataSource={tableData} />
-          </TabPane>
+        <Tabs defaultActiveKey={currentTabs} onChange={key => handleTabChange(key)}>
+          {list.map((item, index) => (
+            <TabPane tab={item.name} key={index}>
+              <Table columns={columns} dataSource={item.des} />
+            </TabPane>
+          ))}
         </Tabs>
         <Divider style={{ marginTop: 20, marginBottom: 20 }} />
         <Button type="primary" onClick={showModal}>
