@@ -141,7 +141,7 @@ class Product extends PureComponent {
 
   onDrawerClose = () => {
     this.setState({
-      drawerBomVisible: false,
+      drawerVisible: false,
     });
   };
 

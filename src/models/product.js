@@ -98,6 +98,8 @@ export default {
       });
       if (callback) callback(response);
     },
+
+    
     *update({ payload, callback }, { call }) {
       const response = yield call(updateProduct, payload);
       if (callback) callback(response);

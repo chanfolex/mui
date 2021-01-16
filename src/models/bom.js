@@ -52,10 +52,14 @@ export default {
       });
       if (callback) callback(response);
     },
+
+    
     *update({ payload, callback }, { call }) {
       const response = yield call(updateData, payload);
       if (callback) callback(response);
     },
+
+
 
     *reload(action, { put, select }) {
       const pagination = yield select(state => state.employee.pagination);

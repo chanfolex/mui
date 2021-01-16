@@ -1,4 +1,6 @@
+/* eslint-disable react/sort-comp */
 import React, { PureComponent } from 'react';
+import { formatMessage, FormattedMessage } from 'umi/locale';
 import {
   Form,
   Drawer,
@@ -13,7 +15,7 @@ import {
   Message,
   Input,
   Upload,
-  Icon,
+  Icon
 } from 'antd';
 
 const { TabPane } = Tabs;
@@ -130,16 +132,6 @@ export default class BomSlide extends PureComponent {
   // 编辑弹框
   productModal = () => {
     const { list, count, temporaryData, modalVisible, productList, currentTabs } = this.state;
-
-    const props = {
-      action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-      onChange({ file, fileList }) {
-        if (file.status !== 'uploading') {
-          console.log(file, fileList);
-        }
-      },
-      defaultFileList: [],
-    };
     // 增加一行
     const addItem = i => {
       temporaryData.splice(i + 1, 0, {
@@ -148,7 +140,7 @@ export default class BomSlide extends PureComponent {
         num: '',
         product: {
           id: '',
-          name: '',
+          name: ''
         },
       });
       // 这里需要调用删除接口
@@ -180,18 +172,20 @@ export default class BomSlide extends PureComponent {
       });
       if (state) {
         dispatch({
-          type: 'bom/add',
+          type: 'bom/update',
           payload: {
-            abbr: { type: list[currentTabs].id, des: des },
-          },
-        }).then(res => {
-          if (res.code == 200) {
-            this.setState({ productList: res.data.list });
+           type: list[currentTabs].id,
+            des: des 
           }
-        });
+        }).then(res => {
+          if (res) {
+            this.setState({ productList: res.data.list })
+          }
+        })
         this.setState({
           modalVisible: false,
         });
+        Message.success('配置成功');
       } else {
         Message.error('请填写完整表单');
       }
@@ -206,9 +200,9 @@ export default class BomSlide extends PureComponent {
 
     // 输入表单
     const inputHandle = (v, i) => {
-      temporaryData[i].num = v;
-      this.setState({ temporaryData: [...temporaryData] });
-      console.log(temporaryData);
+      temporaryData[i].num = v
+      this.setState({ temporaryData: [...temporaryData] })
+      console.log(temporaryData)
     };
 
     // 搜索
@@ -233,14 +227,23 @@ export default class BomSlide extends PureComponent {
 
     // 选择产品
     const selectHandle = (v, i, o) => {
-      console.log(v);
-      console.log(o);
+      console.log(v)
+      console.log(o)
       temporaryData[i].product = {
         id: v,
-        name: o.props.children,
-      };
-      this.setState({ temporaryData: [...temporaryData] }, console.log(temporaryData));
+        name: o.props.children
+      }
+      this.setState({ temporaryData: [...temporaryData] }, console.log(temporaryData))
+
     };
+
+    // 上传图纸
+    const updateChange = (file, i) => {
+      if (file.status === 'done') {
+        temporaryData[i].file = file.response.data
+        this.setState({ temporaryData: [...temporaryData] })
+      }
+    }
 
     const columns = [
       {
@@ -258,13 +261,10 @@ export default class BomSlide extends PureComponent {
             showSearch
             style={{ width: 160 }}
             placeholder="搜索产品"
-            optionFilterProp="children"
             value={text.name}
+            filterOption={false}
             onSearch={value => searchHandle(value)}
             onSelect={(value, option) => selectHandle(value, i, option)}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
           >
             {productList.map((item, index) => (
               <Option value={item.id} key={index} option={item}>
@@ -314,14 +314,18 @@ export default class BomSlide extends PureComponent {
         },
       },
       {
-        title: '上传图纸',
+        title: "上传图纸",
         width: 200,
         dataIndex: 'action',
         render: (text, record, i) => (
-          <Upload {...props}>
+          <Upload
+            action="/server/public/api/product/upload"
+            name="cover"
+            onChange={(file) => updateChange(file.file, i)}
+          >
             <Button type="primary" shape="circle" icon="cloud-upload" />
           </Upload>
-        ),
+        )
       },
       {
         title: '操作',
@@ -343,7 +347,7 @@ export default class BomSlide extends PureComponent {
     ];
     return (
       <Modal
-        title="编辑"
+        title="配置"
         width={1200}
         visible={modalVisible}
         onOk={handleOk}
