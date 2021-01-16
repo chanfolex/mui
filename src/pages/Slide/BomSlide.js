@@ -451,6 +451,11 @@ export default class BomSlide extends PureComponent {
         key: 'action',
         render: (text, record, index) => <a onClick={() => deleteItem(index, text)}>删除</a>,
       },
+      {
+        title: '编辑',
+        key: 'action',
+        render: (text, record, index) => <a onClick={() => deleteItem(index, text)}>编辑</a>,
+      },
     ];
 
     return (
