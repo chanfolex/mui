@@ -15,7 +15,7 @@ import {
   Message,
   Input,
   Upload,
-  Icon
+  Icon,
 } from 'antd';
 
 const { TabPane } = Tabs;
@@ -32,10 +32,16 @@ export default class BomSlide extends PureComponent {
       count: 3, // 记录作用
       modalVisible: false, // 是否显示modal
       temporaryData: [], // 打开Modal之后临时存放
+      editIndex: '', // 当前需要编辑的item
+      editData: '', // 存放需要编辑的数据
     };
   }
 
   componentDidMount() {
+    this.getItems();
+  }
+
+  getItems() {
     const { dispatch } = this.props;
     // 查询分类
     dispatch({
@@ -140,7 +146,7 @@ export default class BomSlide extends PureComponent {
         num: '',
         product: {
           id: '',
-          name: ''
+          name: '',
         },
       });
       // 这里需要调用删除接口
@@ -174,14 +180,13 @@ export default class BomSlide extends PureComponent {
         dispatch({
           type: 'bom/update',
           payload: {
-           type: list[currentTabs].id,
-            des: des 
-          }
+            type: list[currentTabs].id,
+            des: des,
+          },
         }).then(res => {
-          if (res) {
-            this.setState({ productList: res.data.list })
-          }
-        })
+          // 提交成功之后直接重新请求数据
+          this.getItems();
+        });
         this.setState({
           modalVisible: false,
         });
@@ -200,9 +205,9 @@ export default class BomSlide extends PureComponent {
 
     // 输入表单
     const inputHandle = (v, i) => {
-      temporaryData[i].num = v
-      this.setState({ temporaryData: [...temporaryData] })
-      console.log(temporaryData)
+      temporaryData[i].num = v;
+      this.setState({ temporaryData: [...temporaryData] });
+      console.log(temporaryData);
     };
 
     // 搜索
@@ -227,23 +232,22 @@ export default class BomSlide extends PureComponent {
 
     // 选择产品
     const selectHandle = (v, i, o) => {
-      console.log(v)
-      console.log(o)
+      console.log(v);
+      console.log(o);
       temporaryData[i].product = {
         id: v,
-        name: o.props.children
-      }
-      this.setState({ temporaryData: [...temporaryData] }, console.log(temporaryData))
-
+        name: o.props.children,
+      };
+      this.setState({ temporaryData: [...temporaryData] }, console.log(temporaryData));
     };
 
     // 上传图纸
     const updateChange = (file, i) => {
       if (file.status === 'done') {
-        temporaryData[i].file = file.response.data
-        this.setState({ temporaryData: [...temporaryData] })
+        temporaryData[i].file = file.response.data;
+        this.setState({ temporaryData: [...temporaryData] });
       }
-    }
+    };
 
     const columns = [
       {
@@ -314,18 +318,18 @@ export default class BomSlide extends PureComponent {
         },
       },
       {
-        title: "上传图纸",
+        title: '上传图纸',
         width: 200,
         dataIndex: 'action',
         render: (text, record, i) => (
           <Upload
             action="/server/public/api/product/upload"
             name="cover"
-            onChange={(file) => updateChange(file.file, i)}
+            onChange={file => updateChange(file.file, i)}
           >
             <Button type="primary" shape="circle" icon="cloud-upload" />
           </Upload>
-        )
+        ),
       },
       {
         title: '操作',
@@ -367,13 +371,43 @@ export default class BomSlide extends PureComponent {
 
   render() {
     const { visible, onClose } = this.props;
-    const { list, currentTabs } = this.state;
+    const { list, currentTabs, editIndex, editData } = this.state;
     // 删除某条数据
     const deleteItem = (index, data) => {
       this.deleteHandle(data.id);
       list[currentTabs].des.splice(index, 1);
       // 这里需要调用删除接口
       this.setState({ list: [...list] });
+    };
+
+    // 编辑某条数据
+    const editItem = (index, data) => {
+      this.setState({ editIndex: index, editData: data });
+    };
+
+    // 编辑某一条上传图纸
+    const editUpdateChange = file => {
+      if (file.status === 'done') {
+        this.state.editData.file = file.response.data;
+        this.setState({ editData: this.state.editData });
+      }
+    };
+
+    // 编辑某一条数据中的数量
+    const editInputHandle = (v, i) => {
+      this.state.editData.num = v;
+      list[currentTabs].des[i].num = v;
+      this.setState({ list: [...list], editData: this.state.editData });
+    };
+
+    // 编辑某一条需要保存的数据
+    const saveItem = (index, data) => {
+      // 这里调用接口将editData中的数据提交给后台，editData里面包含了当前这个分类下大某一条数据的内容，相关数量和图纸都已经修改；
+      // 提交之后将editIndex 设置为''即可
+      // 最后可以重新刷新一下列表，可保证当前数据是后台最新
+      // 发送保存请求
+      // console.log(editData)
+      // this.setState({ editIndex: '' })
     };
 
     // 是否显示modal
@@ -430,9 +464,20 @@ export default class BomSlide extends PureComponent {
       },
       {
         title: '订单数量',
-        dataIndex: 'id',
+        dataIndex: 'num',
         key: 'id4',
-        render: text => <a>{text}</a>,
+        render: (text, record, index) =>
+          editIndex !== index ? (
+            <a>{text}</a>
+          ) : (
+            <Input
+              placeholder="请输入数量"
+              style={{ width: 80 }}
+              type="number"
+              value={text}
+              onChange={e => editInputHandle(e.target.value, index)}
+            />
+          ),
       },
       {
         title: '待生产',
@@ -444,7 +489,18 @@ export default class BomSlide extends PureComponent {
         title: '图号',
         dataIndex: 'id',
         key: 'id6',
-        render: text => <a>{text}</a>,
+        render: (text, record, index) =>
+          editIndex !== index ? (
+            <a>{text}</a>
+          ) : (
+            <Upload
+              action="/server/public/api/product/upload"
+              name="cover"
+              onChange={file => editUpdateChange(file.file)}
+            >
+              <Button type="primary" shape="circle" icon="cloud-upload" />
+            </Upload>
+          ),
       },
       {
         title: '操作',
@@ -454,7 +510,12 @@ export default class BomSlide extends PureComponent {
       {
         title: '编辑',
         key: 'action',
-        render: (text, record, index) => <a onClick={() => deleteItem(index, text)}>编辑</a>,
+        render: (text, record, index) =>
+          editIndex !== index ? (
+            <a onClick={() => editItem(index, text)}>编辑</a>
+          ) : (
+            <a onClick={() => saveItem(index, text)}>保存</a>
+          ),
       },
     ];
 

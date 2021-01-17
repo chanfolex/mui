@@ -56,7 +56,6 @@ export default [
           // },
         ],
       },
-
       {
         name: 'notify',
         icon: 'user',
@@ -65,7 +64,21 @@ export default [
           {
             path: '/notify/index',
             name: 'index',
-            component: './Notify/Center/Index',
+            // component: './Notify/Center/Index',
+            routes: [
+              {
+                path: '/notify/index/demo',
+                name: 'demo',
+                // component: './Demo/Index',
+                routes: [
+                  {
+                    path: '/notify/index/demo/test',
+                    name: '我是多级了',
+                    component: './Demo/Index',
+                  },
+                ],
+              },
+            ],
           },
           // {
           //   path: '/notify/center',
@@ -199,7 +212,6 @@ export default [
         ],
       },
 
-
       {
         path: '/report',
         name: 'report',
@@ -212,7 +224,6 @@ export default [
             authority: 41,
             component: './Report/Settle/Recorder',
           },
-         
         ],
       },
 
@@ -220,7 +231,7 @@ export default [
         path: '/finance',
         name: 'finance',
         icon: 'book',
-        authority: [51,52,53,54],
+        authority: [51, 52, 53, 54],
         routes: [
           {
             path: '/finance/employee',
